@@ -1,6 +1,6 @@
 local opts = {}
 
-opts.color_set = {
+local color_set = {
     hibiscus = "#806d9c",
     primrose = "#c06f98",
 }
@@ -15,7 +15,7 @@ opts.config = {
         left_bottom = "╰",
         right_arrow = ">",
     },
-    hlchunk_hl_style = opts.color_set.primrose,
+    hlchunk_hl_style = color_set.primrose,
 }
 
 opts.setup = function(params)
