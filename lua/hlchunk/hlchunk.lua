@@ -1,18 +1,9 @@
 local utils = require("hlchunk.utils")
+local hl_chars = require("hlchunk.options").config.hl_chars
 
 local M = {}
 
--- TODO: these configurations should move to userconfig
 local ns_id = -1
-local hl_chars = {
-    horizontal_line = "─",
-    vertical_line = "│",
-    left_top = "╭",
-    left_bottom = "╰",
-    right_arrow = ">",
-}
-
-local beg_row, end_row
 
 -- set new virtual text to the right place
 function M.hl_chunk()
@@ -20,6 +11,7 @@ function M.hl_chunk()
     ns_id = vim.api.nvim_create_namespace("hlchunk")
 
     -- determined the row where parentheses are
+    local beg_row, end_row
     local pair_pos = utils.get_pair_rows()
     beg_row = pair_pos[1]
     end_row = pair_pos[2]
@@ -41,11 +33,10 @@ function M.hl_chunk()
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
     }
-    -- render beg_row
-    local beg_virt_text, end_virt_text
+    -- render beg_row and end_row
     if start_col >= 0 then
-        beg_virt_text = hl_chars.left_top .. hl_chars.horizontal_line:rep(beg_blank_len - start_col - 1)
-        end_virt_text = hl_chars.left_bottom
+        local beg_virt_text = hl_chars.left_top .. hl_chars.horizontal_line:rep(beg_blank_len - start_col - 1)
+        local end_virt_text = hl_chars.left_bottom
             .. hl_chars.horizontal_line:rep(end_blank_len - start_col - 2)
             .. hl_chars.right_arrow
 
@@ -57,7 +48,7 @@ function M.hl_chunk()
 
     -- render middle section
     for i = beg_row + 1, end_row - 1 do
-        mid_virt_text = hl_chars.vertical_line
+        local mid_virt_text = hl_chars.vertical_line
         row_opts.virt_text = { { mid_virt_text, "HLChunkStyle" } }
         row_opts.virt_text_win_col = math.max(0, start_col)
         vim.api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)

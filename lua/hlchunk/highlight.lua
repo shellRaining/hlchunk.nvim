@@ -1,1 +1,3 @@
-vim.api.nvim_set_hl(0, "HLChunkStyle", { ctermfg = 244 })
+
+
+vim.api.nvim_set_hl(0, "HLChunkStyle", { fg = primrose})
