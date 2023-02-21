@@ -16,7 +16,14 @@ function M.enable_hlchunk_autocmds()
         group = "hlchunk_autocmds",
         pattern = config.hlchunk_supported_files,
         desc = "QUES: why just only CursorMoved is ok",
-        callback = require("hlchunk.hlchunk").hl_cur_chunk,
+        callback = require("hlchunk.hl_chunk").hl_cur_chunk,
+    })
+
+    api.nvim_create_autocmd({ "WinScrolled" }, {
+        group = "hlchunk_autocmds",
+        pattern = "*",
+        desc = "when windows scrolled refresh indent mark, can set filetype",
+        callback = require("hlchunk.hl_indent").hl_indent,
     })
 end
 

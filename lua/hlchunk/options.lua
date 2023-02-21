@@ -7,7 +7,7 @@ local color_set = {
 
 opts.config = {
     enabled = true,
-    hlchunk_supported_files = { "*.ts,*.js,*.json,*.go,*.c,*.cpp,*.rs,*.h,*.hpp,*.lua" },
+    hlchunk_supported_files = { "*.ts", "*.js", "*.json", "*.go", "*.c", "*.cpp", "*.rs", "*.h", "*.hpp", "*.lua" },
     hl_chars = {
         horizontal_line = "─",
         vertical_line = "│",

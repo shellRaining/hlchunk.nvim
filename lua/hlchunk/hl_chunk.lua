@@ -50,7 +50,7 @@ function M.hl_cur_chunk()
         return
     end
 
-    render_cur_chunk(utils.get_render_params(beg_row, end_row))
+    render_cur_chunk(utils.get_render_chunk_params(beg_row, end_row))
 end
 
 -- clear the virtual text marked before
@@ -60,13 +60,13 @@ function M.clear_hl_chunk()
     end
 end
 
-function M.disable_hlchunk(args)
+function M.disable_hl_cur_chunk(args)
     opts.config.enabled = false
     M.clear_hl_chunk()
     require("hlchunk.autocmd").disable_hlchunk_autocmds()
 end
 
-function M.enable_hlchunk(args)
+function M.enable_hl_cur_chunk(args)
     opts.config.enabled = true
     M.hl_cur_chunk()
     require("hlchunk.autocmd").enable_hlchunk_autocmds()

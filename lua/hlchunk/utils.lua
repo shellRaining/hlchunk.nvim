@@ -13,7 +13,7 @@ function M.get_pair_rows()
     return { beg_row, end_row }
 end
 
-function M.get_render_params(beg_row, end_row)
+function M.get_render_chunk_params(beg_row, end_row)
     local shift_width = vim.o.shiftwidth
     local space_tab = (" "):rep(shift_width)
     local beg_blank_val = tostring(vim.fn.getline(beg_row)):match("%s*"):gsub("\t", space_tab)
@@ -29,6 +29,15 @@ function M.get_render_params(beg_row, end_row)
         beg_blank_len,
         end_blank_len,
     }
+end
+
+ function M.get_rows_blank()
+    vim.notify("need implement")
+end
+
+
+function M.get_render_indent_params(row_blank_list)
+    vim.notify('need implement')
 end
 
 return M
