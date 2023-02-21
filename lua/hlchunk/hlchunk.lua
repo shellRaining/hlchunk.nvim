@@ -20,7 +20,6 @@ function M.hl_chunk()
     end
 
     -- determined the start_col to draw virt_text
-    -- QUES: if \t can be ignored
     local shift_width = vim.o.shiftwidth
     local space_tab = (" "):rep(shift_width)
     local beg_blank_val = tostring(vim.fn.getline(beg_row)):match("%s*"):gsub("\t", space_tab)
@@ -32,6 +31,7 @@ function M.hl_chunk()
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
+        hl_mode = "combine",
     }
     -- render beg_row and end_row
     if start_col >= 0 then
