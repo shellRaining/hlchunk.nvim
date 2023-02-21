@@ -18,10 +18,4 @@ opts.config = {
     hlchunk_hl_style = color_set.primrose,
 }
 
-opts.setup = function(params)
-    opts.config = vim.tbl_extend("force", {}, opts.config, params or {})
-    require("hlchunk.autocmd")
-    require("hlchunk.highlight")
-end
-
 return opts

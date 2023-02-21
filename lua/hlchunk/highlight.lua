@@ -1,3 +1,5 @@
-local fg_color = require("hlchunk.options").config.hlchunk_hl_style
+local opts = require("hlchunk.options")
 
-vim.api.nvim_set_hl(0, "HLChunkStyle", { fg = fg_color})
+vim.api.nvim_set_hl(0, "HLChunkStyle", {
+    fg = opts.config.hlchunk_hl_style,
+})
