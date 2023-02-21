@@ -4,7 +4,6 @@ local hlchunk = {}
 
 hlchunk.setup = function(params)
     opts.config = vim.tbl_extend("force", {}, opts.config, params or {})
-    vim.notify(vim.inspect(opts.config))
 
     if not opts.config.enabled then
         return
