@@ -17,6 +17,12 @@
 }
 ```
 
-- [ ] add indent line highlight
+- [x] add indent line highlight
 
 - [ ] try to add treesitter support, because the syntax base on regex is so slow and not accurate
+
+- [ ] set the indent more highlighting support
+
+- [ ] please update README
+
+- [ ] add support for single style of hl_indent
