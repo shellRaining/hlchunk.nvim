@@ -15,11 +15,11 @@ local function render_cur_chunk(render_params)
     }
     -- render beg_row and end_row
     if start_col >= 0 then
-        local beg_virt_text = opts.config.hl_chars.left_top
-            .. opts.config.hl_chars.horizontal_line:rep(beg_blank_len - start_col - 1)
-        local end_virt_text = opts.config.hl_chars.left_bottom
-            .. opts.config.hl_chars.horizontal_line:rep(end_blank_len - start_col - 2)
-            .. opts.config.hl_chars.right_arrow
+        local beg_virt_text = opts.config.hl_chunk_chars.left_top
+            .. opts.config.hl_chunk_chars.horizontal_line:rep(beg_blank_len - start_col - 1)
+        local end_virt_text = opts.config.hl_chunk_chars.left_bottom
+            .. opts.config.hl_chunk_chars.horizontal_line:rep(end_blank_len - start_col - 2)
+            .. opts.config.hl_chunk_chars.right_arrow
 
         row_opts.virt_text = { { beg_virt_text, "HLChunkStyle" } }
         vim.api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
@@ -29,7 +29,7 @@ local function render_cur_chunk(render_params)
 
     -- render middle section
     for i = beg_row + 1, end_row - 1 do
-        row_opts.virt_text = { { opts.config.hl_chars.vertical_line, "HLChunkStyle" } }
+        row_opts.virt_text = { { opts.config.hl_chunk_chars.vertical_line, "HLChunkStyle" } }
         row_opts.virt_text_win_col = math.max(0, start_col)
         vim.api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
     end

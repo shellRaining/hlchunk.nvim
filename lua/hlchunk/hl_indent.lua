@@ -24,7 +24,7 @@ local function get_indent_virt_text(line)
     local blank_width = vim.o.shiftwidth
     local char_num = math.floor(rows_blank_list[line] / blank_width)
     local blank = (" "):rep(blank_width - 1)
-    local virt_char = opts.config.hl_chars.vertical_line
+    local virt_char = opts.config.hl_chunk_chars.vertical_line
     local res = ""
 
     for _ = 1, char_num do
@@ -44,7 +44,7 @@ local function render_indent()
     -- NOTE: you can't replace pairs to ipairs, beacuse the index is not 1 in table
     for index, _ in pairs(rows_blank_list) do
         local indent_virt_text = get_indent_virt_text(index)
-        row_opts.virt_text = { { indent_virt_text, "HLChunkStyle" } }
+        row_opts.virt_text = { { indent_virt_text, "HLIndentStyle" } }
         vim.api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
     end
 end
