@@ -35,15 +35,16 @@ function M.get_rows_blank()
     local rows_blank = {}
     local beg_row = vim.fn.line("w0")
     local end_row = vim.fn.line("w$")
-    for i=beg_row,end_row do
+    for i = beg_row, end_row do
         local row_str = vim.fn.getline(i)
-        rows_blank[i] = #(row_str:match('^%s+') or "")
+        if #row_str == 0 then
+            rows_blank[i] = -1
+            goto continue
+        end
+        rows_blank[i] = #(row_str:match("^%s+") or "")
+        ::continue::
     end
     return rows_blank
-end
-
-function M.get_render_indent_params(row_blank_list) 
-
 end
 
 return M
