@@ -21,31 +21,30 @@ local function get_indent_virt_text(line)
         end
     end
 
-    local blank_width = vim.o.shiftwidth
-    local char_num = math.floor(rows_blank_list[line] / blank_width)
-    local blank = (" "):rep(blank_width - 1)
-    local virt_char = opts.config.hl_chunk_chars.vertical_line
-    local res = ""
-
-    for _ = 1, char_num do
-        res = res .. virt_char .. blank
-    end
-
-    return res
+    return math.floor(rows_blank_list[line] / vim.o.shiftwidth)
 end
 
-local function render_indent()
+local function indent_render_line(index)
     local row_opts = {
         virt_text_pos = "overlay",
-        virt_text_win_col = 0,
         hl_mode = "combine",
+        priority = 53,
     }
 
+    local render_char_num = get_indent_virt_text(index)
+    for i = 1, render_char_num do
+        local indent_style_kinds = #opts.config.indent_style
+        local style = "HLIndentStyle" .. tostring((i - 1) % indent_style_kinds + 1)
+        row_opts.virt_text = { { opts.config.hl_indent_chars.vertical_line, style } }
+        row_opts.virt_text_win_col = (i - 1) * vim.o.shiftwidth
+        vim.api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
+    end
+end
+
+local function indent_render_page()
     -- NOTE: you can't replace pairs to ipairs, beacuse the index is not 1 in table
     for index, _ in pairs(rows_blank_list) do
-        local indent_virt_text = get_indent_virt_text(index)
-        row_opts.virt_text = { { indent_virt_text, "HLIndentStyle" } }
-        vim.api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
+        indent_render_line(index)
     end
 end
 
@@ -54,7 +53,7 @@ function M.hl_indent()
     ns_id = api.nvim_create_namespace("hl_indent")
 
     rows_blank_list = utils.get_rows_blank()
-    render_indent()
+    indent_render_page()
 end
 
 function M.clear_hl_indent()

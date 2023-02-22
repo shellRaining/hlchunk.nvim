@@ -1,9 +1,17 @@
 local opts = require("hlchunk.options")
 
+local indent_hl_group = opts.config.indent_style
+
 vim.api.nvim_set_hl(0, "HLChunkStyle", {
-    fg = opts.config.hlchunk_style.chunk_style.hibiscus,
+    fg = opts.config.chunk_style.hibiscus,
 })
 
-vim.api.nvim_set_hl(0, "HLIndentStyle", {
-    fg = opts.config.hlchunk_style.indent_style.primrose,
-})
+-- set highlighting group for indent
+local base_hl_name = "HLIndentStyle"
+for index, value in pairs(indent_hl_group) do
+    local hl_name = base_hl_name .. tostring(index)
+    vim.api.nvim_set_hl(0, hl_name, {
+        fg = value,
+    })
+    index = index + 1
+end

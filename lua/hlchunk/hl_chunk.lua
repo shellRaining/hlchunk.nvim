@@ -12,6 +12,7 @@ local function render_cur_chunk(render_params)
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
         hl_mode = "combine",
+        priority = 77
     }
     -- render beg_row and end_row
     if start_col >= 0 then
