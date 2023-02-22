@@ -1,9 +1,9 @@
 local opts = require("hlchunk.options")
 
-local indent_hl_group = opts.config.indent_style
+local indent_hl_group = opts.config.hl_indent.style
 
 vim.api.nvim_set_hl(0, "HLChunkStyle", {
-    fg = opts.config.chunk_style.hibiscus,
+    fg = opts.config.hl_chunk.style.hibiscus,
 })
 
 -- set highlighting group for indent

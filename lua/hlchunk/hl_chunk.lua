@@ -16,11 +16,11 @@ local function render_cur_chunk(render_params)
     }
     -- render beg_row and end_row
     if start_col >= 0 then
-        local beg_virt_text = opts.config.hl_chunk_chars.left_top
-            .. opts.config.hl_chunk_chars.horizontal_line:rep(beg_blank_len - start_col - 1)
-        local end_virt_text = opts.config.hl_chunk_chars.left_bottom
-            .. opts.config.hl_chunk_chars.horizontal_line:rep(end_blank_len - start_col - 2)
-            .. opts.config.hl_chunk_chars.right_arrow
+        local beg_virt_text = opts.config.hl_chunk.chars.left_top
+            .. opts.config.hl_chunk.chars.horizontal_line:rep(beg_blank_len - start_col - 1)
+        local end_virt_text = opts.config.hl_chunk.chars.left_bottom
+            .. opts.config.hl_chunk.chars.horizontal_line:rep(end_blank_len - start_col - 2)
+            .. opts.config.hl_chunk.chars.right_arrow
 
         row_opts.virt_text = { { beg_virt_text, "HLChunkStyle" } }
         vim.api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
@@ -30,7 +30,7 @@ local function render_cur_chunk(render_params)
 
     -- render middle section
     for i = beg_row + 1, end_row - 1 do
-        row_opts.virt_text = { { opts.config.hl_chunk_chars.vertical_line, "HLChunkStyle" } }
+        row_opts.virt_text = { { opts.config.hl_chunk.chars.vertical_line, "HLChunkStyle" } }
         row_opts.virt_text_win_col = math.max(0, start_col)
         vim.api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
     end
@@ -38,7 +38,7 @@ end
 
 -- set new virtual text to the right place
 function M.hl_cur_chunk()
-    if not opts.config.enabled then
+    if not opts.config.hl_chunk.enable then
         return
     end
 
@@ -62,15 +62,15 @@ function M.clear_hl_chunk()
 end
 
 function M.disable_hl_cur_chunk(args)
-    opts.config.enabled = false
+    opts.config.hl_chunk.enable = false
     M.clear_hl_chunk()
-    require("hlchunk.autocmd").disable_hlchunk_autocmds()
+    require("hlchunk.autocmd").disable_hl_chunk_autocmds()
 end
 
 function M.enable_hl_cur_chunk(args)
-    opts.config.enabled = true
+    opts.config.hl_chunk.enable = true
     M.hl_cur_chunk()
-    require("hlchunk.autocmd").enable_hlchunk_autocmds()
+    require("hlchunk.autocmd").enable_hl_chunk_autocmds()
 end
 
 return M

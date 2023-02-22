@@ -11,7 +11,7 @@ hlchunk.setup = function(params)
 
     require("hlchunk.usercmd")
     require("hlchunk.highlight")
-    require("hlchunk.autocmd").enable_hlchunk_autocmds()
+    require("hlchunk.autocmd").enable_autocmds()
 end
 
 return hlchunk
