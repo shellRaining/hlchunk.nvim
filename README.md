@@ -1,4 +1,4 @@
-# hlchunk.nvim
+<h1 align="center">hlchunk.nvim</h1>
 
 <p align='center'>
 <b>English</b> | <a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
