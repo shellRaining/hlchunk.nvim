@@ -1,7 +1,7 @@
 # hlchunk.nvim
 
 <p align='center'>
-<b>English</b> | <a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.zh_CN.md">简体中文</a>
+<b>English</b> | <a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
 </p>
 
 This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim-hlchunk), and add some new features like highlighting indentline, specially thanks [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim), during the process of writing this plugin, this repo provided a lot of help and inspiration for me
