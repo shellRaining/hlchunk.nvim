@@ -88,9 +88,6 @@ The script comes with the following defaults:
 
 To override the custom configuration, call:
 
-::: info
-when overide the config, enable option must be contained
-:::
 
 ```lua
 require('hlchunk').setup({
@@ -102,6 +99,7 @@ example:
 
 ```lua
 require('hlchunk').setup({
+    -- when overide the config, enable option must be contained
     enabled = true,
 
     hl_indent = {
