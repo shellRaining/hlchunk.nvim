@@ -14,8 +14,9 @@ local function get_indent_virt_text_num(line)
         while rows_blank_list[line_below] do
             if rows_blank_list[line_below] == 0 then
                 break
-            elseif rows_blank_list[line_below] ~= 0 then
+            elseif rows_blank_list[line_below] > 0 then
                 rows_blank_list[line] = rows_blank_list[line_below]
+                break
             end
             line_below = line_below + 1
         end
