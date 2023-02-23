@@ -39,21 +39,6 @@ local function render_cur_chunk(render_params)
     end
 end
 
-local function render_num_line(beg_row, end_row)
-    fn.sign_unplace("LineNumberGroup", {
-        buffer = fn.bufname("%"),
-    })
-
-    if beg_row >= end_row then
-        return
-    end
-    for i = beg_row, end_row do
-        fn.sign_place("", "LineNumberGroup", "LineNumberInterval", fn.bufname("%"), {
-            lnum = i,
-        })
-    end
-end
-
 -- set new virtual text to the right place
 function M.hl_cur_chunk()
     if not opts.config.hl_chunk.enable then
@@ -67,10 +52,6 @@ function M.hl_cur_chunk()
     local beg_row, end_row = unpack(utils.get_pair_rows())
     if beg_row < end_row then
         render_cur_chunk(utils.get_render_chunk_params(beg_row, end_row))
-    end
-
-    if opts.config.hl_chunk.enable_hl_line_num then
-        render_num_line(beg_row, end_row)
     end
 end
 
