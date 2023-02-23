@@ -66,6 +66,11 @@ The script comes with the following defaults:
             hibiscus = "#806d9c",
             primrose = "#c06f98",
         },
+
+        enable_hl_line_num = true,
+        hl_line_num_style = {
+            hibiscus = "#806d9c",
+        },
     },
 
     -- settings for hl_indent
