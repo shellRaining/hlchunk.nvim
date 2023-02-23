@@ -1,17 +1,29 @@
 local opts = require("hlchunk.options")
 
+local chunk_hl_group = opts.config.hl_chunk.style
 local indent_hl_group = opts.config.hl_indent.style
+local line_num_hl_group = opts.config.hl_chunk.hl_line_num_style
 
-vim.api.nvim_set_hl(0, "HLChunkStyle", {
-    fg = opts.config.hl_chunk.style.hibiscus,
-})
+local M = {}
 
--- set highlighting group for indent
-local base_hl_name = "HLIndentStyle"
-for index, value in pairs(indent_hl_group) do
-    local hl_name = base_hl_name .. tostring(index)
-    vim.api.nvim_set_hl(0, hl_name, {
-        fg = value,
-    })
-    index = index + 1
+local function set_hl(hl_base_name, style_table)
+    local count = 1
+
+    return function()
+        for _, value in pairs(style_table) do
+            local hl_name = hl_base_name .. tostring(count)
+            vim.api.nvim_set_hl(0, hl_name, {
+                fg = value,
+            })
+            count = count + 1
+        end
+    end
 end
+
+function M.set_hls()
+    set_hl("HLChunkStyle", chunk_hl_group)()
+    set_hl("HLIndentStyle", indent_hl_group)()
+    set_hl("HLIndentStyle", line_num_hl_group)()
+end
+
+return M

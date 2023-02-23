@@ -9,8 +9,12 @@ hlchunk.setup = function(params)
         return
     end
 
+    vim.fn.sign_define("LineNumberInterval", {
+        numhl = "HLChunkStyle1",
+    })
+
     require("hlchunk.usercmd")
-    require("hlchunk.highlight")
+    require("hlchunk.highlight").set_hls()
     require("hlchunk.autocmd").enable_autocmds()
 end
 
