@@ -1,32 +1,32 @@
 # hlchunk.nvim
 
 <p align='center'>
-<b>English</b> | <a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.zh_CN.md">简体中文</a>
+<a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.md">English</a> | <b>简体中文</b>
 </p>
 
-This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim-hlchunk), and add some new features like highlighting indentline, specially thanks [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim), during the process of writing this plugin, this repo provided a lot of help and inspiration for me
+这是 [nvim-hlchunk](https://github.com/yaocccc/nvim-hlchunk) 的一个 lua 实现，并且添加了例如缩进高亮的功能，本项目特别感谢 [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim)，在我编写这个插件的时候，这个仓库给我提供了很多帮助和灵感
 
-## brief
+## 简要概述
 
-this plugin have two parts,
+这个插件由两个部分组成
 
 1. hl_chunk
 2. hl_indent
 
-the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future, laugh)
+第一部分是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目（笑））
 
-the second one is to highlight indentline like `indent_blankline`
+第二部分是用来高亮缩进，就像是 `indent_blankline` 一样
 
-## example
+## 例子
 
 <img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
 <img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
 
-## Requirements
+## 需求
 
-neovim version `>= 0.7.0` (maybe, just test at this version)
+neovim 版本 `>= 0.7.0` (也许，因为我是在这个版本的 neovim 中编写的)
 
-## Installation
+## 安装
 
 ### Packer
 
@@ -41,9 +41,9 @@ use { "shell-Raining/hlchunk.nvim" }
 Plug "shell-Raining/hlchunk.nvim"
 ```
 
-## Setup
+## 设置
 
-The script comes with the following defaults:
+插件默认带有以下的配置
 
 ```lua
 {
@@ -90,7 +90,7 @@ The script comes with the following defaults:
 }
 ```
 
-To override the custom configuration, call:
+修改默认的配置请调用：
 
 ```lua
 require('hlchunk').setup({
@@ -98,7 +98,7 @@ require('hlchunk').setup({
 })
 ```
 
-example:
+例如这样：
 
 ```lua
 require('hlchunk').setup({
@@ -122,19 +122,18 @@ require('hlchunk').setup({
 
 ## command
 
-this plugin provides some commands to switch plugin status, which are listed below
+这个插件还提供了一些命令用来打开和关闭插件
 
 - EnableHL
 - DisableHL
 
-the two commands are used to switch the whole plugin status, when use `DisableHL`, include `hl_chunk` and `hl_indent` will be disable
+下面这两个命令用来控制 `hl_chunk` 的状态
 
 - DisableHLChunk
 - EnableHLChunk
 
-the two will control `hl_chunk`
+下面这两个命令用来控制 `hl_indent` 的状态
 
 - DisableHLIndent
 - EnableHLIndent
 
-the two will control `hl_indent`

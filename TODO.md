@@ -26,3 +26,5 @@
 - [x] please update README
 
 - [ ] add support for single style of hl_indent
+
+- [ ] when open two split windows bind with the same buffer, the highlighting will render incorrectly
