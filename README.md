@@ -88,7 +88,6 @@ The script comes with the following defaults:
 
 To override the custom configuration, call:
 
-
 ```lua
 require('hlchunk').setup({
   -- your override config
@@ -116,3 +115,22 @@ require('hlchunk').setup({
     },
 })
 ```
+
+## command
+
+this plugin provides some commands to switch plugin status, which are listed below
+
+- EnableHL
+- DisableHL
+
+the two commands are used to switch the whole plugin status, when use `DisableHL`, include `hl_chunk` and `hl_indent` will be disable
+
+- DisableHLChunk
+- EnableHLChunk
+
+the two will control `hl_chunk`
+
+- DisableHLIndent
+- EnableHLIndent
+
+the two will control `hl_indent`

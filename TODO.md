@@ -21,8 +21,8 @@
 
 - [ ] try to add treesitter support, because the syntax base on regex is so slow and not accurate
 
-- [ ] set the indent more highlighting support
+- [x] set the indent more highlighting support
 
-- [ ] please update README
+- [x] please update README
 
 - [ ] add support for single style of hl_indent
