@@ -28,7 +28,7 @@ local function indent_render_line(index)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
-        priority = 53,
+        priority = 1,
     }
 
     local render_char_num = get_indent_virt_text_num(index)
@@ -42,6 +42,10 @@ local function indent_render_line(index)
 end
 
 function M.hl_indent()
+    if opts.config.hl_indent.exclude_filetype[vim.bo.filetype] then
+        return
+    end
+
     M.clear_hl_indent()
     ns_id = api.nvim_create_namespace("hl_indent")
 

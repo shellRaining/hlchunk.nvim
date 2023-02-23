@@ -34,6 +34,15 @@ opts.config = {
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
         },
+        exclude_filetype = {
+            dashboard = true,
+            help = true,
+            lspinfo = true,
+            packer = true,
+            checkhealth = true,
+            man = true,
+            mason = true,
+        },
     },
 }
 
