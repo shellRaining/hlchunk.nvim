@@ -21,9 +21,6 @@ opts.config = {
             primrose = "#c06f98",
         },
     },
-    -- hl_chunk_enable = true,
-    -- hl_chunk_chars = {},
-    -- chunk_style = {},
 
     -- settings for hl_indent
     hl_indent = {
