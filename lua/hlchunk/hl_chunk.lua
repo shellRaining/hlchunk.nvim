@@ -55,7 +55,6 @@ function M.hl_cur_chunk()
     if CUR_CHUNK_RANGE[1] < CUR_CHUNK_RANGE[2] then
         render_cur_chunk(utils.get_render_chunk_params())
     end
-    require("hlchunk.hl_line_num").hl_line_num()
 end
 
 -- clear the virtual text marked before
