@@ -1,4 +1,5 @@
 local config = require("hlchunk.options").config
+local utils = require("hlchunk.utils")
 local api = vim.api
 
 local M = {}
@@ -29,7 +30,11 @@ function M.enable_hl_chunk_autocmds()
         group = "hl_chunk_autocmds",
         pattern = config.hlchunk_supported_files,
         desc = "QUES: why just only CursorMoved is ok",
-        callback = require("hlchunk.hl_chunk").hl_cur_chunk,
+        callback = function ()
+            CUR_LINE_NUM = vim.fn.line('.')
+            CUR_CHUNK_RANGE = utils.get_pair_rows()
+            require("hlchunk.hl_chunk").hl_cur_chunk()
+        end
     })
 end
 

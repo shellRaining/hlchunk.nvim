@@ -4,9 +4,10 @@ local api = vim.api
 
 local M = {}
 
-function M.hl_line_num(beg_row, end_row)
+function M.hl_line_num()
     M.clear_line_num()
 
+    local beg_row, end_row = unpack(CUR_CHUNK_RANGE)
     if beg_row < end_row then
         for i = beg_row, end_row do
             ---@diagnostic disable-next-line: param-type-mismatch

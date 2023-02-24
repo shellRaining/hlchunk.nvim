@@ -9,7 +9,10 @@ local M = {}
 local ns_id = -1
 
 local function render_cur_chunk(render_params)
-    local beg_row, end_row, start_col, beg_blank_len, end_blank_len = unpack(render_params)
+    local beg_row, end_row = unpack(CUR_CHUNK_RANGE)
+    local beg_blank_len = #(tostring(vim.fn.getline(beg_row)):match("%s*"):gsub("\t", SPACE_TAB))
+    local end_blank_len = #(tostring(vim.fn.getline(end_row)):match("%s*"):gsub("\t", SPACE_TAB))
+    local start_col = math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth
 
     local row_opts = {
         virt_text_pos = "overlay",
@@ -49,11 +52,10 @@ function M.hl_cur_chunk()
     ns_id = api.nvim_create_namespace("hlchunk")
 
     -- determined the row where parentheses are
-    local beg_row, end_row = unpack(utils.get_pair_rows())
-    if beg_row < end_row then
-        render_cur_chunk(utils.get_render_chunk_params(beg_row, end_row))
+    if CUR_CHUNK_RANGE[1] < CUR_CHUNK_RANGE[2] then
+        render_cur_chunk(utils.get_render_chunk_params())
     end
-    require("hlchunk.hl_line_num").hl_line_num(beg_row, end_row)
+    require("hlchunk.hl_line_num").hl_line_num()
 end
 
 -- clear the virtual text marked before
