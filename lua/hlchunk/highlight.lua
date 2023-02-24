@@ -23,7 +23,7 @@ end
 function M.set_hls()
     set_hl("HLChunkStyle", chunk_hl_group)()
     set_hl("HLIndentStyle", indent_hl_group)()
-    set_hl("HLIndentStyle", line_num_hl_group)()
+    set_hl("HLLineNumStyle", line_num_hl_group)()
 
     -- TODO: this need to refactor
     vim.fn.sign_define("LineNumberInterval", {

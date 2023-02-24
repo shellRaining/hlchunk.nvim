@@ -64,15 +64,10 @@ function M.enable_hl_indent_autocmds()
 
     hl_indent_augroup_handler = api.nvim_create_augroup("hl_indent_augroup", { clear = true })
 
-    api.nvim_create_autocmd({ "WinScrolled" }, {
+    api.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
         group = "hl_indent_augroup",
         pattern = "*",
         desc = "when windows scrolled refresh indent mark, can set filetype",
-        callback = require("hlchunk.hl_indent").hl_indent,
-    })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
-        group = "hl_indent_augroup",
-        pattern = "*",
         callback = require("hlchunk.hl_indent").hl_indent,
     })
 end

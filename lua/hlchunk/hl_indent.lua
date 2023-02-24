@@ -43,7 +43,7 @@ local function indent_render_line(index)
 end
 
 function M.hl_indent()
-    if opts.config.hl_indent.exclude_filetype[vim.bo.filetype] then
+    if (not opts.config.hl_indent.enable) or opts.config.hl_indent.exclude_filetype[vim.bo.filetype] then
         return
     end
 
