@@ -1,21 +1,33 @@
 local config = require("hlchunk.options").config
 local utils = require("hlchunk.utils")
 local api = vim.api
+local fn = vim.fn
 
 local M = {}
 
+local global_var_autocmd = -1
 local hl_chunk_augroup_handler = -1
 local hl_indent_augroup_handler = -1
 local hl_line_augroup_handler = -1
 
 -- TODO: need to refactor these functions
 function M.enable_autocmds()
+    global_var_autocmd = api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        pattern = config.hlchunk_supported_files,
+        callback = function()
+            if config.hl_chunk.enable or config.hl_line_num.enable then
+                CUR_LINE_NUM = fn.line(".")
+                CUR_CHUNK_RANGE = utils.get_pair_rows()
+            end
+        end,
+    })
     M.enable_hl_chunk_autocmds()
     M.enable_hl_indent_autocmds()
-    M.enable_hl_line_num()
+    M.enable_hl_line_num_autocms()
 end
 
 function M.disable_autocmds()
+    api.nvim_del_autocmd(global_var_autocmd)
     M.disable_hl_chunk_autocmds()
     M.disable_hl_indent_autocmds()
     M.disable_hl_line_autocmds()
@@ -32,11 +44,7 @@ function M.enable_hl_chunk_autocmds()
         group = "hl_chunk_augroup",
         pattern = config.hlchunk_supported_files,
         desc = "QUES: why just only CursorMoved is ok",
-        callback = function ()
-            CUR_LINE_NUM = vim.fn.line('.')
-            CUR_CHUNK_RANGE = utils.get_pair_rows()
-            require("hlchunk.hl_chunk").hl_cur_chunk()
-        end
+        callback = require("hlchunk.hl_chunk").hl_cur_chunk,
     })
 end
 
@@ -78,7 +86,7 @@ function M.disable_hl_indent_autocmds()
     hl_indent_augroup_handler = -1
 end
 
-function M.enable_hl_line_num()
+function M.enable_hl_line_num_autocms()
     if hl_line_augroup_handler ~= -1 then
         return
     end
@@ -88,7 +96,6 @@ function M.enable_hl_line_num()
         group = "hl_line_augroup",
         pattern = config.hlchunk_supported_files,
         desc = "the autocmds about highlight line number",
-        -- TODO:
         callback = require("hlchunk.hl_line_num").hl_line_num,
     })
 end

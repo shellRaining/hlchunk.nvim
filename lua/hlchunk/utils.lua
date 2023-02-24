@@ -13,18 +13,6 @@ function M.get_pair_rows()
     return { beg_row, end_row }
 end
 
-function M.get_render_chunk_params()
-    local shift_width = vim.o.shiftwidth
-    local space_tab = (" "):rep(shift_width)
-    local beg_blank_val = tostring(vim.fn.getline(CUR_CHUNK_RANGE[1])):match("%s*"):gsub("\t", space_tab)
-    local end_blank_val = tostring(vim.fn.getline(CUR_CHUNK_RANGE[2])):match("%s*"):gsub("\t", space_tab)
-    local beg_blank_len = #beg_blank_val
-    local end_blank_len = #end_blank_val
-    local start_col = math.min(beg_blank_len, end_blank_len) - shift_width
-
-    return start_col
-end
-
 function M.get_rows_blank()
     local rows_blank = {}
     local beg_row = vim.fn.line("w0")
@@ -35,6 +23,7 @@ function M.get_rows_blank()
             rows_blank[i] = -1
             goto continue
         end
+        ---@diagnostic disable-next-line: undefined-field
         rows_blank[i] = #(row_str:match("^%s+") or "")
         ::continue::
     end

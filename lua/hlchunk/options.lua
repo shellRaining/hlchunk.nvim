@@ -20,11 +20,6 @@ opts.config = {
             hibiscus = "#806d9c",
             primrose = "#c06f98",
         },
-
-        enable_hl_line_num = true,
-        hl_line_num_style = {
-            hibiscus = "#806d9c",
-        },
     },
 
     -- settings for hl_indent
@@ -44,6 +39,15 @@ opts.config = {
             checkhealth = true,
             man = true,
             mason = true,
+        },
+    },
+
+    -- settings for hl_line_num
+    hl_line_num = {
+        enable = true,
+
+        style = {
+            hibiscus = "#806d9c",
         },
     },
 }

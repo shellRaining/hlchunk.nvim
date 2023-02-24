@@ -1,10 +1,13 @@
 local opts = require("hlchunk.options")
 local fn = vim.fn
-local api = vim.api
 
 local M = {}
 
 function M.hl_line_num()
+    if not opts.config.hl_line_num.enable then
+        return
+    end
+
     M.clear_line_num()
 
     local beg_row, end_row = unpack(CUR_CHUNK_RANGE)
@@ -23,6 +26,18 @@ function M.clear_line_num()
         ---@diagnostic disable-next-line: param-type-mismatch
         buffer = fn.bufname("%"),
     })
+end
+
+function M.disable_hl_line()
+    opts.config.hl_line_num.enable = false
+    M.clear_line_num()
+    require("hlchunk.autocmd").disable_hl_line_autocmds()
+end
+
+function M.enable_hl_line()
+    opts.config.hl_line_num.enable = true
+    M.hl_line_num()
+    require("hlchunk.autocmd").enable_hl_line_num_autocms()
 end
 
 return M

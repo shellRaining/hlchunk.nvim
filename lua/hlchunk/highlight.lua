@@ -2,7 +2,7 @@ local opts = require("hlchunk.options")
 
 local chunk_hl_group = opts.config.hl_chunk.style
 local indent_hl_group = opts.config.hl_indent.style
-local line_num_hl_group = opts.config.hl_chunk.hl_line_num_style
+local line_num_hl_group = opts.config.hl_line_num.style
 
 local M = {}
 

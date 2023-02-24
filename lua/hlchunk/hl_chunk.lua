@@ -1,17 +1,15 @@
----@diagnostic disable: unused-local
-local utils = require("hlchunk.utils")
 local opts = require("hlchunk.options")
-local fn = vim.fn
 local api = vim.api
+local fn = vim.fn
 
 local M = {}
 
 local ns_id = -1
 
-local function render_cur_chunk(render_params)
+local function render_cur_chunk()
     local beg_row, end_row = unpack(CUR_CHUNK_RANGE)
-    local beg_blank_len = #(tostring(vim.fn.getline(beg_row)):match("%s*"):gsub("\t", SPACE_TAB))
-    local end_blank_len = #(tostring(vim.fn.getline(end_row)):match("%s*"):gsub("\t", SPACE_TAB))
+    local beg_blank_len = #(tostring(fn.getline(beg_row)):match("%s*"):gsub("\t", SPACE_TAB))
+    local end_blank_len = #(tostring(fn.getline(end_row)):match("%s*"):gsub("\t", SPACE_TAB))
     local start_col = math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth
 
     local row_opts = {
@@ -53,7 +51,7 @@ function M.hl_cur_chunk()
 
     -- determined the row where parentheses are
     if CUR_CHUNK_RANGE[1] < CUR_CHUNK_RANGE[2] then
-        render_cur_chunk(utils.get_render_chunk_params())
+        render_cur_chunk()
     end
 end
 
@@ -64,13 +62,13 @@ function M.clear_hl_chunk()
     end
 end
 
-function M.disable_hl_cur_chunk(args)
+function M.disable_hl_cur_chunk()
     opts.config.hl_chunk.enable = false
     M.clear_hl_chunk()
     require("hlchunk.autocmd").disable_hl_chunk_autocmds()
 end
 
-function M.enable_hl_cur_chunk(args)
+function M.enable_hl_cur_chunk()
     opts.config.hl_chunk.enable = true
     M.hl_cur_chunk()
     require("hlchunk.autocmd").enable_hl_chunk_autocmds()

@@ -38,7 +38,7 @@ local function indent_render_line(index)
         local style = "HLIndentStyle" .. tostring((i - 1) % indent_style_kinds + 1)
         row_opts.virt_text = { { opts.config.hl_indent.chars.vertical_line, style } }
         row_opts.virt_text_win_col = (i - 1) * vim.o.shiftwidth
-        vim.api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
+        api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
     end
 end
 
@@ -59,7 +59,7 @@ end
 
 function M.clear_hl_indent()
     if ns_id ~= -1 then
-        vim.api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
+        api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
     end
 end
 
