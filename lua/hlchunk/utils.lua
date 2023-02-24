@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch
 local M = {}
 
 function M.get_pair_rows()
@@ -9,6 +10,10 @@ function M.get_pair_rows()
 
     beg_row = vim.fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
     end_row = vim.fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
+
+    if beg_row <= 0 or end_row <= 0 then
+        return { 0, 0 }
+    end
 
     return { beg_row, end_row }
 end
