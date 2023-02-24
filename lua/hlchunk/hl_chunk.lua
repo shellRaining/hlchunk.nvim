@@ -53,6 +53,7 @@ function M.hl_cur_chunk()
     if beg_row < end_row then
         render_cur_chunk(utils.get_render_chunk_params(beg_row, end_row))
     end
+    require("hlchunk.hl_line_num").hl_line_num(beg_row, end_row)
 end
 
 -- clear the virtual text marked before

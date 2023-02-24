@@ -5,7 +5,9 @@ local M = {}
 
 local hl_chunk_autocmd_handler = -1
 local hl_indent_autocmd_handler = -1
+local hl_line_autocmd_handler = -1
 
+-- TODO: need to refactor these functions
 function M.enable_autocmds()
     M.enable_hl_chunk_autocmds()
     M.enable_hl_indent_autocmds()
@@ -67,6 +69,21 @@ function M.disable_hl_indent_autocmds()
 
     api.nvim_del_augroup_by_name("hl_indent_autocmds")
     hl_indent_autocmd_handler = -1
+end
+
+function M.enable_hl_line_num()
+    if hl_line_autocmd_handler ~= -1 then
+        return
+    end
+
+    hl_line_autocmd_handler = api.nvim_create_augroup("hl_line_autocmds", { clear = true })
+    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        group = "hl_line_autocmds",
+        pattern = config.hlchunk_supported_files,
+        desc = "the autocmds about highlight line number",
+        -- TODO:
+        callback = require("hlchunk.hl_line_num").hl_line_num(),
+    })
 end
 
 return M
