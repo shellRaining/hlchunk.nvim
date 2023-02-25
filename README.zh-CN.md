@@ -12,10 +12,13 @@
 
 1. hl_chunk
 2. hl_indent
+3. hl_line_num
 
 第一部分是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目（笑））
 
 第二部分是用来高亮缩进，就像是 `indent_blankline` 一样
+
+第三部分和 hl_chunk 的功能差不多，唯一不同之处在于他高亮的部分是行号而不是编辑器的内容，你可以设置行号的前景颜色和背景颜色
 
 ## 例子
 
@@ -46,8 +49,7 @@ Plug "shell-Raining/hlchunk.nvim"
 插件默认带有以下的配置
 
 ```lua
-{
-    -- settings for this plugin
+{    -- settings for this plugin
     enabled = true,
     hlchunk_supported_files = { "*.ts", "*.js", "*.json", "*.go", "*.c", "*.cpp", "*.rs", "*.h", "*.hpp", "*.lua" },
 
@@ -65,11 +67,6 @@ Plug "shell-Raining/hlchunk.nvim"
         style = {
             hibiscus = "#806d9c",
             primrose = "#c06f98",
-        },
-
-        enable_hl_line_num = true,
-        hl_line_num_style = {
-            hibiscus = "#806d9c",
         },
     },
 
@@ -90,6 +87,15 @@ Plug "shell-Raining/hlchunk.nvim"
             checkhealth = true,
             man = true,
             mason = true,
+        },
+    },
+
+    -- settings for hl_line_num
+    hl_line_num = {
+        enable = true,
+
+        style = {
+            hibiscus = "#806d9c",
         },
     },
 }

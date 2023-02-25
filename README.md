@@ -8,14 +8,17 @@ This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim
 
 ## brief
 
-this plugin have two parts,
+this plugin have three parts,
 
 1. hl_chunk
 2. hl_indent
+3. hl_line_num
 
 the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future, laugh)
 
 the second one is to highlight indentline like `indent_blankline`
+
+the third one is similar to hl_chunk, the difference is that it will highlight line number, you can set front color or background color for it
 
 ## example
 
@@ -66,11 +69,6 @@ The script comes with the following defaults:
             hibiscus = "#806d9c",
             primrose = "#c06f98",
         },
-
-        enable_hl_line_num = true,
-        hl_line_num_style = {
-            hibiscus = "#806d9c",
-        },
     },
 
     -- settings for hl_indent
@@ -92,7 +90,15 @@ The script comes with the following defaults:
             mason = true,
         },
     },
-}
+
+    -- settings for hl_line_num
+    hl_line_num = {
+        enable = true,
+
+        style = {
+            hibiscus = "#806d9c",
+        },
+    },}
 ```
 
 To override the custom configuration, call:
