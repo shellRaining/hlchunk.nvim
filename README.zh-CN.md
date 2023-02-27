@@ -22,9 +22,10 @@
 
 ## 例子
 
-<img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
-<img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
-<img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/27_hlchunk4.png">
 
 ## 需求
 
@@ -88,6 +89,7 @@ Plug "shell-Raining/hlchunk.nvim"
             checkhealth = true,
             man = true,
             mason = true,
+            NvimTree = true,
         },
     },
 
@@ -116,6 +118,15 @@ require('hlchunk').setup({
 require('hlchunk').setup({
     -- when overide the config, enable option must be contained
     enabled = true,
+
+
+    -- if you want to use multiple indent line, just place them here, the key is like vertical_line + x, which x is a number
+    chars = {
+        vertical_line1 = "│",
+        vertical_line2 = "¦",
+        vertical_line3 = "┆",
+        vertical_line4 = "┊",
+    },
 
     hl_indent = {
         enable = true,

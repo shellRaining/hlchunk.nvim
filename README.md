@@ -22,9 +22,10 @@ the third one is similar to hl_chunk, the difference is that it will highlight l
 
 ## example
 
-<img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
-<img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
-<img width="700" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/27_hlchunk4.png">
 
 ## Requirements
 
@@ -89,6 +90,7 @@ The script comes with the following defaults:
             checkhealth = true,
             man = true,
             mason = true,
+            NvimTree = true,
         },
     },
 
@@ -119,6 +121,15 @@ require('hlchunk').setup({
 
     hl_indent = {
         enable = true,
+
+        -- if you want to use multiple indent line, just place them here, the key is like vertical_line + x, which x is a number
+        chars = {
+            vertical_line1 = "│",
+            vertical_line2 = "¦",
+            vertical_line3 = "┆",
+            vertical_line4 = "┊",
+        },
+
         style = {
             "#FF0000",
             "#FF7F00",
