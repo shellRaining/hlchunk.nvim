@@ -29,4 +29,4 @@
 
 - [ ] when open two split windows bind with the same buffer, the highlighting will render incorrectly
 
-- [ ] add support for more characters when render hl_indent
+- [x] add support for more characters when render hl_indent

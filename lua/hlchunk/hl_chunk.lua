@@ -35,8 +35,13 @@ local function render_cur_chunk()
     -- render middle section
     for i = beg_row + 1, end_row - 1 do
         row_opts.virt_text = { { opts.config.hl_chunk.chars.vertical_line, "HLChunkStyle1" } }
-        row_opts.virt_text_win_col = math.max(0, start_col)
-        api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+        start_col = math.max(0, start_col)
+        row_opts.virt_text_win_col = start_col
+        local line_val = fn.getline(i)
+        ---@diagnostic disable-next-line: undefined-field
+        if #line_val <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
+            api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+        end
     end
 end
 
