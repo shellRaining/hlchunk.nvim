@@ -1,5 +1,13 @@
 local opts = {}
 
+-- #FF0000
+-- #FF7F00
+-- #FFFF00
+-- #00FF00
+-- #00FFFF
+-- #0000FF
+-- #8B00FF
+
 opts.config = {
     -- settings for this plugin
     enabled = true,
@@ -39,6 +47,7 @@ opts.config = {
             checkhealth = true,
             man = true,
             mason = true,
+            NvimTree = true,
         },
     },
 
@@ -47,7 +56,7 @@ opts.config = {
         enable = true,
 
         style = {
-            hibiscus = "#806d9c",
+            violet = "#806d9c",
         },
     },
 }

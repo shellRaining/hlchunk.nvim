@@ -1,5 +1,5 @@
 local config = require("hlchunk.options").config
-local utils = require("hlchunk.utils")
+local utils = require("hlchunk.utils.utils")
 local api = vim.api
 local fn = vim.fn
 

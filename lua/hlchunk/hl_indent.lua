@@ -1,4 +1,4 @@
-local utils = require("hlchunk.utils")
+local utils = require("hlchunk.utils.utils")
 local opts = require("hlchunk.options")
 local api = vim.api
 
