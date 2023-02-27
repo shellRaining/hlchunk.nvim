@@ -14,7 +14,7 @@ function M.hl_line_num()
     if beg_row < end_row then
         for i = beg_row, end_row do
             ---@diagnostic disable-next-line: param-type-mismatch
-            fn.sign_place("", "LineNumberGroup", "LineNumberInterval", fn.bufname("%"), {
+            fn.sign_place("", "LineNumberGroup", "sign1", fn.bufname("%"), {
                 lnum = i,
             })
         end
