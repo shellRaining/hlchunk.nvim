@@ -34,7 +34,10 @@ opts.config = {
     hl_indent = {
         enable = true,
         chars = {
-            vertical_line = "│",
+            vertical_line1 = "│",
+            vertical_line2 = "¦",
+            vertical_line3 = "┆",
+            vertical_line4 = "┊",
         },
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
