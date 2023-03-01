@@ -19,8 +19,11 @@ end
 -- the hash part, for practical purposes. Works for any
 -- object with a __pairs metamethod.
 -- @tab t a table
--- @return the size
+-- @return the size, if t is not a table, return 0
 function tablex.size(t)
+    if type(t) ~= "table" then
+        return 0
+    end
     local i = 0
     for _ in pairs(t) do
         i = i + 1
