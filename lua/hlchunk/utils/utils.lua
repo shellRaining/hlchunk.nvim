@@ -27,7 +27,7 @@ function M.get_rows_blank()
     if opts.config.hl_indent.use_treesitter then
         local ts_query_status, ts_query = pcall(require, "nvim-treesitter.query")
         if not ts_query_status then
-            vim.notify("ts_query not load")
+            vim.notify_once("ts_query not load")
             return {}
         end
         if not ts_query.has_indents(vim.bo.filetype) then
@@ -42,19 +42,19 @@ function M.get_rows_blank()
         for i = beg_row, end_row do
             rows_blank[i] = ts_indent.get_indent(i) or 0
         end
-        return rows_blank
+    else
+        for i = beg_row, end_row do
+            local row_str = vim.fn.getline(i)
+            if #row_str == 0 then
+                rows_blank[i] = -1
+                goto continue
+            end
+            ---@diagnostic disable-next-line: undefined-field
+            rows_blank[i] = vim.fn.indent(i)
+            ::continue::
+        end
     end
 
-    for i = beg_row, end_row do
-        local row_str = vim.fn.getline(i)
-        if #row_str == 0 then
-            rows_blank[i] = -1
-            goto continue
-        end
-        ---@diagnostic disable-next-line: undefined-field
-        rows_blank[i] = #(row_str:match("^%s+") or "")
-        ::continue::
-    end
     return rows_blank
 end
 
