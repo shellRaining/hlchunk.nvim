@@ -3,7 +3,7 @@ local opts = require("hlchunk.options")
 local hlchunk = {}
 
 hlchunk.setup = function(params)
-    opts.config = vim.tbl_extend("force", {}, opts.config, params or {})
+    opts.config = vim.tbl_deep_extend("force", opts.config, params)
 
     if not opts.config.enabled then
         return
