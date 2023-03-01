@@ -47,11 +47,9 @@ function M.get_rows_blank()
             local row_str = vim.fn.getline(i)
             if #row_str == 0 then
                 rows_blank[i] = -1
-                goto continue
+            else
+                rows_blank[i] = vim.fn.indent(i)
             end
-            ---@diagnostic disable-next-line: undefined-field
-            rows_blank[i] = vim.fn.indent(i)
-            ::continue::
         end
     end
 
