@@ -16,7 +16,15 @@ this plugin have three parts,
 
 the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future, laugh)
 
-the second one is to highlight indentline like `indent_blankline`
+the second one is to highlight indentline like `indent_blankline`, you can choose a different indent render mode, one is base treesitter, another is base on the number of blank. the advantage of treeitter is that it is very accurate, but it may have low performance, and doesn't support some filetype, such as markdown, if you choose the latter mode, it will render faster (maybe), but will have some issues in particular situation, example below.
+
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk5.png">
+
+base on blank number
+
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk6.png">
+
+base on treesitter
 
 the third one is similar to hl_chunk, the difference is that it will highlight line number, you can set front color or background color for it
 

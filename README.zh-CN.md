@@ -16,7 +16,15 @@
 
 第一部分是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目（笑））
 
-第二部分是用来高亮缩进，就像是 `indent_blankline` 一样
+第二部分是用来高亮缩进，就像是 `indent_blankline` 一样，这个功能可以选择基于 treesitter 或者是空格个数来进行渲染。treesitter 的优点是非常精确，但是可能速度上比较慢，而且有些不支持缩进的文件类型，比如 markdown，如果选择基于空格个数的渲染，速度上会有优势，但是在某些特殊情况下可能渲染不精确，如下所示
+
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk5.png">
+
+基于空格个数的渲染
+
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk6.png">
+
+基于treesitter的渲染
 
 第三部分和 hl_chunk 的功能差不多，唯一不同之处在于他高亮的部分是行号而不是编辑器的内容，你可以设置行号的前景颜色和背景颜色
 
