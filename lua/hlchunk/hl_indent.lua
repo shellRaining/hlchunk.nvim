@@ -34,11 +34,9 @@ local function indent_render_line(index)
 
     local render_char_num = get_indent_virt_text_num(index)
     for i = 1, render_char_num do
-        local indent_style_kinds = #opts.config.hl_indent.style
-        local char_style_kinds = require("hlchunk.lib.table").size(opts.config.hl_indent.chars)
-        local style = "HLIndentStyle" .. tostring((i - 1) % indent_style_kinds + 1)
-        local char = "vertical_line" .. tostring((i - 1) % char_style_kinds + 1)
-        row_opts.virt_text = { { opts.config.hl_indent.chars[char], style } }
+        local style = "HLIndentStyle" .. tostring((i - 1) % INDENT_STYLE_NUM + 1)
+        local char = opts.config.hl_indent.chars[(i - 1) % INDENT_CHARS_NUM + 1]
+        row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = (i - 1) * vim.o.shiftwidth
         api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
     end
