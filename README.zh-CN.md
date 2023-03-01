@@ -75,6 +75,7 @@ Plug "shell-Raining/hlchunk.nvim"
     -- settings for hl_indent
     hl_indent = {
         enable = true,
+        use_treesitter = true,
         chars = {
             vertical_line = "│",
         },

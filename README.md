@@ -76,6 +76,7 @@ The script comes with the following defaults:
     -- settings for hl_indent
     hl_indent = {
         enable = true,
+        use_treesitter = true,
         chars = {
             vertical_line = "│",
         },

@@ -33,7 +33,7 @@ opts.config = {
     -- settings for hl_indent
     hl_indent = {
         enable = true,
-        use_treesitter = true,
+        use_treesitter = false,
         chars = {
             vertical_line1 = "│",
             vertical_line2 = "¦",
