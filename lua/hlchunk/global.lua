@@ -12,6 +12,3 @@ CUR_LINE_NUM = -1
 
 -- the line num range of chunk that cursor stay
 CUR_CHUNK_RANGE = { -1, -1 }
-
--- the list contains blank numbers that every rows show in the window
-ROW_BLANK_LIST = {}

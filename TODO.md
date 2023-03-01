@@ -19,7 +19,7 @@
 
 - [x] add indent line highlight
 
-- [ ] try to add treesitter support, because the syntax base on regex is so slow and not accurate
+- [x] try to add treesitter support, because the syntax base on regex is so slow and not accurate
 
 - [x] set the indent more highlighting support
 
@@ -30,3 +30,5 @@
 - [ ] when open two split windows bind with the same buffer, the highlighting will render incorrectly
 
 - [x] add support for more characters when render hl_indent
+
+- [ ] refactor the hl_indent by use vim.fn.indent()
