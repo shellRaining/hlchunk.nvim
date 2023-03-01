@@ -35,10 +35,7 @@ opts.config = {
         enable = true,
         use_treesitter = false,
         chars = {
-            vertical_line1 = "│",
-            vertical_line2 = "¦",
-            vertical_line3 = "┆",
-            vertical_line4 = "┊",
+            "│",
         },
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
@@ -58,10 +55,7 @@ opts.config = {
     -- settings for hl_line_num
     hl_line_num = {
         enable = true,
-
-        style = {
-            violet = "#806d9c",
-        },
+        style = "#806d9c",
     },
 }
 
