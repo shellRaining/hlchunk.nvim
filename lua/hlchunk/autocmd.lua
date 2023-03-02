@@ -68,7 +68,12 @@ function M.enable_hl_indent_autocmds()
         group = "hl_indent_augroup",
         pattern = "*",
         desc = "when windows scrolled refresh indent mark, can set filetype",
-        callback = require("hlchunk.hl_indent").hl_indent,
+        callback = function()
+            local ok, value = pcall(require("hlchunk.hl_indent").hl_indent)
+            if not ok then
+                vim.notify_once(tostring(value), vim.log.levels.ERROR)
+            end
+        end,
     })
 end
 
