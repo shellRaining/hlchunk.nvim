@@ -11,7 +11,19 @@ local opts = {}
 opts.config = {
     -- settings for this plugin
     enabled = true,
-    hlchunk_supported_files = { "*.ts", "*.js", "*.json", "*.go", "*.c", "*.cpp", "*.rs", "*.h", "*.hpp", "*.lua", "*.vue" },
+    hlchunk_supported_files = {
+        "*.ts",
+        "*.js",
+        "*.json",
+        "*.go",
+        "*.c",
+        "*.cpp",
+        "*.rs",
+        "*.h",
+        "*.hpp",
+        "*.lua",
+        "*.vue",
+    },
 
     -- setttings for hl_chunk
 
