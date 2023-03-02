@@ -25,22 +25,17 @@ function M.get_rows_blank()
     local end_row = vim.fn.line("w$")
 
     if opts.config.hl_indent.use_treesitter then
-        local ts_query_status, ts_query = pcall(require, "nvim-treesitter.query")
-        if not ts_query_status then
-            vim.notify_once("ts_query not load")
-            return {}
-        end
-        if not ts_query.has_indents(vim.bo.filetype) then
-            return {}
-        end
-
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
         if not ts_indent_status then
             return {}
         end
 
         for i = beg_row, end_row do
-            rows_blank[i] = ts_indent.get_indent(i) or 0
+            if #vim.fn.getline(i) == 0 then
+                rows_blank[i] = -1
+            else
+                rows_blank[i] = math.min(ts_indent.get_indent(i) or 0, vim.fn.indent(i))
+            end
         end
     else
         for i = beg_row, end_row do
