@@ -49,6 +49,7 @@ opts.config = {
             man = true,
             mason = true,
             NvimTree = true,
+            plugin = true,
         },
     },
 

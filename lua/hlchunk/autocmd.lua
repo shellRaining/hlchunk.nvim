@@ -44,7 +44,12 @@ function M.enable_hl_chunk_autocmds()
         group = "hl_chunk_augroup",
         pattern = config.hlchunk_supported_files,
         desc = "QUES: why just only CursorMoved is ok",
-        callback = require("hlchunk.hl_chunk").hl_cur_chunk,
+        callback = function()
+            local ok, value = pcall(require("hlchunk.hl_chunk").hl_cur_chunk)
+            if not ok then
+                vim.notify_once(tostring(value), vim.log.levels.ERROR)
+            end
+        end,
     })
 end
 
@@ -96,7 +101,12 @@ function M.enable_hl_line_num_autocms()
         group = "hl_line_augroup",
         pattern = config.hlchunk_supported_files,
         desc = "the autocmds about highlight line number",
-        callback = require("hlchunk.hl_line_num").hl_line_num,
+        callback = function()
+            local ok, value = pcall(require("hlchunk.hl_line_num").hl_line_num)
+            if not ok then
+                vim.notify_once(tostring(value), vim.log.levels.ERROR)
+            end
+        end,
     })
 end
 
