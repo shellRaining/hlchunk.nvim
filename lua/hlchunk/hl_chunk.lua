@@ -8,8 +8,8 @@ local ns_id = -1
 
 local function render_cur_chunk()
     local beg_row, end_row = unpack(CUR_CHUNK_RANGE)
-    local beg_blank_len = #(tostring(fn.getline(beg_row)):match("%s*"):gsub("\t", SPACE_TAB))
-    local end_blank_len = #(tostring(fn.getline(end_row)):match("%s*"):gsub("\t", SPACE_TAB))
+    local beg_blank_len = fn.indent(beg_row)
+    local end_blank_len = fn.indent(end_row)
     local start_col = math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth
 
     local row_opts = {
@@ -34,12 +34,12 @@ local function render_cur_chunk()
 
     -- render middle section
     for i = beg_row + 1, end_row - 1 do
-        row_opts.virt_text = { { opts.config.hl_chunk.chars.vertical_line, "HLChunkStyle1" } }
         start_col = math.max(0, start_col)
+        row_opts.virt_text = { { opts.config.hl_chunk.chars.vertical_line, "HLChunkStyle1" } }
         row_opts.virt_text_win_col = start_col
-        local line_val = fn.getline(i)
+        local line_val = fn.getline(i):gsub('\t', SPACE_TAB)
         ---@diagnostic disable-next-line: undefined-field
-        if #line_val <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
+        if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
             api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
         end
     end
