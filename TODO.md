@@ -25,10 +25,16 @@
 
 - [x] please update README
 
-- [ ] add support for single style of hl_indent
+- [x] add support for single style of hl_indent
 
 - [ ] when open two split windows bind with the same buffer, the highlighting will render incorrectly
 
 - [x] add support for more characters when render hl_indent
 
-- [ ] refactor the hl_indent by use vim.fn.indent()
+- [x] refactor the hl_indent by use vim.fn.indent()
+
+- [ ] enrich the contents of the README
+
+- [ ] add on-demand render for hl_indent
+
+- [ ] add support for fold text
