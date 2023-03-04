@@ -6,11 +6,17 @@ local opts = require("hlchunk.options")
 -- options global value
 
 -- the tab that represents by using blank
--- TODO: need move to another autocmd, because this will cost to much CPU time
+API = vim.api
+FN = vim.fn
 SPACE_TAB = (" "):rep(vim.o.shiftwidth)
 INDENT_CHARS_NUM = tablex.size(opts.config.hl_indent.chars)
 INDENT_STYLE_NUM = tablex.size(opts.config.hl_indent.style)
 LINE_NUM_STYLE_NUM = tablex.size(opts.config.hl_line_num.style)
+REGISTED_MODS = {
+    "hl_chunk",
+    "hl_indent",
+    "hl_line_num",
+}
 
 -- runtime value
 -- the line number that cursor stay
