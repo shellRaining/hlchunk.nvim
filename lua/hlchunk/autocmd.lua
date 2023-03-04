@@ -119,4 +119,24 @@ function M.disable_hl_line_autocmds()
     hl_line_augroup_handler = -1
 end
 
+function M.enable_specific_autocmd(mod)
+    require("hlchunk.mods" .. mod).enable_mod_autocmd()
+end
+
+function M.disable_specific_autocmd(mod)
+    require("hlchunk.mods" .. mod).disable_mod_autocmd()
+end
+
+function M.disable_registered_autocmds()
+    for _, mod in pairs(REGISTED_MODS) do
+        M.disable_specific_autocmd(mod)
+    end
+end
+
+function M.enable_registered_autocmds()
+    for _, mod in pairs(REGISTED_MODS) do
+        M.enable_specific_autocmd(mod)
+    end
+end
+
 return M

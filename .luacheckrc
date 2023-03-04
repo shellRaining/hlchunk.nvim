@@ -19,6 +19,8 @@ ignore = {
 -- Global objects defined by the C code
 read_globals = {
     "vim",
+    "API",
+    "FN",
     "SPACE_TAB",
     "CUR_LINE_NUM",
     "CUR_CHUNK_RANGE",
