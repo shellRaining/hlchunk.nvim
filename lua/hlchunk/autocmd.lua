@@ -6,7 +6,7 @@ local fn = vim.fn
 local M = {}
 
 local global_var_autocmd = -1
-local hl_chunk_augroup_handler = -1
+-- local hl_chunk_augroup_handler = -1
 local hl_indent_augroup_handler = -1
 local hl_line_augroup_handler = -1
 
@@ -21,46 +21,49 @@ function M.enable_autocmds()
             end
         end,
     })
-    M.enable_hl_chunk_autocmds()
-    M.enable_hl_indent_autocmds()
-    M.enable_hl_line_num_autocms()
+    -- M.enable_hl_chunk_autocmds()
+    M.enable_specific_autocmd('chunk')
+    M.enable_specific_autocmd('indent')
+    M.enable_specific_autocmd('line_num')
+    -- M.enable_hl_indent_autocmds()
+    -- M.enable_hl_line_num_autocms()
 end
 
 function M.disable_autocmds()
     api.nvim_del_autocmd(global_var_autocmd)
-    M.disable_hl_chunk_autocmds()
+    -- M.disable_hl_chunk_autocmds()
     M.disable_hl_indent_autocmds()
     M.disable_hl_line_autocmds()
 end
 
-function M.enable_hl_chunk_autocmds()
-    if hl_chunk_augroup_handler ~= -1 then
-        return
-    end
-
-    hl_chunk_augroup_handler = api.nvim_create_augroup("hl_chunk_augroup", { clear = true })
-
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        group = "hl_chunk_augroup",
-        pattern = config.hlchunk_supported_files,
-        desc = "QUES: why just only CursorMoved is ok",
-        callback = function()
-            local ok, value = pcall(require("hlchunk.hl_chunk").hl_cur_chunk)
-            if not ok then
-                vim.notify_once(tostring(value), vim.log.levels.ERROR)
-            end
-        end,
-    })
-end
-
-function M.disable_hl_chunk_autocmds()
-    if hl_chunk_augroup_handler == -1 then
-        return
-    end
-
-    api.nvim_del_augroup_by_name("hl_chunk_augroup")
-    hl_chunk_augroup_handler = -1
-end
+-- function M.enable_hl_chunk_autocmds()
+--     if hl_chunk_augroup_handler ~= -1 then
+--         return
+--     end
+--
+--     hl_chunk_augroup_handler = api.nvim_create_augroup("hl_chunk_augroup", { clear = true })
+--
+--     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+--         group = "hl_chunk_augroup",
+--         pattern = config.hlchunk_supported_files,
+--         desc = "QUES: why just only CursorMoved is ok",
+--         callback = function()
+--             local ok, value = pcall(require("hlchunk.hl_chunk").hl_cur_chunk)
+--             if not ok then
+--                 vim.notify_once(tostring(value), vim.log.levels.ERROR)
+--             end
+--         end,
+--     })
+-- end
+--
+-- function M.disable_hl_chunk_autocmds()
+--     if hl_chunk_augroup_handler == -1 then
+--         return
+--     end
+--
+--     api.nvim_del_augroup_by_name("hl_chunk_augroup")
+--     hl_chunk_augroup_handler = -1
+-- end
 
 function M.enable_hl_indent_autocmds()
     if hl_indent_augroup_handler ~= -1 then
@@ -120,11 +123,11 @@ function M.disable_hl_line_autocmds()
 end
 
 function M.enable_specific_autocmd(mod)
-    require("hlchunk.mods" .. mod).enable_mod_autocmd()
+    require("hlchunk.mods." .. mod).enable_mod_autocmd()
 end
 
 function M.disable_specific_autocmd(mod)
-    require("hlchunk.mods" .. mod).disable_mod_autocmd()
+    require("hlchunk.mods." .. mod).disable_mod_autocmd()
 end
 
 function M.disable_registered_autocmds()

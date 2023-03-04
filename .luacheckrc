@@ -21,6 +21,8 @@ read_globals = {
     "vim",
     "API",
     "FN",
+    "PLUG_CONF",
+    "REGISTED_MODS",
     "SPACE_TAB",
     "CUR_LINE_NUM",
     "CUR_CHUNK_RANGE",

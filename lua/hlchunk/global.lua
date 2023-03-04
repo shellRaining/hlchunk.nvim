@@ -1,17 +1,17 @@
 -- this file contains some global variables will be used when rendering
 
 local tablex = require("hlchunk.lib.table")
-local opts = require("hlchunk.options")
 
 -- options global value
 
 -- the tab that represents by using blank
 API = vim.api
 FN = vim.fn
+PLUG_CONF = require("hlchunk.options").config
 SPACE_TAB = (" "):rep(vim.o.shiftwidth)
-INDENT_CHARS_NUM = tablex.size(opts.config.hl_indent.chars)
-INDENT_STYLE_NUM = tablex.size(opts.config.hl_indent.style)
-LINE_NUM_STYLE_NUM = tablex.size(opts.config.hl_line_num.style)
+INDENT_CHARS_NUM = tablex.size(PLUG_CONF.hl_indent.chars)
+INDENT_STYLE_NUM = tablex.size(PLUG_CONF.hl_indent.style)
+LINE_NUM_STYLE_NUM = tablex.size(PLUG_CONF.hl_line_num.style)
 REGISTED_MODS = {
     "hl_chunk",
     "hl_indent",
