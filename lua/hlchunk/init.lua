@@ -21,7 +21,7 @@ hlchunk.setup = function(params)
     end
 
     require("hlchunk.global")
-    require("hlchunk.usercmd").enable_registered_mods()
+    require("hlchunk.usercmd")
     require("hlchunk.highlight").set_hls()
     require("hlchunk.autocmd").enable_registered_autocmds()
 end
