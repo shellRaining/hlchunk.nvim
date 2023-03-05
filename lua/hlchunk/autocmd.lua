@@ -1,65 +1,32 @@
-local config = require("hlchunk.options").config
-local utils = require("hlchunk.utils.utils")
-local api = vim.api
-local fn = vim.fn
-
 local M = {}
 
 local global_var_autocmd = -1
-local hl_indent_augroup_handler = -1
-local hl_line_augroup_handler = -1
 
 -- TODO: need to refactor these functions
 function M.enable_autocmds()
-    global_var_autocmd = api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        pattern = config.hlchunk_supported_files,
+    global_var_autocmd = API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        pattern = PLUG_CONF.hlchunk_supported_files,
         callback = function()
-            if config.hl_chunk.enable or config.hl_line_num.enable then
-                CUR_LINE_NUM = fn.line(".")
-                CUR_CHUNK_RANGE = utils.get_pair_rows()
+            if PLUG_CONF.hl_chunk.enable or PLUG_CONF.hl_line_num.enable then
+                CUR_LINE_NUM = FN.line(".")
+                CUR_CHUNK_RANGE = UTILS.get_pair_rows()
             end
         end,
     })
-    M.enable_specific_autocmd('chunk')
-    M.enable_specific_autocmd('indent')
-    -- M.enable_specific_autocmd('line_num')
+
+    for _, mod in pairs(REGISTED_MODS) do
+        M.enable_specific_autocmd(mod)
+    end
 end
 
 function M.disable_autocmds()
-    -- api.nvim_del_autocmd(global_var_autocmd)
-    M.disable_specific_autocmd('chunk')
-    M.disable_specific_autocmd('indent')
-    -- M.disable_hl_line_autocmds()
-end
-
-
-function M.enable_hl_line_num_autocms()
-    if hl_line_augroup_handler ~= -1 then
-        return
+    API.nvim_del_autocmd(global_var_autocmd)
+    for _, mod in pairs(REGISTED_MODS) do
+        M.disable_specific_autocmd(mod)
     end
-
-    hl_line_augroup_handler = api.nvim_create_augroup("hl_line_augroup", { clear = true })
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        group = "hl_line_augroup",
-        pattern = config.hlchunk_supported_files,
-        desc = "the autocmds about highlight line number",
-        callback = function()
-            local ok, value = pcall(require("hlchunk.hl_line_num").hl_line_num)
-            if not ok then
-                vim.notify_once(tostring(value), vim.log.levels.ERROR)
-            end
-        end,
-    })
 end
 
-function M.disable_hl_line_autocmds()
-    if hl_line_augroup_handler == -1 then
-        return
-    end
 
-    api.nvim_del_augroup_by_name("hl_line_augroup")
-    hl_line_augroup_handler = -1
-end
 
 function M.enable_specific_autocmd(mod)
     require("hlchunk.mods." .. mod).enable_mod_autocmd()

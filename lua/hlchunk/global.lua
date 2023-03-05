@@ -17,9 +17,9 @@ INDENT_CHARS_NUM = tablex.size(PLUG_CONF.hl_indent.chars)
 INDENT_STYLE_NUM = tablex.size(PLUG_CONF.hl_indent.style)
 LINE_NUM_STYLE_NUM = tablex.size(PLUG_CONF.hl_line_num.style)
 REGISTED_MODS = {
-    "hl_chunk",
-    "hl_indent",
-    "hl_line_num",
+    "chunk",
+    "indent",
+    "line_num",
 }
 
 -- runtime value
