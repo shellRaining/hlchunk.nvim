@@ -2,8 +2,15 @@ local M = {}
 
 local global_var_autocmd = -1
 
--- TODO: need to refactor these functions
-function M.enable_autocmds()
+function M.enable_specific_autocmd(mod)
+    require("hlchunk.mods." .. mod).enable_mod_autocmd()
+end
+
+function M.disable_specific_autocmd(mod)
+    require("hlchunk.mods." .. mod).disable_mod_autocmd()
+end
+
+function M.enable_registered_autocmds()
     global_var_autocmd = API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         pattern = PLUG_CONF.hlchunk_supported_files,
         callback = function()
@@ -19,32 +26,10 @@ function M.enable_autocmds()
     end
 end
 
-function M.disable_autocmds()
+function M.disable_registered_autocmds()
     API.nvim_del_autocmd(global_var_autocmd)
     for _, mod in pairs(REGISTED_MODS) do
         M.disable_specific_autocmd(mod)
-    end
-end
-
-
-
-function M.enable_specific_autocmd(mod)
-    require("hlchunk.mods." .. mod).enable_mod_autocmd()
-end
-
-function M.disable_specific_autocmd(mod)
-    require("hlchunk.mods." .. mod).disable_mod_autocmd()
-end
-
-function M.disable_registered_autocmds()
-    for _, mod in pairs(REGISTED_MODS) do
-        M.disable_specific_autocmd(mod)
-    end
-end
-
-function M.enable_registered_autocmds()
-    for _, mod in pairs(REGISTED_MODS) do
-        M.enable_specific_autocmd(mod)
     end
 end
 
