@@ -52,7 +52,7 @@ function chunk_mod:render()
         return
     end
 
-    chunk_mod:clear()
+    self:clear()
     ns_id = API.nvim_create_namespace("hlchunk")
 
     -- determined the row where parentheses are
@@ -78,12 +78,8 @@ function chunk_mod:enable_mod_autocmd()
     API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_chunk_augroup",
         pattern = PLUG_CONF.hlchunk_supported_files,
-        desc = "QUES: why just only CursorMoved is ok",
         callback = function()
-            local ok, value = pcall(require("hlchunk.hl_chunk").hl_cur_chunk)
-            if not ok then
-                vim.notify_once(tostring(value), vim.log.levels.ERROR)
-            end
+            chunk_mod:render()
         end,
     })
 end
