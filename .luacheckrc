@@ -22,6 +22,7 @@ read_globals = {
     "API",
     "FN",
     "PLUG_CONF",
+    "UTILS",
     "REGISTED_MODS",
     "SPACE_TAB",
     "CUR_LINE_NUM",
