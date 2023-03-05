@@ -88,6 +88,15 @@ function indent_mod:disable_mod_autocmd()
     hl_indent_augroup_handler = -1
 end
 
+function indent_mod:create_mod_usercmd()
+    API.nvim_create_user_command("EnableHLIndent", function()
+        indent_mod:enable()
+    end, {})
+    API.nvim_create_user_command("DisableHLIndent", function()
+        indent_mod:disable()
+    end, {})
+end
+
 function indent_mod:enable()
     PLUG_CONF.hl_indent.enable = true
     self:render()

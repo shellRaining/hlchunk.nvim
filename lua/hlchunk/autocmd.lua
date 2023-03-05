@@ -3,11 +3,11 @@ local M = {}
 local global_var_autocmd = -1
 
 function M.enable_specific_autocmd(mod)
-    require("hlchunk.mods." .. mod).enable_mod_autocmd()
+    require("hlchunk.mods." .. mod):enable_mod_autocmd()
 end
 
 function M.disable_specific_autocmd(mod)
-    require("hlchunk.mods." .. mod).disable_mod_autocmd()
+    require("hlchunk.mods." .. mod):disable_mod_autocmd()
 end
 
 function M.enable_registered_autocmds()

@@ -10,7 +10,6 @@ FN = vim.fn
 PLUG_CONF = require("hlchunk.options").config
 UTILS = require("hlchunk.utils.utils")
 
-
 -- the tab that represents by using blank
 SPACE_TAB = (" "):rep(vim.o.shiftwidth)
 INDENT_CHARS_NUM = tablex.size(PLUG_CONF.hl_indent.chars)

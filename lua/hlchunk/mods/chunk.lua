@@ -39,7 +39,6 @@ local function render_cur_chunk()
         row_opts.virt_text = { { PLUG_CONF.hl_chunk.chars.vertical_line, "HLChunkStyle1" } }
         row_opts.virt_text_win_col = start_col
         local line_val = FN.getline(i):gsub("\t", SPACE_TAB)
-        ---@diagnostic disable-next-line: undefined-field
         if #FN.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
             API.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
         end
@@ -83,6 +82,16 @@ function chunk_mod:enable_mod_autocmd()
         end,
     })
 end
+
+function chunk_mod:create_mod_usercmd()
+    API.nvim_create_user_command("EnableHLChunk", function()
+        chunk_mod:enable()
+    end, {})
+    API.nvim_create_user_command("DisableHLChunk", function()
+        chunk_mod:disable()
+    end, {})
+end
+
 function chunk_mod:disable_mod_autocmd()
     if hl_chunk_augroup_handler == -1 then
         return

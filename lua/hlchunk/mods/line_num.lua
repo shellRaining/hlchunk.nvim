@@ -52,16 +52,25 @@ function line_num_mod:disable_mod_autocmd()
     hl_line_augroup_handler = -1
 end
 
-function line_num_mod:disable_hl_line()
-    PLUG_CONF.hl_line_num.enable = false
-    self:clear()
-    require("hlchunk.autocmd").disable_hl_line_autocmds()
+function line_num_mod:create_mod_usercmd()
+    API.nvim_create_user_command("EnableHLLineNum", function()
+        line_num_mod:enable()
+    end, {})
+    API.nvim_create_user_command("DisableHLLineNum", function()
+        line_num_mod:disable()
+    end, {})
 end
 
-function line_num_mod:enable_hl_line()
+function line_num_mod:disable()
+    PLUG_CONF.hl_line_num.enable = false
+    self:clear()
+    self:disable_mod_autocmd()
+end
+
+function line_num_mod:enable()
     PLUG_CONF.hl_line_num.enable = true
     self:render()
-    require("hlchunk.autocmd").enable_hl_line_num_autocms()
+    self:enable_mod_autocmd()
 end
 
 return line_num_mod
