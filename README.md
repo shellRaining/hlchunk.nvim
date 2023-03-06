@@ -8,7 +8,7 @@ This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim
 
 ## brief
 
-this plugin have three parts,
+this plugin now have three parts (future will add more... `^v^`)
 
 1. hl_chunk
 2. hl_indent
@@ -60,14 +60,21 @@ The script comes with the following defaults:
 
 ```lua
 {
-    -- settings for this plugin
-    enabled = true,
-    hlchunk_supported_files = { "*.ts", "*.js", "*.json", "*.go", "*.c", "*.cpp", "*.rs", "*.h", "*.hpp", "*.lua" },
-
-    -- setttings for hl_chunk
-
-    hl_chunk = {
+    chunk = {
         enable = true,
+        support_filetypes = {
+            "*.ts",
+            "*.js",
+            "*.json",
+            "*.go",
+            "*.c",
+            "*.cpp",
+            "*.rs",
+            "*.h",
+            "*.hpp",
+            "*.lua",
+            "*.vue",
+        },
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -75,21 +82,29 @@ The script comes with the following defaults:
             left_bottom = "╰",
             right_arrow = ">",
         },
-        style = {
-            hibiscus = "#806d9c",
-            primrose = "#c06f98",
-        },
+        style = "#00ffff",
     },
 
-    -- settings for hl_indent
-    hl_indent = {
+    indent = {
         enable = true,
-        use_treesitter = true,
+        use_treesitter = false,
+        -- You can uncomment to get more indented line look like
         chars = {
-            vertical_line = "│",
+            "│",
+            -- "¦",
+            -- "┆",
+            -- "┊",
         },
+        -- you can uncomment to get more indented line style
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            -- "#FF0000",
+            -- "#FF7F00",
+            -- "#FFFF00",
+            -- "#00FF00",
+            -- "#00FFFF",
+            -- "#0000FF",
+            -- "#8B00FF",
         },
         exclude_filetype = {
             dashboard = true,
@@ -100,35 +115,24 @@ The script comes with the following defaults:
             man = true,
             mason = true,
             NvimTree = true,
+            plugin = true,
         },
     },
 
-    -- settings for hl_line_num
-    hl_line_num = {
+    line_num = {
         enable = true,
-
-        style = {
-            hibiscus = "#806d9c",
+        support_filetypes = {
+            "..."
         },
-    },}
-```
-
-To override the custom configuration, call:
-
-```lua
-require('hlchunk').setup({
-  -- your override config
-})
+        style = "#806d9c",
+    },
 ```
 
 example:
 
 ```lua
 require('hlchunk').setup({
-    -- when overide the config, enable option must be contained
-    enabled = true,
-
-    hl_indent = {
+    indent = {
         enable = true,
 
         -- if you want to use multiple indent line, just place them here, the key is like vertical_line + x, which x is a number
@@ -140,12 +144,6 @@ require('hlchunk').setup({
         },
 
         style = {
-            "#FF0000",
-            "#FF7F00",
-            "#FFFF00",
-            "#00FF00",
-            "#00FFFF",
-            "#0000FF",
             "#8B00FF",
         },
     },
@@ -170,3 +168,8 @@ the two will control `hl_chunk`
 - EnableHLIndent
 
 the two will control `hl_indent`
+
+- DisableHLLineNum
+- EnableHLLineNum
+
+the two will control `hl_line_num`

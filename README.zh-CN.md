@@ -8,7 +8,7 @@
 
 ## 简要概述
 
-这个插件由三个部分组成
+这个插件由三个部分组成，未来会添加更多的功能（笑）
 
 1. hl_chunk
 2. hl_indent
@@ -59,14 +59,22 @@ Plug "shell-Raining/hlchunk.nvim"
 插件默认带有以下的配置
 
 ```lua
-{    -- settings for this plugin
-    enabled = true,
-    hlchunk_supported_files = { "*.ts", "*.js", "*.json", "*.go", "*.c", "*.cpp", "*.rs", "*.h", "*.hpp", "*.lua" },
-
-    -- setttings for hl_chunk
-
-    hl_chunk = {
+{
+    chunk = {
         enable = true,
+        support_filetypes = {
+            "*.ts",
+            "*.js",
+            "*.json",
+            "*.go",
+            "*.c",
+            "*.cpp",
+            "*.rs",
+            "*.h",
+            "*.hpp",
+            "*.lua",
+            "*.vue",
+        },
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -74,21 +82,29 @@ Plug "shell-Raining/hlchunk.nvim"
             left_bottom = "╰",
             right_arrow = ">",
         },
-        style = {
-            hibiscus = "#806d9c",
-            primrose = "#c06f98",
-        },
+        style = "#00ffff",
     },
 
-    -- settings for hl_indent
-    hl_indent = {
+    indent = {
         enable = true,
-        use_treesitter = true,
+        use_treesitter = false,
+        -- 你可以去掉注释来获得更多缩进线的样子
         chars = {
-            vertical_line = "│",
+            "│",
+            -- "¦",
+            -- "┆",
+            -- "┊",
         },
+        -- 你可以去掉注释来获得更多的缩进线颜色样式
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            -- "#FF0000",
+            -- "#FF7F00",
+            -- "#FFFF00",
+            -- "#00FF00",
+            -- "#00FFFF",
+            -- "#0000FF",
+            -- "#8B00FF",
         },
         exclude_filetype = {
             dashboard = true,
@@ -99,26 +115,17 @@ Plug "shell-Raining/hlchunk.nvim"
             man = true,
             mason = true,
             NvimTree = true,
+            plugin = true,
         },
     },
 
-    -- settings for hl_line_num
-    hl_line_num = {
+    line_num = {
         enable = true,
-
-        style = {
-            hibiscus = "#806d9c",
+        support_filetypes = {
+            "..."
         },
+        style = "#806d9c",
     },
-}
-```
-
-修改默认的配置请调用：
-
-```lua
-require('hlchunk').setup({
-  -- your override config
-})
 ```
 
 例如这样：
@@ -140,12 +147,6 @@ require('hlchunk').setup({
     hl_indent = {
         enable = true,
         style = {
-            "#FF0000",
-            "#FF7F00",
-            "#FFFF00",
-            "#00FF00",
-            "#00FFFF",
-            "#0000FF",
             "#8B00FF",
         },
     },
@@ -168,3 +169,8 @@ require('hlchunk').setup({
 
 - DisableHLIndent
 - EnableHLIndent
+
+下面这两个命令用来控制 `hl_line_num` 的状态
+
+- DisableHLLineNum
+- EnableHLLineNum
