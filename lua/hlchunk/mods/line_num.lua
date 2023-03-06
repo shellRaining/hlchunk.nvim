@@ -1,7 +1,6 @@
 local line_num_mod = require("hlchunk.base_mod"):new({
     name = "line_num",
 })
-local hl_line_augroup_handler = -1
 
 function line_num_mod:render()
     if not PLUG_CONF.line_num.enable then
@@ -29,11 +28,7 @@ function line_num_mod:clear()
 end
 
 function line_num_mod:enable_mod_autocmd()
-    if hl_line_augroup_handler ~= -1 then
-        return
-    end
-
-    hl_line_augroup_handler = API.nvim_create_augroup("hl_line_augroup", { clear = true })
+    API.nvim_create_augroup("hl_line_augroup", { clear = true })
     API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_line_augroup",
         pattern = PLUG_CONF.line_num.support_filetypes,
@@ -44,12 +39,7 @@ function line_num_mod:enable_mod_autocmd()
 end
 
 function line_num_mod:disable_mod_autocmd()
-    if hl_line_augroup_handler == -1 then
-        return
-    end
-
     API.nvim_del_augroup_by_name("hl_line_augroup")
-    hl_line_augroup_handler = -1
 end
 
 function line_num_mod:create_mod_usercmd()
@@ -62,15 +52,25 @@ function line_num_mod:create_mod_usercmd()
 end
 
 function line_num_mod:disable()
-    PLUG_CONF.line_num.enable = false
-    self:clear()
-    self:disable_mod_autocmd()
+    local ok, _ = pcall(function()
+        PLUG_CONF.line_num.enable = false
+        self:clear()
+        self:disable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have enable this plugin")
+    end
 end
 
 function line_num_mod:enable()
-    PLUG_CONF.line_num.enable = true
-    self:render()
-    self:enable_mod_autocmd()
+    local ok, _ = pcall(function()
+        PLUG_CONF.line_num.enable = true
+        self:render()
+        self:enable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have disable this plugin")
+    end
 end
 
 return line_num_mod

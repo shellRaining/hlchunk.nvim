@@ -1,5 +1,4 @@
 local BaseMod = require("hlchunk.base_mod")
-local hl_chunk_augroup_handler = -1
 
 local chunk_mod = BaseMod:new({
     name = "chunk",
@@ -68,12 +67,7 @@ function chunk_mod:clear()
 end
 
 function chunk_mod:enable_mod_autocmd()
-    if hl_chunk_augroup_handler ~= -1 then
-        return
-    end
-
-    hl_chunk_augroup_handler = API.nvim_create_augroup("hl_chunk_augroup", { clear = true })
-
+    API.nvim_create_augroup("hl_chunk_augroup", { clear = true })
     API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_chunk_augroup",
         pattern = PLUG_CONF.chunk.support_filetypes,
@@ -84,12 +78,7 @@ function chunk_mod:enable_mod_autocmd()
 end
 
 function chunk_mod:disable_mod_autocmd()
-    if hl_chunk_augroup_handler == -1 then
-        return
-    end
-
     API.nvim_del_augroup_by_name("hl_chunk_augroup")
-    hl_chunk_augroup_handler = -1
 end
 
 function chunk_mod:create_mod_usercmd()
@@ -102,15 +91,25 @@ function chunk_mod:create_mod_usercmd()
 end
 
 function chunk_mod:enable()
-    PLUG_CONF.chunk.enable = true
-    self:render()
-    self:enable_mod_autocmd()
+    local ok, _ = pcall(function()
+        PLUG_CONF.chunk.enable = true
+        self:render()
+        self:enable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have enable this plugin")
+    end
 end
 
 function chunk_mod:disable()
-    PLUG_CONF.chunk.enable = false
-    self:clear()
-    self:disable_mod_autocmd()
+    local ok, _ = pcall(function()
+        PLUG_CONF.chunk.enable = false
+        self:clear()
+        self:disable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have disable this plugin")
+    end
 end
 
 return chunk_mod

@@ -1,5 +1,4 @@
 local BaseMod = require("hlchunk.base_mod")
-local hl_indent_augroup_handler = -1
 
 local indent_mod = BaseMod:new({
     name = "indent",
@@ -64,11 +63,7 @@ function indent_mod:clear()
 end
 
 function indent_mod:enable_mod_autocmd()
-    if hl_indent_augroup_handler ~= -1 then
-        return
-    end
-
-    hl_indent_augroup_handler = API.nvim_create_augroup("hl_indent_augroup", { clear = true })
+    API.nvim_create_augroup("hl_indent_augroup", { clear = true })
 
     API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
         group = "hl_indent_augroup",
@@ -80,12 +75,7 @@ function indent_mod:enable_mod_autocmd()
 end
 
 function indent_mod:disable_mod_autocmd()
-    if hl_indent_augroup_handler == -1 then
-        return
-    end
-
     API.nvim_del_augroup_by_name("hl_indent_augroup")
-    hl_indent_augroup_handler = -1
 end
 
 function indent_mod:create_mod_usercmd()
@@ -98,15 +88,25 @@ function indent_mod:create_mod_usercmd()
 end
 
 function indent_mod:enable()
-    PLUG_CONF.indent.enable = true
-    self:render()
-    self:enable_mod_autocmd()
+    local ok, _ = pcall(function()
+        PLUG_CONF.indent.enable = true
+        self:render()
+        self:enable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have enable this plugin")
+    end
 end
 
 function indent_mod:disable()
-    PLUG_CONF.indent.enable = false
-    self:clear()
-    self:disable_mod_autocmd()
+    local ok, _ = pcall(function()
+        PLUG_CONF.indent.enable = false
+        self:clear()
+        self:disable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have disable this plugin")
+    end
 end
 
 return indent_mod
