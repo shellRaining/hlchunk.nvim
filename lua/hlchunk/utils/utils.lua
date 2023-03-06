@@ -24,7 +24,7 @@ function M.get_rows_blank()
     local beg_row = vim.fn.line("w0")
     local end_row = vim.fn.line("w$")
 
-    if opts.config.hl_indent.use_treesitter then
+    if opts.config.indent.use_treesitter then
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
         if not ts_indent_status then
             return {}
