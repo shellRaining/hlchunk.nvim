@@ -18,7 +18,6 @@ hlchunk.setup = function(params)
     end
 
     require("hlchunk.global")
-    require("hlchunk.usercmd")
     require("hlchunk.highlight").set_hls()
 
     for key, value in pairs(opts.config) do
@@ -37,6 +36,8 @@ hlchunk.setup = function(params)
             mod:enable()
         end
     end
+
+    require("hlchunk.usercmd")
 end
 
 return hlchunk

@@ -12,3 +12,10 @@ end
 
 API.nvim_create_user_command("EnableHL", enable_registered_mods, {})
 API.nvim_create_user_command("DisableHL", disable_registered_mods, {})
+
+for key, _ in pairs(PLUG_CONF) do
+    local ok, mod = pcall(require, "hlchunk.mods." .. key)
+    if ok then
+        mod:create_mod_usercmd()
+    end
+end
