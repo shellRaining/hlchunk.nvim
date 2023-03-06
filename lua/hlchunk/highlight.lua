@@ -1,8 +1,6 @@
-local opts = require("hlchunk.options")
-
-local chunk_hl_group = opts.config.hl_chunk.style
-local indent_hl_group = opts.config.hl_indent.style
-local line_num_hl_group = opts.config.hl_line_num.style
+local chunk_hl_group = PLUG_CONF.chunk.style
+local indent_hl_group = PLUG_CONF.indent.style
+local line_num_hl_group = PLUG_CONF.line_num.style
 
 local M = {}
 
@@ -27,7 +25,7 @@ local function set_hl(hl_base_name, args)
 end
 
 local function set_signs()
-    if type(opts.config.hl_line_num.style) == "table" then
+    if type(PLUG_CONF.line_num.style) == "table" then
         local tbl = {}
         for i = 1, LINE_NUM_STYLE_NUM do
             local sign_name = "sign" .. tostring(i)

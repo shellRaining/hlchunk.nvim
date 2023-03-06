@@ -26,7 +26,7 @@ local function get_indent_virt_text_num(line)
     return math.floor(rows_blank_list[line] / vim.o.shiftwidth)
 end
 
-local function indent_render_line(index)
+local function render_line(index)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
@@ -36,7 +36,7 @@ local function indent_render_line(index)
     local render_char_num = get_indent_virt_text_num(index)
     for i = 1, render_char_num do
         local style = "HLIndentStyle" .. tostring((i - 1) % INDENT_STYLE_NUM + 1)
-        local char = PLUG_CONF.hl_indent.chars[(i - 1) % INDENT_CHARS_NUM + 1]
+        local char = PLUG_CONF.indent.chars[(i - 1) % INDENT_CHARS_NUM + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = (i - 1) * vim.o.shiftwidth
         API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
@@ -44,7 +44,7 @@ local function indent_render_line(index)
 end
 
 function indent_mod:render()
-    if (not PLUG_CONF.hl_indent.enable) or PLUG_CONF.hl_indent.exclude_filetype[vim.bo.filetype] then
+    if (not PLUG_CONF.indent.enable) or PLUG_CONF.indent.exclude_filetype[vim.bo.filetype] then
         return
     end
 
@@ -53,7 +53,7 @@ function indent_mod:render()
 
     rows_blank_list = UTILS.get_rows_blank()
     for index, _ in pairs(rows_blank_list) do
-        indent_render_line(index)
+        render_line(index)
     end
 end
 
@@ -98,13 +98,13 @@ function indent_mod:create_mod_usercmd()
 end
 
 function indent_mod:enable()
-    PLUG_CONF.hl_indent.enable = true
+    PLUG_CONF.indent.enable = true
     self:render()
     self:enable_mod_autocmd()
 end
 
 function indent_mod:disable()
-    PLUG_CONF.hl_indent.enable = false
+    PLUG_CONF.indent.enable = false
     self:clear()
     self:disable_mod_autocmd()
 end

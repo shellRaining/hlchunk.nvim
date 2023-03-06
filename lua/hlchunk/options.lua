@@ -9,26 +9,22 @@ local opts = {}
 -- #8B00FF
 
 opts.config = {
-    -- settings for this plugin
-    enabled = true,
-    hlchunk_supported_files = {
-        "*.ts",
-        "*.js",
-        "*.json",
-        "*.go",
-        "*.c",
-        "*.cpp",
-        "*.rs",
-        "*.h",
-        "*.hpp",
-        "*.lua",
-        "*.vue",
-    },
-
-    -- setttings for hl_chunk
-
-    hl_chunk = {
+    chunk = {
         enable = true,
+        -- settings for this plugin
+        support_filetypes = {
+            "*.ts",
+            "*.js",
+            "*.json",
+            "*.go",
+            "*.c",
+            "*.cpp",
+            "*.rs",
+            "*.h",
+            "*.hpp",
+            "*.lua",
+            "*.vue",
+        },
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -43,7 +39,7 @@ opts.config = {
     },
 
     -- settings for hl_indent
-    hl_indent = {
+    indent = {
         enable = true,
         use_treesitter = false,
         chars = {
@@ -66,8 +62,21 @@ opts.config = {
     },
 
     -- settings for hl_line_num
-    hl_line_num = {
+    line_num = {
         enable = true,
+        support_filetypes = {
+            "*.ts",
+            "*.js",
+            "*.json",
+            "*.go",
+            "*.c",
+            "*.cpp",
+            "*.rs",
+            "*.h",
+            "*.hpp",
+            "*.lua",
+            "*.vue",
+        },
         style = "#806d9c",
     },
 }

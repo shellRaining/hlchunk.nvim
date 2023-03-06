@@ -4,7 +4,7 @@ local line_num_mod = require("hlchunk.base_mod"):new({
 local hl_line_augroup_handler = -1
 
 function line_num_mod:render()
-    if not PLUG_CONF.hl_line_num.enable then
+    if not PLUG_CONF.line_num.enable then
         return
     end
 
@@ -36,7 +36,7 @@ function line_num_mod:enable_mod_autocmd()
     hl_line_augroup_handler = API.nvim_create_augroup("hl_line_augroup", { clear = true })
     API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_line_augroup",
-        pattern = PLUG_CONF.hlchunk_supported_files,
+        pattern = PLUG_CONF.line_num.support_filetypes,
         callback = function()
             line_num_mod:render()
         end,
@@ -62,13 +62,13 @@ function line_num_mod:create_mod_usercmd()
 end
 
 function line_num_mod:disable()
-    PLUG_CONF.hl_line_num.enable = false
+    PLUG_CONF.line_num.enable = false
     self:clear()
     self:disable_mod_autocmd()
 end
 
 function line_num_mod:enable()
-    PLUG_CONF.hl_line_num.enable = true
+    PLUG_CONF.line_num.enable = true
     self:render()
     self:enable_mod_autocmd()
 end
