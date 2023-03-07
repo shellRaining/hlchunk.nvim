@@ -1,6 +1,4 @@
-local chunk_hl_group = PLUG_CONF.chunk.style
-local indent_hl_group = PLUG_CONF.indent.style
-local line_num_hl_group = PLUG_CONF.line_num.style
+local stringx = require("hlchunk.utils.string")
 
 local M = {}
 
@@ -27,7 +25,7 @@ end
 local function set_signs()
     if type(PLUG_CONF.line_num.style) == "table" then
         local tbl = {}
-        for i = 1, LINE_NUM_STYLE_NUM do
+        for i = 1, 1 do
             local sign_name = "sign" .. tostring(i)
             local hl_name = "HLLineNumStyle" .. tostring(i)
             tbl[#tbl + 1] = { name = sign_name, numhl = hl_name }
@@ -40,11 +38,20 @@ local function set_signs()
     end
 end
 
-function M.set_hls()
-    set_hl("HLChunkStyle", chunk_hl_group)()
-    set_hl("HLIndentStyle", indent_hl_group)()
-    set_hl("HLLineNumStyle", line_num_hl_group)()
+local function get_hl_base_name(s)
+    local token_list = stringx.split(s, "_")
+    local res = ""
+    for _, value in pairs(token_list) do
+        res = res .. stringx.firstToUpper(value)
+    end
+    return "HL" .. res .. "Style"
+end
 
+function M.set_hls()
+    for key, value in pairs(PLUG_CONF) do
+        local hl_base_name = get_hl_base_name(key)
+        set_hl(hl_base_name, value.style)()
+    end
     set_signs()
 end
 

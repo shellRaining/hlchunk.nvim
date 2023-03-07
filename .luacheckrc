@@ -23,12 +23,9 @@ read_globals = {
     "FN",
     "PLUG_CONF",
     "UTILS",
-    "REGISTED_MODS",
+
     "SPACE_TAB",
     "CUR_LINE_NUM",
     "CUR_CHUNK_RANGE",
-    "INDENT_CHARS_NUM",
-    "INDENT_STYLE_NUM",
-    "CHUNK_STYLE_NUM",
-    "LINE_NUM_STYLE_NUM",
+    "ROWS_BLANK_LIST",
 }
