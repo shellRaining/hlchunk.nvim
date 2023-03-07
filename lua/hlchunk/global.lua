@@ -26,7 +26,13 @@ API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable then
             CUR_LINE_NUM = FN.line(".")
             CUR_CHUNK_RANGE = UTILS.get_pair_rows()
-            ROWS_BLANK_LIST = UTILS.get_rows_blank()
         end
+    end,
+})
+
+API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
+    pattern = "*",
+    callback = function()
+        ROWS_BLANK_LIST = UTILS.get_rows_blank()
     end,
 })
