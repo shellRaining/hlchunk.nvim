@@ -51,4 +51,22 @@ function M.get_rows_blank()
     return rows_blank
 end
 
+function M.get_indent_virt_text_num(line)
+    -- if the given line is blank, we need set the virt_text by context
+    if ROWS_BLANK_LIST[line] == -1 then
+        local line_below = line + 1
+        while ROWS_BLANK_LIST[line_below] do
+            if ROWS_BLANK_LIST[line_below] == 0 then
+                break
+            elseif ROWS_BLANK_LIST[line_below] > 0 then
+                ROWS_BLANK_LIST[line] = ROWS_BLANK_LIST[line_below]
+                break
+            end
+            line_below = line_below + 1
+        end
+    end
+
+    return math.floor(ROWS_BLANK_LIST[line] / vim.o.shiftwidth)
+end
+
 return M

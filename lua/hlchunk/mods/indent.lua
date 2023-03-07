@@ -1,29 +1,14 @@
 local BaseMod = require("hlchunk.base_mod")
+local tablex = require("hlchunk.utils.table")
+
+local Indent_chars_num = tablex.size(PLUG_CONF.indent.chars)
+local Indent_style_num = tablex.size(PLUG_CONF.indent.style)
 
 local indent_mod = BaseMod:new({
     name = "indent",
 })
 
 local ns_id = -1
-local rows_blank_list = {}
-
-local function get_indent_virt_text_num(line)
-    -- if the given line is blank, we need set the virt_text by context
-    if rows_blank_list[line] == -1 then
-        local line_below = line + 1
-        while rows_blank_list[line_below] do
-            if rows_blank_list[line_below] == 0 then
-                break
-            elseif rows_blank_list[line_below] > 0 then
-                rows_blank_list[line] = rows_blank_list[line_below]
-                break
-            end
-            line_below = line_below + 1
-        end
-    end
-
-    return math.floor(rows_blank_list[line] / vim.o.shiftwidth)
-end
 
 local function render_line(index)
     local row_opts = {
@@ -32,10 +17,10 @@ local function render_line(index)
         priority = 1,
     }
 
-    local render_char_num = get_indent_virt_text_num(index)
+    local render_char_num = UTILS.get_indent_virt_text_num(index)
     for i = 1, render_char_num do
-        local style = "HLIndentStyle" .. tostring((i - 1) % INDENT_STYLE_NUM + 1)
-        local char = PLUG_CONF.indent.chars[(i - 1) % INDENT_CHARS_NUM + 1]
+        local style = "HLIndentStyle" .. tostring((i - 1) % Indent_style_num + 1)
+        local char = PLUG_CONF.indent.chars[(i - 1) % Indent_chars_num + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = (i - 1) * vim.o.shiftwidth
         API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
@@ -50,8 +35,7 @@ function indent_mod:render()
     self:clear()
     ns_id = API.nvim_create_namespace("hl_indent")
 
-    rows_blank_list = UTILS.get_rows_blank()
-    for index, _ in pairs(rows_blank_list) do
+    for index, _ in pairs(ROWS_BLANK_LIST) do
         render_line(index)
     end
 end
