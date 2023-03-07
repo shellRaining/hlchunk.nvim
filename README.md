@@ -8,11 +8,12 @@ This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim
 
 ## brief
 
-this plugin now have three parts (future will add more... `^v^`)
+this plugin now have four parts (future will add more... `^v^`)
 
 1. hl_chunk
 2. hl_indent
 3. hl_line_num
+4. hl_blank
 
 the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future, laugh)
 
@@ -28,12 +29,26 @@ base on treesitter
 
 the third one is similar to hl_chunk, the difference is that it will highlight line number, you can set front color or background color for it
 
+the last one is hl_blank, which can highlight the blank with some funny char and style, you can see in the example below, you can find many chars in this website [Unicode Plus](https://unicodeplus.com/) 
+
 ## example
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
+
+hl_chunk
+
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/27_hlchunk4.png">
+
+hl_indent
+
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+
+hl_line_num
+
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/07_hlchunk7.png">
+
+hl_blank
 
 ## Requirements
 
@@ -126,6 +141,24 @@ The script comes with the following defaults:
         },
         style = "#806d9c",
     },
+
+    blank = {
+        enable = true,
+        chars = {
+            "․",
+            "⁚",
+            "⁖",
+            "⁘",
+            "⁙",
+        },
+        style = {
+            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            "#806d9c",
+            "#c06f98",
+        },
+        exclude_filetype = "...",
+    },
+}
 ```
 
 example:
@@ -173,3 +206,8 @@ the two will control `hl_indent`
 - EnableHLLineNum
 
 the two will control `hl_line_num`
+
+- DisableHLBlank
+- EnableHLBlank
+
+the two will control `hl_blank`

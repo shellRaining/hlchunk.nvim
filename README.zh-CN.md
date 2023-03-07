@@ -8,11 +8,12 @@
 
 ## 简要概述
 
-这个插件由三个部分组成，未来会添加更多的功能（笑）
+这个插件由四个部分组成，未来会添加更多的功能（笑）
 
 1. hl_chunk
 2. hl_indent
 3. hl_line_num
+4. hl_blank
 
 第一部分是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目（笑））
 
@@ -28,12 +29,26 @@
 
 第三部分和 hl_chunk 的功能差不多，唯一不同之处在于他高亮的部分是行号而不是编辑器的内容，你可以设置行号的前景颜色和背景颜色
 
+第四部分是用来将空格使用你指定的字符来进行填充的，你可以指定很多有趣的图标和样式，下面这网站中你可以找到很多这样的图标 [Unicode Plus](https://unicodeplus.com/) 
+
 ## 例子
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
+
+hl_chunk
+
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/27_hlchunk4.png">
+
+hl_index
+
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+
+hl_line_num
+
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/07_hlchunk7.png">
+
+hl_blank
 
 ## 需求
 
@@ -126,6 +141,24 @@ Plug "shell-Raining/hlchunk.nvim"
         },
         style = "#806d9c",
     },
+
+    blank = {
+        enable = true,
+        chars = {
+            "․",
+            "⁚",
+            "⁖",
+            "⁘",
+            "⁙",
+        },
+        style = {
+            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            "#806d9c",
+            "#c06f98",
+        },
+        exclude_filetype = "...",
+    },
+}
 ```
 
 例如这样：
@@ -170,7 +203,7 @@ require('hlchunk').setup({
 - DisableHLIndent
 - EnableHLIndent
 
-下面这两个命令用来控制 `hl_line_num` 的状态
+下面这两个命令用来控制 `hl_blank` 的状态
 
-- DisableHLLineNum
-- EnableHLLineNum
+- DisableHLBlank
+- EnableHLBlank
