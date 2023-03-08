@@ -33,7 +33,7 @@ the last one is hl_blank, which can highlight the blank with some funny char and
 
 ## example
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk1.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlchunk8.gif">
 
 hl_chunk
 
@@ -42,11 +42,11 @@ hl_chunk
 
 hl_indent
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
 
 hl_line_num
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/07_hlchunk7.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlblank1.png">
 
 hl_blank
 
