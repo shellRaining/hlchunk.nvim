@@ -68,7 +68,7 @@ end
 
 function chunk_mod:enable_mod_autocmd()
     API.nvim_create_augroup("hl_chunk_augroup", { clear = true })
-    API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "TextChanged" }, {
         group = "hl_chunk_augroup",
         pattern = PLUG_CONF.chunk.support_filetypes,
         callback = function()
