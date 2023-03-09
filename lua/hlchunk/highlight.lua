@@ -1,7 +1,5 @@
 local stringx = require("hlchunk.utils.string")
 
-local M = {}
-
 local function set_hl(hl_base_name, args)
     local count = 1
 
@@ -47,12 +45,11 @@ local function get_hl_base_name(s)
     return "HL" .. res .. "Style"
 end
 
-function M.set_hls()
+-- execute this function to get styles
+(function()
     for key, value in pairs(PLUG_CONF) do
         local hl_base_name = get_hl_base_name(key)
         set_hl(hl_base_name, value.style)()
     end
     set_signs()
-end
-
-return M
+end)()

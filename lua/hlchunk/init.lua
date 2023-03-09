@@ -1,28 +1,25 @@
-local opts = require("hlchunk.options")
-
 local hlchunk = {}
 
-hlchunk.setup = function(params)
-    opts.config = vim.tbl_deep_extend("force", opts.config, params)
-
-    if opts.config.indent.use_treesitter then
-        local ts_query_status, ts_query = pcall(require, "nvim-treesitter.query")
-        if not ts_query_status then
-            vim.notify_once("ts_query not load")
-            return
-        end
-        local ft = vim.bo.filetype
-        if not (ts_query.has_indents(ft) or opts.config.indent.exclude_filetype[ft]) then
-            vim.notify_once("treesitter not support indent for this filetype: " .. ft)
-        end
+local function enable_all_mods()
+    for mod, _ in pairs(PLUG_CONF) do
+        require("hlchunk.mods." .. mod):enable()
     end
+end
 
+local function disable_all_mods()
+    for mod, _ in pairs(PLUG_CONF) do
+        require("hlchunk.mods." .. mod):disable()
+    end
+end
+
+hlchunk.setup = function(params)
     require("hlchunk.global")
-    require("hlchunk.highlight").set_hls()
+    PLUG_CONF = vim.tbl_deep_extend("force", PLUG_CONF, params)
+    require("hlchunk.highlight")
 
-    for key, value in pairs(opts.config) do
-        if value.enable then
-            local ok, mod = pcall(require, "hlchunk.mods." .. key)
+    for mod_name, mod_conf in pairs(PLUG_CONF) do
+        if mod_conf.enable then
+            local ok, mod = pcall(require, "hlchunk.mods." .. mod_name)
             if not ok then
                 vim.notify(
                     "you get this info because my mistake... \n"
@@ -37,7 +34,14 @@ hlchunk.setup = function(params)
         end
     end
 
-    require("hlchunk.usercmd")
+    for key, _ in pairs(PLUG_CONF) do
+        local ok, mod = pcall(require, "hlchunk.mods." .. key)
+        if ok then
+            mod:create_mod_usercmd()
+        end
+    end
+    API.nvim_create_user_command("EnableHL", enable_all_mods, {})
+    API.nvim_create_user_command("DisableHL", disable_all_mods, {})
 end
 
 return hlchunk
