@@ -11,7 +11,7 @@ SPACE_TAB = (" "):rep(vim.o.shiftwidth)
 
 -- runtime value
 -- the line number that cursor stay
-CUR_LINE_NUM = -1
+WIN_INFO = vim.fn.winsaveview()
 
 -- the line num range of chunk that cursor stay
 CUR_CHUNK_RANGE = { -1, -1 }
@@ -24,7 +24,6 @@ API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     pattern = "*",
     callback = function()
         if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable then
-            CUR_LINE_NUM = FN.line(".")
             CUR_CHUNK_RANGE = UTILS.get_pair_rows()
         end
     end,
@@ -33,6 +32,7 @@ API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
     pattern = "*",
     callback = function()
+        WIN_INFO = vim.fn.winsaveview()
         ROWS_BLANK_LIST = UTILS.get_rows_blank()
     end,
 })

@@ -26,6 +26,7 @@ read_globals = {
 
     "SPACE_TAB",
     "CUR_LINE_NUM",
+    "WIN_INFO",
     "CUR_CHUNK_RANGE",
     "ROWS_BLANK_LIST",
 }

@@ -15,4 +15,8 @@ function stringx.firstToUpper(s)
     return (s:gsub("^%l", string.upper))
 end
 
+function stringx.at(s, idx)
+    return s:sub(idx, idx)
+end
+
 return stringx
