@@ -40,3 +40,5 @@
 - [ ] add support for fold text
 
 - [ ] when open a large file, you should optimize the spped
+
+- [ ] add nowrap support for all mods
