@@ -34,7 +34,9 @@ API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
     pattern = "*",
     callback = function()
-        WIN_INFO = vim.fn.winsaveview()
-        ROWS_BLANK_LIST = UTILS.get_rows_blank()
+        if PLUG_CONF.indent.enable or PLUG_CONF.blank.enable then
+            WIN_INFO = vim.fn.winsaveview()
+            ROWS_BLANK_LIST = UTILS.get_rows_blank()
+        end
     end,
 })
