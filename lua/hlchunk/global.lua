@@ -23,7 +23,7 @@ ROWS_BLANK_LIST = {}
 
 -- this autocmd is defined first, so it will execute the first, don't worry about execute order
 API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-    pattern = "*",
+    pattern = PLUG_CONF.chunk.support_filetypes,
     callback = function()
         if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable then
             CUR_CHUNK_RANGE = UTILS.get_pair_rows()
