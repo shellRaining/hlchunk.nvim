@@ -1,9 +1,7 @@
 local BaseMod = require("hlchunk.base_mod")
-local tablex = require("hlchunk.utils.table")
-local stringx = require("hlchunk.utils.string")
 
-local Blank_chars_num = tablex.size(PLUG_CONF.blank.chars)
-local Blank_style_num = tablex.size(PLUG_CONF.blank.style)
+local Blank_chars_num = TABLEX.size(PLUG_CONF.blank.chars)
+local Blank_style_num = TABLEX.size(PLUG_CONF.blank.style)
 
 local blank_mod = BaseMod:new({
     name = "blank",
@@ -31,7 +29,7 @@ local function render_line(index)
     -- it may case get wronged char
     local count = 0
     for i = 1, #text do
-        local c = stringx.at(text, i)
+        local c = STRINGX.at(text, i)
         if not c:match("%s") then
             count = count + 1
             local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth - 1)
@@ -41,13 +39,6 @@ local function render_line(index)
             API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
         end
     end
-    -- for i = 1, render_char_num do
-    --     local style = "HLBlankStyle" .. tostring((i - 1) % Blank_style_num + 1)
-    --     local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth - 1)
-    --     row_opts.virt_text = { { char, style } }
-    --     row_opts.virt_text_win_col = (i - 1) * vim.o.shiftwidth + 1
-    --     API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
-    -- end
 end
 
 function blank_mod:render()

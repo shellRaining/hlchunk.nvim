@@ -5,6 +5,8 @@ API = vim.api
 FN = vim.fn
 PLUG_CONF = require("hlchunk.options").config
 UTILS = require("hlchunk.utils.utils")
+TABLEX = require("hlchunk.utils.table")
+STRINGX = require("hlchunk.utils.string")
 
 -- the tab that represents by using blank
 SPACE_TAB = (" "):rep(vim.o.shiftwidth)

@@ -9,7 +9,7 @@ exclude_files = {
 -- Glorious list of warnings: https://luacheck.readthedocs.io/en/stable/warnings.html
 ignore = {
     "121", -- setting read-only global variable
-    "212", -- Unused argument, In the case of callback function, _arg_name is easier to understand than _, so this option is set to off.
+    "212", -- Unused argument, In the case of callback function
     "411", -- Redefining a local variable.
     "412", -- Redefining an argument.
     "422", -- Shadowing an argument
@@ -22,6 +22,8 @@ read_globals = {
     "API",
     "FN",
     "PLUG_CONF",
+    "TABLEX",
+    "STRINGX",
     "UTILS",
 
     "SPACE_TAB",

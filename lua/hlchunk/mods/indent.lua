@@ -1,9 +1,7 @@
 local BaseMod = require("hlchunk.base_mod")
-local tablex = require("hlchunk.utils.table")
-local stringx = require("hlchunk.utils.string")
 
-local Indent_chars_num = tablex.size(PLUG_CONF.indent.chars)
-local Indent_style_num = tablex.size(PLUG_CONF.indent.style)
+local Indent_chars_num = TABLEX.size(PLUG_CONF.indent.chars)
+local Indent_style_num = TABLEX.size(PLUG_CONF.indent.style)
 
 local indent_mod = BaseMod:new({
     name = "indent",
@@ -31,7 +29,7 @@ local function render_line(index)
     -- it may case get wronged char
     local count = 0
     for i = 1, #text do
-        local c = stringx.at(text, i)
+        local c = STRINGX.at(text, i)
         if not c:match("%s") then
             count = count + 1
             local char = PLUG_CONF.indent.chars[(i - 1) % Indent_chars_num + 1]

@@ -42,3 +42,5 @@
 - [ ] when open a large file, you should optimize the spped
 
 - [ ] add nowrap support for all mods
+
+- [ ] when open help file, hl_line_num will be slow
