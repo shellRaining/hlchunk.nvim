@@ -47,6 +47,7 @@ hl_indent
 hl_line_num
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlblank1.png">
+<img width='500' src='https://raw.githubusercontent.com/shell-Raining/img/main/2303/11_hlblank2.png'>
 
 hl_blank
 

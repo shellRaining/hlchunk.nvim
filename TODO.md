@@ -37,10 +37,12 @@
 
 - [ ] add on-demand render for hl_indent
 
-- [ ] add support for fold text
+- [x] add support for fold text
 
-- [ ] when open a large file, you should optimize the spped
+    this is priority question 
+
+- [ ] when open a large file, you should optimize the speed
 
 - [ ] add nowrap support for all mods
 
-- [ ] when open help file, hl_line_num will be slow
+- [x] when open help file, hl_line_num will be slow
