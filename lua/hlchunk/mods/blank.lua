@@ -32,10 +32,10 @@ local function render_line(index)
         local c = STRINGX.at(text, i)
         if not c:match("%s") then
             count = count + 1
-            local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth - 1)
+            local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
             local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
             row_opts.virt_text = { { char, style } }
-            row_opts.virt_text_win_col = i
+            row_opts.virt_text_win_col = i - 1
             API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
         end
     end

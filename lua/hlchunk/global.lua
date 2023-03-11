@@ -26,7 +26,7 @@ API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     pattern = PLUG_CONF.chunk.support_filetypes,
     callback = function()
         if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable then
-            CUR_CHUNK_RANGE = UTILS.get_pair_rows()
+            CUR_CHUNK_RANGE = UTILS.get_chunk_range()
         end
     end,
 })

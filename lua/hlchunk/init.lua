@@ -28,11 +28,21 @@ local function set_hl(hl_base_name, args)
         elseif type(args) == "table" then
             for _, value in pairs(args) do
                 local hl_name = hl_base_name .. tostring(count)
-                vim.api.nvim_set_hl(0, hl_name, {
-                    fg = value,
-                })
+                if type(value) == "string" then
+                    vim.api.nvim_set_hl(0, hl_name, {
+                        fg = value,
+                    })
+                elseif type(value) == "table" then
+                    vim.api.nvim_set_hl(0, hl_name, {
+                        fg = value[1],
+                        bg = value[2],
+                        nocombine = true,
+                    })
+                end
                 count = count + 1
             end
+        else
+            vim.notify("highlight format error")
         end
     end
 end
