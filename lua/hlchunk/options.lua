@@ -71,7 +71,7 @@ opts.config = {
             -- "⁙",
         },
         style = {
-            { "", FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui") },
+            -- { "", FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui") },
             { vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"), "" },
             -- "#806d9c",
             -- "#c06f98",
