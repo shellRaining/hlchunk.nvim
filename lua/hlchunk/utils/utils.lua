@@ -5,7 +5,7 @@ function M.get_chunk_range()
     local beg_row, end_row
     local base_flag = "nWz"
     local cur_row_val = vim.fn.getline(".")
-    local cur_col = FN.col('.')
+    local cur_col = FN.col(".")
     local cur_char = string.sub(cur_row_val, cur_col, cur_col)
 
     beg_row = vim.fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
