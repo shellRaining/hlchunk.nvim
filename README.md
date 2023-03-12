@@ -1,7 +1,7 @@
 <h1 align="center">hlchunk.nvim</h1>
 
 <p align='center'>
-<b>English</b> | <a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
+<b>English</b> | <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
 </p>
 
 This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim-hlchunk), and add some new features like highlighting indentline, specially thanks [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim), during the process of writing this plugin, this repo provided a lot of help and inspiration for me
@@ -19,11 +19,11 @@ the first one is to highlight the current chunk, a chunk is defined as `the clos
 
 the second one is to highlight indentline like `indent_blankline`, you can choose a different indent render mode, one is base treesitter, another is base on the number of blank. the advantage of treeitter is that it is very accurate, but it may have low performance, and doesn't support some filetype, such as markdown, if you choose the latter mode, it will render faster (maybe), but will have some issues in particular situation, example below.
 
-<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk5.png">
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk5.png">
 
 base on blank number
 
-<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk6.png">
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk6.png">
 
 base on treesitter
 
@@ -33,21 +33,21 @@ the last one is hl_blank, which can highlight the blank with some funny char and
 
 ## example
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlchunk8.gif">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 
 hl_chunk
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/27_hlchunk4.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/27_hlchunk4.png">
 
 hl_indent
 
--<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+-<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
 
 hl_line_num
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlblank1.png">
-<img width='500' src='https://raw.githubusercontent.com/shell-Raining/img/main/2303/11_hlblank2.png'>
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
+<img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
 
 hl_blank
 
@@ -60,14 +60,14 @@ neovim version `>= 0.7.0` (maybe, just test at this version)
 ### Packer
 
 ```lua
-use { "shell-Raining/hlchunk.nvim" }
+use { "shellRaining/hlchunk.nvim" }
 
 ```
 
 ### Plug
 
 ```lua
-Plug "shell-Raining/hlchunk.nvim"
+Plug "shellRaining/hlchunk.nvim"
 ```
 
 ## Setup

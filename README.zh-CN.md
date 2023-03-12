@@ -1,7 +1,7 @@
 <h1 align="center">hlchunk.nvim</h1>
 
 <p align='center'>
-<a href="https://github.com/shell-Raining/hlchunk.nvim/blob/main/README.md">English</a> | <b>简体中文</b>
+<a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.md">English</a> | <b>简体中文</b>
 </p>
 
 这是 [nvim-hlchunk](https://github.com/yaocccc/nvim-hlchunk) 的一个 lua 实现，并且添加了例如缩进高亮的功能，本项目特别感谢 [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim)，在我编写这个插件的时候，这个仓库给我提供了很多帮助和灵感
@@ -19,11 +19,11 @@
 
 第二部分是用来高亮缩进，就像是 `indent_blankline` 一样，这个功能可以选择基于 treesitter 或者是空格个数来进行渲染。treesitter 的优点是非常精确，但是可能速度上比较慢，而且有些不支持缩进的文件类型，比如 markdown，如果选择基于空格个数的渲染，速度上会有优势，但是在某些特殊情况下可能渲染不精确，如下所示
 
-<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk5.png">
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk5.png">
 
 基于空格个数的渲染
 
-<img width="400" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/01_hlchunk6.png">
+<img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk6.png">
 
 基于treesitter的渲染
 
@@ -33,21 +33,21 @@
 
 ## 例子
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlchunk8.gif">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 
 hl_chunk
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/23_hlchunk2.png">
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/27_hlchunk4.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/27_hlchunk4.png">
 
 hl_indent
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2302/25_hlchunk3.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
 
 hl_line_num
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shell-Raining/img/main/2303/08_hlblank1.png">
-<img width='500' src='https://raw.githubusercontent.com/shell-Raining/img/main/2303/11_hlblank2.png'>
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
+<img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
 
 hl_blank
 
@@ -60,14 +60,14 @@ neovim 版本 `>= 0.7.0` (也许，因为我是在这个版本的 neovim 中编�
 ### Packer
 
 ```lua
-use { "shell-Raining/hlchunk.nvim" }
+use { "shellRaining/hlchunk.nvim" }
 
 ```
 
 ### Plug
 
 ```lua
-Plug "shell-Raining/hlchunk.nvim"
+Plug "shellRaining/hlchunk.nvim"
 ```
 
 ## 设置
