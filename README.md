@@ -15,7 +15,7 @@ this plugin now have four parts (future will add more... `^v^`)
 3. hl_line_num
 4. hl_blank
 
-the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future, laugh)
+the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future 😊)
 
 the second one is to highlight indentline like `indent_blankline`, you can choose a different indent render mode, one is base treesitter, another is base on the number of blank. the advantage of treeitter is that it is very accurate, but it may have low performance, and doesn't support some filetype, such as markdown, if you choose the latter mode, it will render faster (maybe), but will have some issues in particular situation, example below.
 
@@ -29,27 +29,37 @@ base on treesitter
 
 the third one is similar to hl_chunk, the difference is that it will highlight line number, you can set front color or background color for it
 
-the last one is hl_blank, which can highlight the blank with some funny char and style, you can see in the example below, you can find many chars in this website [Unicode Plus](https://unicodeplus.com/) 
+the last one is hl_blank, which can highlight the blank with some funny char and style, you can see in the example below, you can find many useful chars in this website [Unicode Plus](https://unicodeplus.com/)
 
 ## example
 
+**NOTE: you can click the picture to get more information about how to configure like this**
+
+### hl_chunk
+
+<a href='./docs/chunk.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
+</a>
 
-hl_chunk
+### hl_indent
 
+<a href='./docs/indent.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/27_hlchunk4.png">
+</a>
 
-hl_indent
+### hl_line_num
 
--<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
+<a href='./docs/line_num.md'>
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
+</a>
 
-hl_line_num
+### hl_blank
 
+<a href='./docs/blank.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
-
-hl_blank
+</a>
 
 ## Requirements
 
@@ -61,7 +71,6 @@ neovim version `>= 0.7.0` (maybe, just test at this version)
 
 ```lua
 use { "shellRaining/hlchunk.nvim" }
-
 ```
 
 ### Plug
@@ -73,6 +82,9 @@ Plug "shellRaining/hlchunk.nvim"
 ## Setup
 
 The script comes with the following defaults:
+
+<details>
+<summary>Click this Dropdown to see defaults setttings.</summary>
 
 ```lua
 {
@@ -107,20 +119,10 @@ The script comes with the following defaults:
         -- You can uncomment to get more indented line look like
         chars = {
             "│",
-            -- "¦",
-            -- "┆",
-            -- "┊",
         },
         -- you can uncomment to get more indented line style
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
-            -- "#FF0000",
-            -- "#FF7F00",
-            -- "#FFFF00",
-            -- "#00FF00",
-            -- "#00FFFF",
-            -- "#0000FF",
-            -- "#8B00FF",
         },
         exclude_filetype = {
             dashboard = true,
@@ -147,15 +149,9 @@ The script comes with the following defaults:
         enable = true,
         chars = {
             "․",
-            "⁚",
-            "⁖",
-            "⁘",
-            "⁙",
         },
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
-            "#806d9c",
-            "#c06f98",
         },
         exclude_filetype = "...",
     },
@@ -184,7 +180,12 @@ require('hlchunk').setup({
 })
 ```
 
+</details>
+
 ## command
+
+<details>
+<summary>Click this Dropdown to see Available Commands</summary>
 
 this plugin provides some commands to switch plugin status, which are listed below
 
@@ -212,3 +213,5 @@ the two will control `hl_line_num`
 - EnableHLBlank
 
 the two will control `hl_blank`
+
+</details>

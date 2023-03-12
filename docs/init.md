@@ -3,44 +3,45 @@
 ## brief
 
 ```
-├── lua
-│   └── hlchunk
-│       ├── autocmd.lua
-│       ├── global.lua
-│       ├── highlight.lua
-│       ├── hl_chunk.lua
-│       ├── hl_indent.lua
-│       ├── hl_line_num.lua
-│       ├── init.lua
-│       ├── lib
-│       │   └── table.lua
-│       ├── options.lua
-│       ├── usercmd.lua
-│       └── utils
-│           ├── color.lua
-│           └── utils.lua
+lua
+└── hlchunk
+    ├── base_mod.lua
+    ├── global.lua
+    ├── init.lua
+    ├── mods
+    │   ├── blank.lua
+    │   ├── chunk.lua
+    │   ├── indent.lua
+    │   └── line_num.lua
+    ├── options.lua
+    └── utils
+        ├── string.lua
+        ├── table.lua
+        └── utils.lua
 ```
 
 as we knwon, neovim will load the plugin directory in `runtimespath` automatically, this will cause without setup the plugin has been used, so i don't set this dir, instead of `lua` dir, to use this plugin, user should require the it manually.
 
 the project src files is under `lua/hlchunk` dir, we will introduce them one by one
 
-## init.lua
+1. init.lua
 
-this file controls what to do when setup
+   this file controls what to do when setup
 
-we will start from this file because the plugin loads here, when we call `require('hlchunk').setup()`, the `setup` function will execute and merge user config and default config, then judge what features are available, the unused features will not cost memory and CPU time, at last, it will load global variables, usercmds, highlights and autocmds
+   we will start from this file because the plugin loads here, when we call `require('hlchunk').setup()`, the `setup` function will execute and merge user config and default config, then judge what features are available, the unused features will not cost memory and CPU time, at last, it will load global variables, usercmds, highlights and autocmds
 
-## autocmd.lua
+2. global.lua
 
-the file controls state of autocmds
+   this file contains some global variables could be used when rendering, it will be updated in `autocmd.lua`
 
-`init.lua` will load `autocmd.lua` and in this file we set some autocmds, when get suitable events from nvim such as `WinScrolled`, the corresponding render function will be executed
+3. base_mod.lua
 
-## global.lua
+   this file defines the base mod behavior, as user you need not to care it
 
-this file contains some global variables could be used when rendering, it will be updated in `autocmd.lua`
+4. options.lua
 
-## usercmd.lua
+   this file contains the default settings for all mods
 
-this file will define some usercmds, all of commands are used to control the state of plugins
+5. utils/
+
+   this dir contains some useful functions to render and deal with strings...

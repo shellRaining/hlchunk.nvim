@@ -64,17 +64,11 @@ opts.config = {
     blank = {
         enable = true,
         chars = {
-            " ",
-            -- "⁚",
-            -- "⁖",
-            -- "⁘",
-            -- "⁙",
+            "․",
         },
         style = {
             -- { "", FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui") },
             { vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"), "" },
-            -- "#806d9c",
-            -- "#c06f98",
         },
         exclude_filetype = exclude_ft,
     },
