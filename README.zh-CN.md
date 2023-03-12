@@ -119,7 +119,7 @@ Plug "shellRaining/hlchunk.nvim"
         },
         -- you can uncomment to get more indented line style
         style = {
-            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetype = {
             dashboard = true,

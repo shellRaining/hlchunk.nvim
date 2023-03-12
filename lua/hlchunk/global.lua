@@ -13,7 +13,7 @@ SPACE_TAB = (" "):rep(vim.o.shiftwidth)
 
 -- runtime value
 -- the line number that cursor stay
-WIN_INFO = vim.fn.winsaveview()
+WIN_INFO = FN.winsaveview()
 
 -- the line num range of chunk that cursor stay
 CUR_CHUNK_RANGE = { -1, -1 }
@@ -35,7 +35,7 @@ API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinE
     pattern = "*",
     callback = function()
         if PLUG_CONF.indent.enable or PLUG_CONF.blank.enable then
-            WIN_INFO = vim.fn.winsaveview()
+            WIN_INFO = FN.winsaveview()
             ROWS_BLANK_LIST = UTILS.get_rows_blank()
         end
     end,

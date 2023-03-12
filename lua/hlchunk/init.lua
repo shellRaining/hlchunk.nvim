@@ -22,18 +22,18 @@ local function set_hl(hl_base_name, args)
 
     return function()
         if type(args) == "string" then
-            vim.api.nvim_set_hl(0, hl_base_name .. "1", {
+            API.nvim_set_hl(0, hl_base_name .. "1", {
                 fg = args,
             })
         elseif type(args) == "table" then
             for _, value in pairs(args) do
                 local hl_name = hl_base_name .. tostring(count)
                 if type(value) == "string" then
-                    vim.api.nvim_set_hl(0, hl_name, {
+                    API.nvim_set_hl(0, hl_name, {
                         fg = value,
                     })
                 elseif type(value) == "table" then
-                    vim.api.nvim_set_hl(0, hl_name, {
+                    API.nvim_set_hl(0, hl_name, {
                         fg = value[1],
                         bg = value[2],
                         nocombine = true,
@@ -55,9 +55,9 @@ local function set_signs()
             local hl_name = "HLLineNumStyle" .. tostring(i)
             tbl[#tbl + 1] = { name = sign_name, numhl = hl_name }
         end
-        vim.fn.sign_define(tbl)
+        FN.sign_define(tbl)
     else
-        vim.fn.sign_define("sign1", {
+        FN.sign_define("sign1", {
             numhl = "HLLineNumStyle1",
         })
     end

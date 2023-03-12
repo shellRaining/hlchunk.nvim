@@ -10,6 +10,7 @@ local exclude_ft = {
     mason = true,
     NvimTree = true,
     plugin = true,
+    lazy = true,
 }
 
 local support_ft = {
@@ -50,7 +51,7 @@ opts.config = {
             "│",
         },
         style = {
-            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetype = exclude_ft,
     },
@@ -68,7 +69,7 @@ opts.config = {
         },
         style = {
             -- { "", FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui") },
-            { vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"), "" },
+            { FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"), "" },
         },
         exclude_filetype = exclude_ft,
     },
