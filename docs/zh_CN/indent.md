@@ -1,8 +1,8 @@
-# how to configure chunk mod
+# 如何设置 hl_indent
 
-## Configurable items
+## 配置项
 
-chunk have five configurable items
+indent mod 有五个配置项
 
 1. enable
 2. use_treesitter
@@ -10,11 +10,11 @@ chunk have five configurable items
 4. style
 5. exclude_filetype
 
-enable is used to control whether enable hl_indent, if set it to false, its usercmd and autocmd will not set, so it will not work
+enable 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
 
-use_treesitter is a boolean value, if set it to true, this mod will judge indent by using treesitter
+use_treesitter 是一个布尔类型，如果设置为 false，将不会采用基于 treesitter 的渲染
 
-chars is used to configure what char to render the indent line, it is a table contains many char, like this
+chars 是一个 lua 表，其中的字符用来指示如何渲染 indent line，这个表中包含五个部分
 
 ```lua
 chars = {
@@ -25,9 +25,9 @@ chars = {
 },
 ```
 
-style is a RGB string or RGB string list, if it is a table, it will choice different color to render different indent line
+style 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 indent line
 
-exclude_filetype is opposite of support_filetypes, it is a lua table like this
+exclude_filetype 是 support_filetype 的反面，用来控制在哪些文件类型不渲染 indent line
 
 ```lua
 exclude_filetype = {
@@ -38,7 +38,7 @@ exclude_filetype = {
 
 ## example
 
-below is the default style of indent line
+下面是默认的 indent 样式
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk1.png">
 
@@ -53,7 +53,7 @@ indent = {
 }
 ```
 
-you can also set it like rainbow
+你也可以将缩进线设置的像是彩虹一般 🌈
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
 
@@ -74,7 +74,7 @@ indent = {
 }
 ```
 
-it also can configure use multiple chars
+你也可以设置多种字符类型
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk5.png">
 

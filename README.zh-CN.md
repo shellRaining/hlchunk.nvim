@@ -15,7 +15,7 @@
 3. hl_line_num
 4. hl_blank
 
-第一部分是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目（笑））
+第一部分是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目 😊）
 
 第二部分是用来高亮缩进，就像是 `indent_blankline` 一样，这个功能可以选择基于 treesitter 或者是空格个数来进行渲染。treesitter 的优点是非常精确，但是可能速度上比较慢，而且有些不支持缩进的文件类型，比如 markdown，如果选择基于空格个数的渲染，速度上会有优势，但是在某些特殊情况下可能渲染不精确，如下所示
 
@@ -25,31 +25,37 @@
 
 <img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk6.png">
 
-基于treesitter的渲染
+基于 treesitter 的渲染
 
 第三部分和 hl_chunk 的功能差不多，唯一不同之处在于他高亮的部分是行号而不是编辑器的内容，你可以设置行号的前景颜色和背景颜色
 
-第四部分是用来将空格使用你指定的字符来进行填充的，你可以指定很多有趣的图标和样式，下面这网站中你可以找到很多这样的图标 [Unicode Plus](https://unicodeplus.com/) 
+第四部分是用来将空格使用你指定的字符来进行填充的，你可以指定很多有趣的图标和样式，下面这网站中你可以找到很多这样的图标 [Unicode Plus](https://unicodeplus.com/)
 
 ## 例子
 
+<a href='./docs/zh_CN/chunk.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
+</a>
 
-hl_chunk
+### hl_indent
 
+<a href='./docs/zh_CN/indent.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/27_hlchunk4.png">
+</a>
 
-hl_indent
+### hl_line_num
 
+<a href='./docs/zh_CN/line_num.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
+</a>
 
-hl_line_num
+### hl_blank
 
+<a href='./docs/zh_CN/blank.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
-
-hl_blank
+</a>
 
 ## 需求
 
@@ -73,6 +79,9 @@ Plug "shellRaining/hlchunk.nvim"
 ## 设置
 
 插件默认带有以下的配置
+
+<details>
+<summary>戳我获取更多信息</summary>
 
 ```lua
 {
@@ -104,23 +113,13 @@ Plug "shellRaining/hlchunk.nvim"
     indent = {
         enable = true,
         use_treesitter = false,
-        -- 你可以去掉注释来获得更多缩进线的样子
+        -- You can uncomment to get more indented line look like
         chars = {
             "│",
-            -- "¦",
-            -- "┆",
-            -- "┊",
         },
-        -- 你可以去掉注释来获得更多的缩进线颜色样式
+        -- you can uncomment to get more indented line style
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
-            -- "#FF0000",
-            -- "#FF7F00",
-            -- "#FFFF00",
-            -- "#00FF00",
-            -- "#00FFFF",
-            -- "#0000FF",
-            -- "#8B00FF",
         },
         exclude_filetype = {
             dashboard = true,
@@ -147,22 +146,20 @@ Plug "shellRaining/hlchunk.nvim"
         enable = true,
         chars = {
             "․",
-            "⁚",
-            "⁖",
-            "⁘",
-            "⁙",
         },
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
-            "#806d9c",
-            "#c06f98",
         },
         exclude_filetype = "...",
     },
 }
 ```
 
-例如这样：
+</details>
+
+<hr>
+
+配置文件像下面这样：
 
 ```lua
 require('hlchunk').setup({
@@ -189,6 +186,9 @@ require('hlchunk').setup({
 
 ## command
 
+<details>
+<summary>戳我获取更多信息</summary>
+
 这个插件还提供了一些命令用来打开和关闭插件
 
 - EnableHL
@@ -208,3 +208,5 @@ require('hlchunk').setup({
 
 - DisableHLBlank
 - EnableHLBlank
+
+</details>

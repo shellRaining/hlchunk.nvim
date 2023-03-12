@@ -37,26 +37,26 @@ the last one is hl_blank, which can highlight the blank with some funny char and
 
 ### hl_chunk
 
-<a href='./docs/chunk.md'>
+<a href='./docs/en/chunk.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 </a>
 
 ### hl_indent
 
-<a href='./docs/indent.md'>
+<a href='./docs/en/indent.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/27_hlchunk4.png">
 </a>
 
 ### hl_line_num
 
-<a href='./docs/line_num.md'>
+<a href='./docs/en/line_num.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
 </a>
 
 ### hl_blank
 
-<a href='./docs/blank.md'>
+<a href='./docs/en/blank.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
 </a>
@@ -157,6 +157,8 @@ The script comes with the following defaults:
     },
 }
 ```
+
+<hr>
 
 example:
 

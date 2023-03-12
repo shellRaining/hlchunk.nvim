@@ -1,8 +1,8 @@
-# how to configure line_num mod
+# how to configure hl_line_num
 
 ## Configurable items
 
-chunk have five configurable items
+line_num have three configurable items
 
 1. enable
 2. style
