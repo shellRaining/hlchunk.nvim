@@ -166,15 +166,7 @@ example:
 ```lua
 require('hlchunk').setup({
     indent = {
-        enable = true,
-
-        -- if you want to use multiple indent line, just place them here, the key is like vertical_line + x, which x is a number
-        chars = {
-            vertical_line1 = "│",
-            vertical_line2 = "¦",
-            vertical_line3 = "┆",
-            vertical_line4 = "┊",
-        },
+        chars = { "│", "¦", "┆", "┊", },
 
         style = {
             "#8B00FF",

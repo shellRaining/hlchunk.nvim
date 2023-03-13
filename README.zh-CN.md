@@ -158,34 +158,22 @@ Plug "shellRaining/hlchunk.nvim"
 }
 ```
 
-</details>
-
-<hr>
-
 配置文件像下面这样：
 
 ```lua
 require('hlchunk').setup({
-    -- when overide the config, enable option must be contained
-    enabled = true,
+    indent = {
+        chars = { "│", "¦", "┆", "┊", },
 
-
-    -- if you want to use multiple indent line, just place them here, the key is like vertical_line + x, which x is a number
-    chars = {
-        vertical_line1 = "│",
-        vertical_line2 = "¦",
-        vertical_line3 = "┆",
-        vertical_line4 = "┊",
-    },
-
-    hl_indent = {
-        enable = true,
         style = {
             "#8B00FF",
         },
     },
 })
 ```
+
+</details>
+<hr>
 
 ## command
 

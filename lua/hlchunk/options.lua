@@ -54,7 +54,7 @@ opts.config = {
             "│",
         },
         style = {
-            { whitespaceStyle, whitespaceStyle },
+            { whitespaceStyle, "" },
         },
         exclude_filetype = exclude_ft,
     },
