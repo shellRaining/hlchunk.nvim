@@ -27,6 +27,9 @@ local support_ft = {
     "*.vue",
 }
 
+local whitespaceStyle = FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui")
+-- local cursorlineStyle = FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui")
+
 opts.config = {
     chunk = {
         enable = true,
@@ -51,7 +54,7 @@ opts.config = {
             "│",
         },
         style = {
-            FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"),
+            { whitespaceStyle, whitespaceStyle },
         },
         exclude_filetype = exclude_ft,
     },
@@ -68,8 +71,8 @@ opts.config = {
             "․",
         },
         style = {
-            -- { "", FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui") },
-            { FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"), "" },
+            -- { "", cursorline },
+            { whitespaceStyle, "" },
         },
         exclude_filetype = exclude_ft,
     },
