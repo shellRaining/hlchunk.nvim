@@ -70,6 +70,13 @@ function indent_mod:enable_mod_autocmd()
             indent_mod:render()
         end,
     })
+    API.nvim_create_autocmd({ "OptionSet" }, {
+        group = "hl_indent_augroup",
+        pattern = "list,listchars,shiftwidth,tabstop,expandtab",
+        callback = function()
+            indent_mod:render()
+        end,
+    })
 end
 
 function indent_mod:disable_mod_autocmd()
