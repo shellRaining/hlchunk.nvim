@@ -33,7 +33,7 @@ the last one is hl_blank, which can highlight the blank with some funny char and
 
 ## example
 
-**NOTE: you can click the picture to get more information about how to configure like this**
+<b><font color='red'> NOTE: you can click the picture to get more information about how to configure like this </font></b>
 
 ### hl_chunk
 

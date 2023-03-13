@@ -33,6 +33,8 @@
 
 ## 例子
 
+<b><font color='red'>注意：可以点击图片获取配置信息～</font></b>
+
 <a href='./docs/zh_CN/chunk.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 </a>
