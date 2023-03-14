@@ -17,6 +17,7 @@ WIN_INFO = FN.winsaveview()
 
 -- the line num range of chunk that cursor stay
 CUR_CHUNK_RANGE = { -1, -1 }
+CUR_INDENT_RANGE = {-1, -1}
 
 -- this table contains the num of blank of each row in current window(from w0 to w$)
 ROWS_BLANK_LIST = {}
@@ -25,8 +26,9 @@ ROWS_BLANK_LIST = {}
 API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     pattern = PLUG_CONF.chunk.support_filetypes,
     callback = function()
-        if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable then
+        if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable or PLUG_CONF.context.enable then
             CUR_CHUNK_RANGE = UTILS.get_chunk_range()
+            CUR_INDENT_RANGE = UTILS.get_indent_range()
         end
     end,
 })
