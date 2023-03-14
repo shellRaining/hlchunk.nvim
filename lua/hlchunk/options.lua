@@ -11,6 +11,7 @@ local exclude_ft = {
     NvimTree = true,
     plugin = true,
     lazy = true,
+    TelescopePrompt = true,
 }
 
 local support_ft = {
