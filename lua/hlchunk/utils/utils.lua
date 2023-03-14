@@ -33,7 +33,7 @@ function M.get_indent_range()
     while res[1] >= beg_row and FN.indent(res[1]) >= cur_row_blank_num do
         res[1] = res[1] - 1
     end
-    while res[2] <= end_row and FN.indent(res[2])>= cur_row_blank_num do
+    while res[2] <= end_row and FN.indent(res[2]) >= cur_row_blank_num do
         res[2] = res[2] + 1
     end
 
