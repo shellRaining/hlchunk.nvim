@@ -18,6 +18,28 @@ function M.get_chunk_range()
     return { beg_row, end_row }
 end
 
+function M.get_indent_range()
+    local cur_row = FN.line(".")
+
+    if ROWS_BLANK_LIST[cur_row] <= 0 then
+        return { -1, -1 }
+    end
+
+    local beg_row = FN.line("w0")
+    local end_row = FN.line("w$")
+    local res = { cur_row, cur_row }
+    local cur_row_blank_num = ROWS_BLANK_LIST[cur_row]
+
+    while res[1] >= beg_row and ROWS_BLANK_LIST[res[1]] >= cur_row_blank_num do
+        res[1] = res[1] - 1
+    end
+    while res[2] <= end_row and ROWS_BLANK_LIST[res[2]] >= cur_row_blank_num do
+        res[2] = res[2] + 1
+    end
+
+    return res
+end
+
 function M.get_rows_blank()
     local rows_blank = {}
     local beg_row = FN.line("w0")

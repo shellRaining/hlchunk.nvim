@@ -31,4 +31,5 @@ read_globals = {
     "WIN_INFO",
     "CUR_CHUNK_RANGE",
     "ROWS_BLANK_LIST",
+    "CUR_INDENT_RANGE",
 }

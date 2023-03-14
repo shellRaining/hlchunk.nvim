@@ -76,6 +76,18 @@ opts.config = {
         },
         exclude_filetype = exclude_ft,
     },
+
+    context = {
+        enable = false,
+        use_treesitter = false,
+        chars = {
+            "┃", -- Box Drawings Heavy Vertical
+        },
+        style = {
+            { "#806d9c", "" },
+        },
+        exclude_filetype = exclude_ft,
+    },
 }
 
 return opts
