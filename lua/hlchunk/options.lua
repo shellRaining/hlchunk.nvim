@@ -12,6 +12,7 @@ local exclude_ft = {
     plugin = true,
     lazy = true,
     TelescopePrompt = true,
+    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
 }
 
 local support_ft = {
