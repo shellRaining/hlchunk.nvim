@@ -92,7 +92,10 @@ Plug "shellRaining/hlchunk.nvim"
         enable = true,
         support_filetypes = {
             "*.ts",
+            "*.tsx",
             "*.js",
+            "*.jsx",
+            "*.html",
             "*.json",
             "*.go",
             "*.c",
