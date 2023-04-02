@@ -96,6 +96,7 @@ The script comes with the following defaults:
             "*.tsx",
             "*.js",
             "*.jsx",
+            "*.html",
             "*.json",
             "*.go",
             "*.c",

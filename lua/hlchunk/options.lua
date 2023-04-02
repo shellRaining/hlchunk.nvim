@@ -20,6 +20,7 @@ local support_ft = {
     "*.tsx",
     "*.js",
     "*.jsx",
+    "*.html",
     "*.json",
     "*.go",
     "*.c",
