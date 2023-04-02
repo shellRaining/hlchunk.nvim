@@ -17,6 +17,7 @@ local exclude_ft = {
 
 local support_ft = {
     "*.ts",
+    "*.tsx",
     "*.js",
     "*.json",
     "*.go",

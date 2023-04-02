@@ -93,6 +93,7 @@ The script comes with the following defaults:
         enable = true,
         support_filetypes = {
             "*.ts",
+            "*.tsx",
             "*.js",
             "*.json",
             "*.go",
