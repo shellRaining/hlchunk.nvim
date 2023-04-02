@@ -94,6 +94,7 @@ Plug "shellRaining/hlchunk.nvim"
             "*.ts",
             "*.tsx",
             "*.js",
+            "*.jsx",
             "*.json",
             "*.go",
             "*.c",
