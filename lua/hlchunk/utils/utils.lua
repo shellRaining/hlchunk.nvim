@@ -19,27 +19,48 @@ function M.get_chunk_range()
 end
 
 function M.get_indent_range()
+    ROWS_BLANK_LIST = M.get_rows_blank()
     local cur_row = FN.line(".")
+    for line, blank_num in pairs(ROWS_BLANK_LIST) do
+        if blank_num == -1 then
+            local cur = line + 1
+            while ROWS_BLANK_LIST[cur] do
+                if ROWS_BLANK_LIST[cur] == 0 then
+                    break
+                elseif ROWS_BLANK_LIST[cur] > 0 then
+                    ROWS_BLANK_LIST[line] = ROWS_BLANK_LIST[cur]
+                    break
+                end
+                cur = cur + 1
+            end
+        end
+    end
+    local cur_row_blank_num = ROWS_BLANK_LIST[cur_row]
 
-    local cur_row_blank_num = FN.indent(cur_row)
     if cur_row_blank_num <= 0 then
         return { -1, -1 }
     end
 
-    local beg_row = FN.line("w0")
-    local end_row = FN.line("w$")
-    local res = { cur_row, cur_row }
+    local up = cur_row
+    local down = cur_row
+    local wbegin = FN.line("w0")
+    local wend = FN.line("w$")
 
-    while res[1] >= beg_row and FN.indent(res[1]) >= cur_row_blank_num do
-        res[1] = res[1] - 1
+    while up >= wbegin and ROWS_BLANK_LIST[up] >= cur_row_blank_num do
+        up = up - 1
     end
-    while res[2] <= end_row and FN.indent(res[2]) >= cur_row_blank_num do
-        res[2] = res[2] + 1
+    while down <= wend and ROWS_BLANK_LIST[down] >= cur_row_blank_num do
+        down = down + 1
     end
 
-    return res
+    return { up, down }
 end
 
+-- get the indent of each row in the current window
+-- there are three cases:
+-- 1. the row is blank, we set the indent to -1
+-- 2. the row is not blank, however it has no indent, we set the indent to 0
+-- 3. the row is not blank and has indent, we set the indent to the indent of the row
 function M.get_rows_blank()
     local rows_blank = {}
     local beg_row = FN.line("w0")
@@ -75,15 +96,15 @@ end
 function M.get_indent_virt_text_num(line)
     -- if the given line is blank, we need set the virt_text by context
     if ROWS_BLANK_LIST[line] == -1 then
-        local line_below = line + 1
-        while ROWS_BLANK_LIST[line_below] do
-            if ROWS_BLANK_LIST[line_below] == 0 then
+        local cur = line + 1
+        while ROWS_BLANK_LIST[cur] do
+            if ROWS_BLANK_LIST[cur] == 0 then
                 break
-            elseif ROWS_BLANK_LIST[line_below] > 0 then
-                ROWS_BLANK_LIST[line] = ROWS_BLANK_LIST[line_below]
+            elseif ROWS_BLANK_LIST[cur] > 0 then
+                ROWS_BLANK_LIST[line] = ROWS_BLANK_LIST[cur]
                 break
             end
-            line_below = line_below + 1
+            cur = cur + 1
         end
     end
 

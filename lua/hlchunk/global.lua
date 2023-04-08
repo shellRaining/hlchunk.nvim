@@ -8,21 +8,14 @@ UTILS = require("hlchunk.utils.utils")
 TABLEX = require("hlchunk.utils.table")
 STRINGX = require("hlchunk.utils.string")
 
--- the tab that represents by using blank
+----------------------------------------------------------------------------------------------------
+-- static global variables
 SPACE_TAB = (" "):rep(vim.o.shiftwidth)
 
--- runtime value
--- the line number that cursor stay
-WIN_INFO = FN.winsaveview()
-
--- the line num range of chunk that cursor stay
-CUR_CHUNK_RANGE = { -1, -1 }
-CUR_INDENT_RANGE = { -1, -1 }
-
--- this table contains the num of blank of each row in current window(from w0 to w$)
-ROWS_BLANK_LIST = {}
-
--- this autocmd is defined first, so it will execute the first, don't worry about execute order
+----------------------------------------------------------------------------------------------------
+-- dynamic global variables
+WIN_INFO = FN.winsaveview() -- the line number that cursor stay
+ROWS_BLANK_LIST = {} -- this table contains the num of blank of each row in current window(from w0 to w$)
 API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
     pattern = "*",
     callback = function()
@@ -33,6 +26,9 @@ API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinE
     end,
 })
 
+-- the line num range of chunk that cursor stay
+CUR_CHUNK_RANGE = { -1, -1 }
+CUR_INDENT_RANGE = { -1, -1 }
 API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     pattern = PLUG_CONF.chunk.support_filetypes,
     callback = function()
