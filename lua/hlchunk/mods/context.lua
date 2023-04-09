@@ -18,7 +18,7 @@ function context_mod:render()
     local beg_row, end_row = unpack(indent_range)
     ns_id = API.nvim_create_namespace("hl_context")
 
-    local start_col = FN.indent(beg_row)
+    local start_col = math.min(FN.indent(beg_row), FN.indent(end_row))
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
