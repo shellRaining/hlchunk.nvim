@@ -21,7 +21,6 @@ API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinE
     callback = function()
         if PLUG_CONF.indent.enable or PLUG_CONF.blank.enable then
             WIN_INFO = FN.winsaveview()
-            ROWS_BLANK_LIST = UTILS.get_rows_blank()
         end
     end,
 })
@@ -34,7 +33,6 @@ API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
     callback = function()
         if PLUG_CONF.chunk.enable or PLUG_CONF.line_num.enable or PLUG_CONF.context.enable then
             CUR_CHUNK_RANGE = UTILS.get_chunk_range()
-            CUR_INDENT_RANGE = UTILS.get_indent_range()
         end
     end,
 })

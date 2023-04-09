@@ -9,38 +9,6 @@ local blank_mod = BaseMod:new({
 
 local ns_id = -1
 
-local function render_line(index)
-    local row_opts = {
-        virt_text_pos = "overlay",
-        hl_mode = "combine",
-        priority = 1,
-    }
-
-    local render_char_num = UTILS.get_indent_virt_text_num(index)
-
-    -- get the full text will be rendered
-    local text = ""
-    for _ = 1, render_char_num do
-        text = text .. "." .. (" "):rep(vim.o.shiftwidth - 1)
-    end
-    text = text:sub(WIN_INFO.leftcol + 1)
-
-    -- WARNING: please note the indentline you used maybe Unicode char, so dont use stirngx.at directly
-    -- it may case get wronged char
-    local count = 0
-    for i = 1, #text do
-        local c = STRINGX.at(text, i)
-        if not c:match("%s") then
-            count = count + 1
-            local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
-            local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
-            row_opts.virt_text = { { char, style } }
-            row_opts.virt_text_win_col = i - 1
-            API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
-        end
-    end
-end
-
 function blank_mod:render()
     if (not PLUG_CONF.blank.enable) or PLUG_CONF.blank.exclude_filetype[vim.bo.filetype] then
         return
@@ -49,8 +17,40 @@ function blank_mod:render()
     self:clear()
     ns_id = API.nvim_create_namespace("hl_blank_augroup")
 
-    for index, _ in pairs(ROWS_BLANK_LIST) do
-        render_line(index)
+    local rows_indent = UTILS.get_rows_indent(nil, nil, {
+        use_treesitter = PLUG_CONF.blank.use_treesitter,
+        virt_indent = false,
+    })
+    if not rows_indent then
+        return
+    end
+    local row_opts = {
+        virt_text_pos = "overlay",
+        hl_mode = "combine",
+        priority = 1,
+    }
+    for index, _ in pairs(rows_indent) do
+        local render_char_num = UTILS.get_indent_virt_text_num(index)
+
+        -- get the full text will be rendered
+        local text = ""
+        for _ = 1, render_char_num do
+            text = text .. "." .. (" "):rep(vim.o.shiftwidth - 1)
+        end
+        text = text:sub(WIN_INFO.leftcol + 1)
+
+        local count = 0
+        for i = 1, #text do
+            local c = STRINGX.at(text, i)
+            if not c:match("%s") then
+                count = count + 1
+                local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
+                local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
+                row_opts.virt_text = { { char, style } }
+                row_opts.virt_text_win_col = i - 1
+                API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
+            end
+        end
     end
 end
 
