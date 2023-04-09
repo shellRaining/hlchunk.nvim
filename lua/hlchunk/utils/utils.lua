@@ -18,97 +18,87 @@ function M.get_chunk_range()
     return { beg_row, end_row }
 end
 
-function M.get_indent_range()
-    ROWS_BLANK_LIST = M.get_rows_blank()
-    local cur_row = FN.line(".")
-    for line, blank_num in pairs(ROWS_BLANK_LIST) do
-        if blank_num == -1 then
-            local cur = line + 1
-            while ROWS_BLANK_LIST[cur] do
-                if ROWS_BLANK_LIST[cur] == 0 then
-                    break
-                elseif ROWS_BLANK_LIST[cur] > 0 then
-                    ROWS_BLANK_LIST[line] = ROWS_BLANK_LIST[cur]
-                    break
-                end
-                cur = cur + 1
-            end
-        end
-    end
-    local cur_row_blank_num = ROWS_BLANK_LIST[cur_row]
+---@param line? number the line number we want to get the indent range
+---@return table<number, number> | nil
+function M.get_indent_range(line)
+    line = line or FN.line(".")
 
+    local rows_blank_list = M.get_rows_indent(nil, nil, { use_treesitter = false, virt_indent = true })
+    if not rows_blank_list then
+        return nil
+    end
+    local cur_row_blank_num = rows_blank_list[line]
     if cur_row_blank_num <= 0 then
-        return { -1, -1 }
+        return nil
     end
 
-    local up = cur_row
-    local down = cur_row
+    local up = line
+    local down = line
     local wbegin = FN.line("w0")
     local wend = FN.line("w$")
 
-    while up >= wbegin and ROWS_BLANK_LIST[up] >= cur_row_blank_num do
+    while up >= wbegin and rows_blank_list[up] >= cur_row_blank_num do
         up = up - 1
     end
-    while down <= wend and ROWS_BLANK_LIST[down] >= cur_row_blank_num do
+    while down <= wend and rows_blank_list[down] >= cur_row_blank_num do
         down = down + 1
     end
+    up = math.max(up, wbegin)
+    down = math.min(down, wend)
 
     return { up, down }
 end
 
--- get the indent of each row in the current window
 -- there are three cases:
--- 1. the row is blank, we set the indent to -1
--- 2. the row is not blank, however it has no indent, we set the indent to 0
+-- 1. the row is blank, we set the value to -1
+-- 2. the row is not blank, however it has no blank, we set the indent to 0
 -- 3. the row is not blank and has indent, we set the indent to the indent of the row
-function M.get_rows_blank()
-    local rows_blank = {}
-    local beg_row = FN.line("w0")
-    local end_row = FN.line("w$")
+---@param begRow? number
+---@param endRow? number
+---@param options? {use_treesitter: boolean, virt_indent: boolean}
+---@return table<number, number> | nil
+function M.get_rows_indent(begRow, endRow, options)
+    begRow = begRow or FN.line("w0")
+    endRow = endRow or FN.line("w$")
+    options = options or { use_treesitter = false, virt_indent = false }
 
-    if PLUG_CONF.indent.use_treesitter then
+    local rows_indent = {}
+    local get_indent = FN.indent
+    if options.use_treesitter then
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
         if not ts_indent_status then
-            return {}
+            vim.notify_once("hl_indent: treesitter not loaded")
+            return nil
         end
-
-        for i = beg_row, end_row do
-            if #FN.getline(i) == 0 then
-                rows_blank[i] = -1
-            else
-                rows_blank[i] = math.min(ts_indent.get_indent(i) or 0, FN.indent(i))
-            end
-        end
-    else
-        for i = beg_row, end_row do
-            local row_str = FN.getline(i)
-            if #row_str == 0 then
-                rows_blank[i] = -1
-            else
-                rows_blank[i] = FN.indent(i)
-            end
+        get_indent = function(i)
+            return math.min(ts_indent.get_indent(i) or 0, FN.indent(i))
         end
     end
 
-    return rows_blank
+    for i = endRow, begRow, -1 do
+        rows_indent[i] = get_indent(i)
+        if rows_indent[i] == 0 and #FN.getline(i) == 0 then
+            rows_indent[i] = options.virt_indent and M.get_virt_indent(rows_indent, i) or -1
+        end
+    end
+
+    return rows_indent
 end
 
-function M.get_indent_virt_text_num(line)
-    -- if the given line is blank, we need set the virt_text by context
-    if ROWS_BLANK_LIST[line] == -1 then
-        local cur = line + 1
-        while ROWS_BLANK_LIST[cur] do
-            if ROWS_BLANK_LIST[cur] == 0 then
-                break
-            elseif ROWS_BLANK_LIST[cur] > 0 then
-                ROWS_BLANK_LIST[line] = ROWS_BLANK_LIST[cur]
-                break
-            end
-            cur = cur + 1
+---@param rows_indent table<number, number>
+---@param line number the line number that we want to get the virt indent
+---@return number
+function M.get_virt_indent(rows_indent, line)
+    local cur = line + 1
+    while rows_indent[cur] do
+        if rows_indent[cur] == 0 then
+            break
+        elseif rows_indent[cur] > 0 then
+            return rows_indent[cur]
         end
+        cur = cur + 1
     end
-
-    return math.floor(ROWS_BLANK_LIST[line] / vim.o.shiftwidth)
+    return 0
 end
 
 return M

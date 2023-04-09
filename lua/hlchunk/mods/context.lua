@@ -11,13 +11,14 @@ function context_mod:render()
 
     self:clear()
 
-    local beg_row, end_row = unpack(CUR_INDENT_RANGE)
-    if beg_row == -1 then
+    local indent_range = UTILS.get_indent_range()
+    if not indent_range then
         return
     end
+    local beg_row, end_row = unpack(indent_range)
     ns_id = API.nvim_create_namespace("hl_context")
 
-    local start_col = math.max(ROWS_BLANK_LIST[beg_row], 0)
+    local start_col = FN.indent(beg_row)
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
