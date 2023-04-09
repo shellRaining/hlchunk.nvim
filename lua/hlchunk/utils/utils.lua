@@ -49,10 +49,19 @@ function M.get_indent_range(line)
     return { up, down }
 end
 
--- there are three cases:
+-- when virt_indent is false, there are three cases:
 -- 1. the row is blank, we set the value to -1
 -- 2. the row is not blank, however it has no blank, we set the indent to 0
 -- 3. the row is not blank and has indent, we set the indent to the indent of the row
+-- when virt_indent is true, the only difference is:
+-- when the len of line val is 0, we set its indent by its context, example
+-- 1. hello world
+-- 2.    this is shellRaining
+-- 3.
+-- 4.    this is shellRaining
+-- 5.
+-- 6. this is shellRaining
+-- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
 ---@param begRow? number
 ---@param endRow? number
 ---@param options? {use_treesitter: boolean, virt_indent: boolean}
@@ -85,8 +94,9 @@ function M.get_rows_indent(begRow, endRow, options)
     return rows_indent
 end
 
+-- get the virtual indent of the given line
 ---@param rows_indent table<number, number>
----@param line number the line number that we want to get the virt indent
+---@param line number
 ---@return number
 function M.get_virt_indent(rows_indent, line)
     local cur = line + 1
