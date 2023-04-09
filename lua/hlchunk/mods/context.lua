@@ -22,13 +22,14 @@ function context_mod:render()
     local beg_row, end_row = unpack(indent_range)
     ns_id = api.nvim_create_namespace("hl_context")
 
-    local start_col = math.min(fn.indent(beg_row),fn.indent(end_row))
+    local start_col = math.min(fn.indent(beg_row), fn.indent(end_row))
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
         hl_mode = "combine",
         priority = 99,
     }
+
     -- render middle section
     for i = beg_row, end_row do
         row_opts.virt_text = { { PLUG_CONF.context.chars[1], "HLContextStyle1" } }
