@@ -1,5 +1,7 @@
 local opts = {}
 
+local fn = vim.fn
+
 local exclude_ft = {
     dashboard = true,
     help = true,
@@ -32,7 +34,7 @@ local support_ft = {
     "*.vue",
 }
 
-local whitespaceStyle = FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui")
+local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
 -- local cursorlineStyle = FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui")
 
 opts.config = {

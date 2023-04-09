@@ -1,7 +1,13 @@
 local BaseMod = require("hlchunk.base_mod")
 
-local Blank_chars_num = TABLEX.size(PLUG_CONF.blank.chars)
-local Blank_style_num = TABLEX.size(PLUG_CONF.blank.style)
+local utils = require("hlchunk.utils.utils")
+local tablex = require("hlchunk.utils.table")
+local stringx = require("hlchunk.utils.string")
+local api = vim.api
+local fn = vim.fn
+
+local Blank_chars_num = tablex.size(PLUG_CONF.blank.chars)
+local Blank_style_num = tablex.size(PLUG_CONF.blank.style)
 
 local blank_mod = BaseMod:new({
     name = "blank",
@@ -15,9 +21,9 @@ function blank_mod:render()
     end
 
     self:clear()
-    ns_id = API.nvim_create_namespace("hl_blank_augroup")
+    ns_id = api.nvim_create_namespace("hl_blank_augroup")
 
-    local rows_indent = UTILS.get_rows_indent(nil, nil, {
+    local rows_indent = utils.get_rows_indent(nil, nil, {
         use_treesitter = PLUG_CONF.blank.use_treesitter,
         virt_indent = false,
     })
@@ -30,25 +36,24 @@ function blank_mod:render()
         priority = 1,
     }
     for index, _ in pairs(rows_indent) do
-        local render_char_num = UTILS.get_indent_virt_text_num(index)
-
-        -- get the full text will be rendered
+        local render_char_num = rows_indent[index] / vim.o.shiftwidth
+        local win_info = fn.winsaveview()
         local text = ""
         for _ = 1, render_char_num do
             text = text .. "." .. (" "):rep(vim.o.shiftwidth - 1)
         end
-        text = text:sub(WIN_INFO.leftcol + 1)
+        text = text:sub(win_info.leftcol + 1)
 
         local count = 0
         for i = 1, #text do
-            local c = STRINGX.at(text, i)
+            local c = stringx.at(text, i)
             if not c:match("%s") then
                 count = count + 1
                 local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
                 local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
                 row_opts.virt_text = { { char, style } }
                 row_opts.virt_text_win_col = i - 1
-                API.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
+                api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
             end
         end
     end
@@ -56,14 +61,14 @@ end
 
 function blank_mod:clear()
     if ns_id ~= -1 then
-        API.nvim_buf_clear_namespace(0, ns_id, 0, -1)
+        api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
     end
 end
 
 function blank_mod:enable_mod_autocmd()
-    API.nvim_create_augroup("hl_blank_augroup", { clear = true })
+    api.nvim_create_augroup("hl_blank_augroup", { clear = true })
 
-    API.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
+    api.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
         group = "hl_blank_augroup",
         pattern = "*",
         callback = function()
@@ -73,14 +78,14 @@ function blank_mod:enable_mod_autocmd()
 end
 
 function blank_mod:disable_mod_autocmd()
-    API.nvim_del_augroup_by_name("hl_blank_augroup")
+    api.nvim_del_augroup_by_name("hl_blank_augroup")
 end
 
 function blank_mod:create_mod_usercmd()
-    API.nvim_create_user_command("EnableHLBlank", function()
+    api.nvim_create_user_command("EnableHLBlank", function()
         blank_mod:enable()
     end, {})
-    API.nvim_create_user_command("DisableHLBlank", function()
+    api.nvim_create_user_command("DisableHLBlank", function()
         blank_mod:disable()
     end, {})
 end

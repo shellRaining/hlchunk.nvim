@@ -1,15 +1,17 @@
 ---@diagnostic disable: param-type-mismatch
 local M = {}
 
+local fn = vim.fn
+
 function M.get_chunk_range()
     local beg_row, end_row
     local base_flag = "nWz"
-    local cur_row_val = FN.getline(".")
-    local cur_col = FN.col(".")
+    local cur_row_val = fn.getline(".")
+    local cur_col = fn.col(".")
     local cur_char = string.sub(cur_row_val, cur_col, cur_col)
 
-    beg_row = FN.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
-    end_row = FN.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
+    beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
+    end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
 
     if beg_row <= 0 or end_row <= 0 then
         return { 0, 0 }
@@ -21,7 +23,7 @@ end
 ---@param line? number the line number we want to get the indent range
 ---@return table<number, number> | nil
 function M.get_indent_range(line)
-    line = line or FN.line(".")
+    line = line or fn.line(".")
 
     local rows_indent_list = M.get_rows_indent(nil, nil, { use_treesitter = false, virt_indent = true })
     if not rows_indent_list then
@@ -43,8 +45,8 @@ function M.get_indent_range(line)
 
     local up = line
     local down = line
-    local wbegin = FN.line("w0")
-    local wend = FN.line("w$")
+    local wbegin = fn.line("w0")
+    local wend = fn.line("w$")
 
     while up >= wbegin and rows_indent_list[up] >= rows_indent_list[line] do
         up = up - 1
@@ -76,12 +78,12 @@ end
 ---@param options? {use_treesitter: boolean, virt_indent: boolean}
 ---@return table<number, number> | nil
 function M.get_rows_indent(begRow, endRow, options)
-    begRow = begRow or FN.line("w0")
-    endRow = endRow or FN.line("w$")
+    begRow = begRow or fn.line("w0")
+    endRow = endRow or fn.line("w$")
     options = options or { use_treesitter = false, virt_indent = false }
 
     local rows_indent = {}
-    local get_indent = FN.indent
+    local get_indent = fn.indent
     if options.use_treesitter then
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
         if not ts_indent_status then
@@ -89,13 +91,13 @@ function M.get_rows_indent(begRow, endRow, options)
             return nil
         end
         get_indent = function(i)
-            return math.min(ts_indent.get_indent(i) or 0, FN.indent(i))
+            return math.min(ts_indent.get_indent(i) or 0, fn.indent(i))
         end
     end
 
     for i = endRow, begRow, -1 do
         rows_indent[i] = get_indent(i)
-        if rows_indent[i] == 0 and #FN.getline(i) == 0 then
+        if rows_indent[i] == 0 and #fn.getline(i) == 0 then
             rows_indent[i] = options.virt_indent and M.get_virt_indent(rows_indent, i) or -1
         end
     end

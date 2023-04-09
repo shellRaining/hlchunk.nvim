@@ -1,3 +1,7 @@
+local utils = require("hlchunk.utils.utils")
+local api = vim.api
+local fn = vim.fn
+
 local context_mod = require("hlchunk.base_mod"):new({
     name = "context",
 })
@@ -11,14 +15,14 @@ function context_mod:render()
 
     self:clear()
 
-    local indent_range = UTILS.get_indent_range()
+    local indent_range = utils.get_indent_range()
     if not indent_range then
         return
     end
     local beg_row, end_row = unpack(indent_range)
-    ns_id = API.nvim_create_namespace("hl_context")
+    ns_id = api.nvim_create_namespace("hl_context")
 
-    local start_col = math.min(FN.indent(beg_row), FN.indent(end_row))
+    local start_col = math.min(fn.indent(beg_row),fn.indent(end_row))
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
@@ -30,22 +34,23 @@ function context_mod:render()
         row_opts.virt_text = { { PLUG_CONF.context.chars[1], "HLContextStyle1" } }
         row_opts.virt_text_win_col = start_col
         ---@diagnostic disable-next-line: undefined-field
-        local line_val = FN.getline(i):gsub("\t", SPACE_TAB)
-        if #FN.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
-            API.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+        local space_tab = (" "):rep(vim.o.shiftwidth)
+        local line_val = fn.getline(i):gsub("\t", space_tab)
+        if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
+            api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
         end
     end
 end
 
 function context_mod:clear()
     if ns_id ~= -1 then
-        API.nvim_buf_clear_namespace(0, ns_id, 0, -1)
+        api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
     end
 end
 
 function context_mod:enable_mod_autocmd()
-    API.nvim_create_augroup("hl_context_augroup", { clear = true })
-    API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "WinScrolled" }, {
+    api.nvim_create_augroup("hl_context_augroup", { clear = true })
+    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "WinScrolled" }, {
         group = "hl_context_augroup",
         pattern = "*",
         callback = function()
@@ -58,7 +63,7 @@ function context_mod:enable_mod_autocmd()
 end
 
 function context_mod:disable_mod_autocmd()
-    API.nvim_del_augroup_by_name("hl_context_augroup")
+    api.nvim_del_augroup_by_name("hl_context_augroup")
 end
 
 function context_mod:create_mod_usercmd() end
