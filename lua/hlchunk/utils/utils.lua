@@ -23,12 +23,21 @@ end
 function M.get_indent_range(line)
     line = line or FN.line(".")
 
-    local rows_blank_list = M.get_rows_indent(nil, nil, { use_treesitter = false, virt_indent = true })
-    if not rows_blank_list then
+    local rows_indent_list = M.get_rows_indent(nil, nil, { use_treesitter = false, virt_indent = true })
+    if not rows_indent_list then
         return nil
     end
-    local cur_row_blank_num = rows_blank_list[line]
-    if cur_row_blank_num <= 0 then
+    if rows_indent_list[line] < 0 then
+        return nil
+    end
+
+    if rows_indent_list[line + 1] and rows_indent_list[line + 1] > rows_indent_list[line] then
+        line = line + 1
+    elseif rows_indent_list[line - 1] and rows_indent_list[line - 1] > rows_indent_list[line] then
+        line = line - 1
+    end
+
+    if rows_indent_list[line] <= 0 then
         return nil
     end
 
@@ -37,10 +46,10 @@ function M.get_indent_range(line)
     local wbegin = FN.line("w0")
     local wend = FN.line("w$")
 
-    while up >= wbegin and rows_blank_list[up] >= cur_row_blank_num do
+    while up >= wbegin and rows_indent_list[up] >= rows_indent_list[line] do
         up = up - 1
     end
-    while down <= wend and rows_blank_list[down] >= cur_row_blank_num do
+    while down <= wend and rows_indent_list[down] >= rows_indent_list[line] do
         down = down + 1
     end
     up = math.max(up, wbegin)
@@ -108,7 +117,7 @@ function M.get_virt_indent(rows_indent, line)
         end
         cur = cur + 1
     end
-    return 0
+    return -1
 end
 
 return M

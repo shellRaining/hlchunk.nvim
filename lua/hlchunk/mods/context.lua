@@ -45,7 +45,7 @@ end
 
 function context_mod:enable_mod_autocmd()
     API.nvim_create_augroup("hl_context_augroup", { clear = true })
-    API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    API.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "WinScrolled" }, {
         group = "hl_context_augroup",
         pattern = "*",
         callback = function()
