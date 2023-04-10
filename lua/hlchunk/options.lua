@@ -3,14 +3,17 @@ local opts = {}
 local fn = vim.fn
 
 local exclude_ft = {
+    aerial = true,
     dashboard = true,
     help = true,
     lspinfo = true,
     packer = true,
     checkhealth = true,
+    FTerm = true,
     man = true,
     mason = true,
     NvimTree = true,
+    NeoTree = true,
     plugin = true,
     lazy = true,
     TelescopePrompt = true,
