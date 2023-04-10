@@ -67,7 +67,14 @@ function context_mod:disable_mod_autocmd()
     api.nvim_del_augroup_by_name("hl_context_augroup")
 end
 
-function context_mod:create_mod_usercmd() end
+function context_mod:create_mod_usercmd()
+    api.nvim_create_user_command("EnableHLContext", function()
+        context_mod:enable()
+    end, {})
+    api.nvim_create_user_command("DisableHLContext", function()
+        context_mod:disable()
+    end, {})
+end
 
 function context_mod:disable()
     pcall(function()
