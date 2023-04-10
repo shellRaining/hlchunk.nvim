@@ -3,10 +3,14 @@ local M = {}
 
 local fn = vim.fn
 
-function M.get_chunk_range()
+---@param line? number the line number we want to get the chunk range
+---@return table<number, number> | nil
+function M.get_chunk_range(line)
+    line = line or fn.line(".")
+
     local beg_row, end_row
     local base_flag = "nWz"
-    local cur_row_val = fn.getline(".")
+    local cur_row_val = fn.getline(line)
     local cur_col = fn.col(".")
     local cur_char = string.sub(cur_row_val, cur_col, cur_col)
 
@@ -14,7 +18,7 @@ function M.get_chunk_range()
     end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
 
     if beg_row <= 0 or end_row <= 0 then
-        return { 0, 0 }
+        return nil
     end
 
     return { beg_row, end_row }
