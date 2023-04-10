@@ -80,6 +80,12 @@ use { "shellRaining/hlchunk.nvim" }
 Plug "shellRaining/hlchunk.nvim"
 ```
 
+### Lazy
+
+```lua
+{ "shellRaining/hlchunk.nvim", event = { "UIEnter" }, },
+```
+
 ## Setup
 
 The script comes with the following defaults:

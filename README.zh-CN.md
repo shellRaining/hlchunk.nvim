@@ -79,6 +79,12 @@ use { "shellRaining/hlchunk.nvim" }
 Plug "shellRaining/hlchunk.nvim"
 ```
 
+### Lazy
+
+```lua
+{ "shellRaining/hlchunk.nvim", event = { "UIEnter" }, },
+```
+
 ## 设置
 
 插件默认带有以下的配置
