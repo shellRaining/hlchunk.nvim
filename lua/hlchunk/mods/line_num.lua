@@ -13,7 +13,9 @@ function line_num_mod:render()
 
     self:clear()
 
-    local beg_row, end_row = unpack(utils.get_chunk_range())
+    local range = utils.get_chunk_range()
+    if not range then return end
+    local beg_row, end_row = unpack(range)
     if beg_row < end_row then
         for i = beg_row, end_row do
             ---@diagnostic disable-next-line: param-type-mismatch
