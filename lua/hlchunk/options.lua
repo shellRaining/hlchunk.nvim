@@ -7,6 +7,7 @@ local exclude_ft = {
     dashboard = true,
     help = true,
     lspinfo = true,
+    lspsagafinder = true,
     packer = true,
     checkhealth = true,
     man = true,
