@@ -19,6 +19,10 @@
 
 - [ ] add on-demand render for hl_indent
 
-- [ ] when open a large file, you should optimize the speed
+- [ ] when open a large file, you should optimize the speed (hlchunk mod)
 
 - [ ] add nowrap support for all mods
+
+- [ ] move the plugin config to mod config (it is helpful to enhance performance)
+
+- [ ] Optimize context algorithm
