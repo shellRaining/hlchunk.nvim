@@ -89,14 +89,42 @@ local function set_hls()
     set_signs()
 end
 
+-- get the status(whether enabled) of mods, return a table, the first key is the mod name, the second key is a bool variables to represent whether enabled
+---@param params table
+---@return table<string, boolean>
+local function get_mods_status(params)
+    local mods_status = {
+        chunk = true,
+        line_num = true,
+        indent = true,
+        blank = true,
+        context = false,
+    }
+
+    for mod_name, mod_conf in pairs(params) do
+        if mod_conf.enable then
+            mods_status[mod_name] = true
+        end
+    end
+
+    return mods_status
+end
+
+---@class PlugConfig
+---@field chunk? table
+---@field line_num? table
+---@field indent? table
+---@field blank? table
+---@field context? table
+---@param params PlugConfig
 hlchunk.setup = function(params)
-    PLUG_CONF = vim.tbl_deep_extend("force", PLUG_CONF, params)
     set_usercmds()
     set_hls()
-
-    for mod_name, mod_conf in pairs(PLUG_CONF) do
-        if mod_conf.enable then
+    local mods_status = get_mods_status(params)
+    for mod_name, enabled in pairs(mods_status) do
+        if enabled then
             local _, mod = pcall(require, "hlchunk.mods." .. mod_name)
+            mod:set_options(params[mod_name])
             mod:enable()
             mod:create_mod_usercmd()
         end

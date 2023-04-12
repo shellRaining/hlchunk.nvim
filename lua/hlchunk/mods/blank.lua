@@ -6,17 +6,45 @@ local stringx = require("hlchunk.utils.string")
 local api = vim.api
 local fn = vim.fn
 
-local Blank_chars_num = tablex.size(PLUG_CONF.blank.chars)
-local Blank_style_num = tablex.size(PLUG_CONF.blank.style)
+local exclude_ft = {
+    aerial = true,
+    dashboard = true,
+    help = true,
+    lspinfo = true,
+    lspsagafinder = true,
+    packer = true,
+    checkhealth = true,
+    man = true,
+    mason = true,
+    NvimTree = true,
+    ["neo-tree"] = true,
+    plugin = true,
+    lazy = true,
+    TelescopePrompt = true,
+    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+}
 
+local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
 local blank_mod = BaseMod:new({
     name = "blank",
+    options = {
+        enable = true,
+        chars = {
+            "․",
+        },
+        style = {
+            -- { "", cursorline },
+            { whitespaceStyle, "" },
+        },
+        exclude_filetype = exclude_ft,
+
+    }
 })
 
 local ns_id = -1
 
 function blank_mod:render()
-    if (not PLUG_CONF.blank.enable) or PLUG_CONF.blank.exclude_filetype[vim.bo.filetype] then
+    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
         return
     end
 
@@ -24,7 +52,7 @@ function blank_mod:render()
     ns_id = api.nvim_create_namespace("hl_blank_augroup")
 
     local rows_indent = utils.get_rows_indent(nil, nil, {
-        use_treesitter = PLUG_CONF.blank.use_treesitter,
+        use_treesitter = self.options.use_treesitter,
         virt_indent = false,
     })
     if not rows_indent then
@@ -49,7 +77,9 @@ function blank_mod:render()
             local c = stringx.at(text, i)
             if not c:match("%s") then
                 count = count + 1
-                local char = PLUG_CONF.blank.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
+                local Blank_chars_num = tablex.size(self.options.chars)
+                local Blank_style_num = tablex.size(self.options.style)
+                local char = self.options.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
                 local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
                 row_opts.virt_text = { { char, style } }
                 row_opts.virt_text_win_col = i - 1
@@ -92,7 +122,7 @@ end
 
 function blank_mod:enable()
     local ok, _ = pcall(function()
-        PLUG_CONF.blank.enable = true
+        self.options.enable = true
         self:render()
         self:enable_mod_autocmd()
     end)
@@ -103,7 +133,7 @@ end
 
 function blank_mod:disable()
     local ok, _ = pcall(function()
-        PLUG_CONF.blank.enable = false
+        self.options.enable = false
         self:clear()
         self:disable_mod_autocmd()
     end)

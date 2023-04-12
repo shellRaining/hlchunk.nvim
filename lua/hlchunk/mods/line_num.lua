@@ -1,20 +1,44 @@
-local line_num_mod = require("hlchunk.base_mod"):new({
-    name = "line_num",
-})
 
 local utils = require("hlchunk.utils.utils")
 local api = vim.api
 local fn = vim.fn
 
+local support_ft = {
+    "*.ts",
+    "*.tsx",
+    "*.js",
+    "*.jsx",
+    "*.html",
+    "*.json",
+    "*.go",
+    "*.c",
+    "*.cpp",
+    "*.rs",
+    "*.h",
+    "*.hpp",
+    "*.lua",
+    "*.vue",
+}
+
+local line_num_mod = require("hlchunk.base_mod"):new({
+    name = "line_num",
+    options = {
+        enable = true,
+        style = "#806d9c",
+        support_filetypes = support_ft,
+    },
+})
+
 function line_num_mod:render()
-    if not PLUG_CONF.line_num.enable then
+    if not self.options.enable then
         return
     end
 
     self:clear()
 
-    local beg_row, end_row = unpack(utils.get_chunk_range())
-    if beg_row < end_row then
+    local cur_chunk_range = utils.get_chunk_range()
+    if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
+        local beg_row, end_row = unpack(cur_chunk_range)
         for i = beg_row, end_row do
             ---@diagnostic disable-next-line: param-type-mismatch
             fn.sign_place("", "LineNumberGroup", "sign1", fn.bufname("%"), {
@@ -35,7 +59,7 @@ function line_num_mod:enable_mod_autocmd()
     api.nvim_create_augroup("hl_line_augroup", { clear = true })
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_line_augroup",
-        pattern = PLUG_CONF.line_num.support_filetypes,
+        pattern = self.options.support_filetypes,
         callback = function()
             line_num_mod:render()
         end,
@@ -57,7 +81,7 @@ end
 
 function line_num_mod:disable()
     local ok, _ = pcall(function()
-        PLUG_CONF.line_num.enable = false
+        self.options.enable = false
         self:clear()
         self:disable_mod_autocmd()
     end)
@@ -68,7 +92,7 @@ end
 
 function line_num_mod:enable()
     local ok, _ = pcall(function()
-        PLUG_CONF.line_num.enable = true
+        self.options.enable = true
         self:render()
         self:enable_mod_autocmd()
     end)

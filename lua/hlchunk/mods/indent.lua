@@ -6,17 +6,45 @@ local stringx = require("hlchunk.utils.string")
 local api = vim.api
 local fn = vim.fn
 
-local Indent_chars_num = tablex.size(PLUG_CONF.indent.chars)
-local Indent_style_num = tablex.size(PLUG_CONF.indent.style)
+local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
+local exclude_ft = {
+    aerial = true,
+    dashboard = true,
+    help = true,
+    lspinfo = true,
+    lspsagafinder = true,
+    packer = true,
+    checkhealth = true,
+    man = true,
+    mason = true,
+    NvimTree = true,
+    ["neo-tree"] = true,
+    plugin = true,
+    lazy = true,
+    TelescopePrompt = true,
+    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+}
 
+---@class IndentMod : BaseMod
 local indent_mod = BaseMod:new({
     name = "indent",
+    options = {
+        enable = true,
+        use_treesitter = false,
+        chars = {
+            "│",
+        },
+        style = {
+            { whitespaceStyle, "" },
+        },
+        exclude_filetype = exclude_ft,
+    },
 })
 
 local ns_id = -1
 
 function indent_mod:render()
-    if (not PLUG_CONF.indent.enable) or PLUG_CONF.indent.exclude_filetype[vim.bo.filetype] then
+    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
         return
     end
 
@@ -24,7 +52,7 @@ function indent_mod:render()
     ns_id = api.nvim_create_namespace("hl_indent")
 
     local rows_indent = utils.get_rows_indent(nil, nil, {
-        use_treesitter = PLUG_CONF.indent.use_treesitter,
+        use_treesitter = self.options.use_treesitter,
         virt_indent = true,
     })
     if not rows_indent then
@@ -52,7 +80,9 @@ function indent_mod:render()
             local c = stringx.at(text, i)
             if not c:match("%s") then
                 count = count + 1
-                local char = PLUG_CONF.indent.chars[(i - 1) % Indent_chars_num + 1]
+                local Indent_chars_num = tablex.size(self.options.chars)
+                local Indent_style_num = tablex.size(self.options.style)
+                local char = self.options.chars[(i - 1) % Indent_chars_num + 1]
                 local style = "HLIndentStyle" .. tostring((count - 1) % Indent_style_num + 1)
                 row_opts.virt_text = { { char, style } }
                 row_opts.virt_text_win_col = i - 1
@@ -102,7 +132,7 @@ end
 
 function indent_mod:enable()
     local ok, _ = pcall(function()
-        PLUG_CONF.indent.enable = true
+        self.options.enable = true
         self:render()
         self:enable_mod_autocmd()
     end)
@@ -113,7 +143,7 @@ end
 
 function indent_mod:disable()
     local ok, _ = pcall(function()
-        PLUG_CONF.indent.enable = false
+        self.options.enable = false
         self:clear()
         self:disable_mod_autocmd()
     end)

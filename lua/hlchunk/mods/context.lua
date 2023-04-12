@@ -2,14 +2,43 @@ local utils = require("hlchunk.utils.utils")
 local api = vim.api
 local fn = vim.fn
 
+local exclude_ft = {
+    aerial = true,
+    dashboard = true,
+    help = true,
+    lspinfo = true,
+    lspsagafinder = true,
+    packer = true,
+    checkhealth = true,
+    man = true,
+    mason = true,
+    NvimTree = true,
+    ["neo-tree"] = true,
+    plugin = true,
+    lazy = true,
+    TelescopePrompt = true,
+    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+}
+
 local context_mod = require("hlchunk.base_mod"):new({
     name = "context",
+    options = {
+        enable = false,
+        use_treesitter = false,
+        chars = {
+            "┃", -- Box Drawings Heavy Vertical
+        },
+        style = {
+            { "#806d9c", "" },
+        },
+        exclude_filetype = exclude_ft,
+    },
 })
 
 local ns_id = -1
 
 function context_mod:render()
-    if (not PLUG_CONF.context.enable) or PLUG_CONF.context.exclude_filetype[vim.bo.filetype] then
+    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
         return
     end
 
@@ -32,7 +61,7 @@ function context_mod:render()
 
     -- render middle section
     for i = beg_row, end_row do
-        row_opts.virt_text = { { PLUG_CONF.context.chars[1], "HLContextStyle1" } }
+        row_opts.virt_text = { { self.options.chars[1], "HLContextStyle1" } }
         row_opts.virt_text_win_col = start_col
         ---@diagnostic disable-next-line: undefined-field
         local space_tab = (" "):rep(vim.o.shiftwidth)
@@ -78,7 +107,7 @@ end
 
 function context_mod:disable()
     pcall(function()
-        PLUG_CONF.context.enable = false
+        self.options.enable = false
         self:clear()
         self:disable_mod_autocmd()
     end)
@@ -86,7 +115,7 @@ end
 
 function context_mod:enable()
     pcall(function()
-        PLUG_CONF.context.enable = true
+        self.options.enable = true
         self:render()
         self:enable_mod_autocmd()
     end)
