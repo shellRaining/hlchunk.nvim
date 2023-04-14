@@ -78,17 +78,6 @@ function line_num_mod:create_mod_usercmd()
     end, {})
 end
 
-function line_num_mod:disable()
-    local ok, _ = pcall(function()
-        self.options.enable = false
-        self:clear()
-        self:disable_mod_autocmd()
-    end)
-    if not ok then
-        vim.notify("you have enable this plugin")
-    end
-end
-
 function line_num_mod:set_signs()
     if type(self.options.style) == "table" then
         local tbl = {}

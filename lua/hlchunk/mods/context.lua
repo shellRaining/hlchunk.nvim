@@ -105,21 +105,4 @@ function context_mod:create_mod_usercmd()
     end, {})
 end
 
-function context_mod:disable()
-    pcall(function()
-        self.options.enable = false
-        self:clear()
-        self:disable_mod_autocmd()
-    end)
-end
-
-function context_mod:enable()
-    pcall(function()
-        self.options.enable = true
-        self:set_hl(self.options.style)
-        self:render()
-        self:enable_mod_autocmd()
-    end)
-end
-
 return context_mod

@@ -27,10 +27,26 @@ function BaseMod:new(o)
 end
 
 function BaseMod:enable()
-    vim.notify("not implemented enable " .. self.name, vim.log.levels.ERROR)
+    local ok, _ = pcall(function()
+        self.options.enable = true
+        self:set_options(self.options)
+        self:set_hl(self.options.style)
+        self:render()
+        self:enable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have enable " .. self.name .. " plugin")
+    end
 end
 function BaseMod:disable()
-    vim.notify("not implemented disable " .. self.name, vim.log.levels.ERROR)
+    local ok, _ = pcall(function()
+        self.options.enable = false
+        self:clear()
+        self:disable_mod_autocmd()
+    end)
+    if not ok then
+        vim.notify("you have disable " .. self.name .. " plugin")
+    end
 end
 function BaseMod:render()
     vim.notify("not implemented render " .. self.name, vim.log.levels.ERROR)
@@ -78,14 +94,17 @@ local function set_hl(hl_base_name, args)
     end
 end
 
+-- set highlight for mod
 ---@param args table
 function BaseMod:set_hl(args)
     local token_array = Array:from(stringx.split(self.name, "_"))
-    local hl_name = "HL" .. token_array
-        :map(function(value)
-            return stringx.firstToUpper(value)
-        end)
-        :join() .. "Style"
+    local hl_name = "HL"
+        .. token_array
+            :map(function(value)
+                return stringx.firstToUpper(value)
+            end)
+            :join()
+        .. "Style"
     set_hl(hl_name, args)()
 end
 

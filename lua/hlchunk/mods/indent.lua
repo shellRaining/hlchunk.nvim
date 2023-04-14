@@ -129,27 +129,4 @@ function indent_mod:create_mod_usercmd()
     end, {})
 end
 
-function indent_mod:enable()
-    local ok, _ = pcall(function()
-        self.options.enable = true
-        self:set_hl(self.options.style)
-        self:render()
-        self:enable_mod_autocmd()
-    end)
-    if not ok then
-        vim.notify("you have enable this plugin")
-    end
-end
-
-function indent_mod:disable()
-    local ok, _ = pcall(function()
-        self.options.enable = false
-        self:clear()
-        self:disable_mod_autocmd()
-    end)
-    if not ok then
-        vim.notify("you have disable this plugin")
-    end
-end
-
 return indent_mod
