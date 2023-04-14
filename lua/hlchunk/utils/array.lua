@@ -2,6 +2,7 @@
 
 ---@class Array
 ---@field new fun(self: Array, ...: any): Array
+---@field from fun(self: Array, t: table | string | Array, f?: callbackFn): Array
 ---@field size fun(self: Array): number
 ---@field map fun(self: Array, f: callbackFn): Array
 ---@field filter fun(self: Array, f: callbackFn): Array
@@ -37,6 +38,25 @@ function Array:new(...)
     setmetatable(o, self)
 
     return o
+end
+
+-- create a new array from another iterable class like table or string
+---@param self Array
+---@param t table | string | Array
+---@param f? callbackFn
+---@return Array
+function Array:from(t, f)
+    local new_arr = Array:new()
+    if type(t) == "table" then
+        for k, v in pairs(t) do
+            new_arr:push(f and f(v, k) or v)
+        end
+    elseif type(t) == "string" then
+        for i = 1, #t do
+            new_arr:push(f and f(t:sub(i, i), i) or t:sub(i, i))
+        end
+    end
+    return new_arr
 end
 
 -- get size of a table
