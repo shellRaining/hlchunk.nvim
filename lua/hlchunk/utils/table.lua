@@ -1,22 +1,48 @@
-local tablex = {}
+local Array = {}
 
---- total number of elements in this table.
--- Note that this is distinct from `#t`, which is the number
--- of values in the array part; this value will always
--- be greater or equal. The difference gives the size of
--- the hash part, for practical purposes. Works for any
--- object with a __pairs metamethod.
--- @tab t a table
--- @return the size, if t is not a table, return 0
-function tablex.size(t)
-    if type(t) ~= "table" then
-        return 0
+
+-- this is constructor of Array class
+---@param self Array
+---@param ... any
+---@return Array
+function Array:new(...)
+    local o = {}
+    local params_num = select("#", ...)
+
+    if params_num == 1 then
+        local arg1 = select(1, ...)
+        if type(arg1) == "number" then
+            for i = 1, tonumber(arg1) do
+                o[i] = nil
+            end
+        else
+            o[1] = arg1
+        end
+    elseif params_num > 1 then
+        for i = 1, params_num do
+            o[i] = select(i, ...)
+        end
     end
+
+    setmetatable(o, self)
+
+    return o
+end
+
+function Array:size()
     local i = 0
-    for _ in pairs(t) do
+    for _ in pairs(self) do
         i = i + 1
     end
     return i
 end
 
-return tablex
+-- execute a function for each element of a table
+---@param f fun(k: any, v: any)
+function Array:foreach(f)
+    for k, v in pairs(self) do
+        f(k, v)
+    end
+end
+
+return Array
