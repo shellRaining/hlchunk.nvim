@@ -29,14 +29,13 @@ end
 function BaseMod:enable()
     local ok, _ = pcall(function()
         self.options.enable = true
-        self:set_options(self.options)
         self:set_hl(self.options.style)
         self:render()
         self:enable_mod_autocmd()
         self:create_mod_usercmd()
     end)
     if not ok then
-        vim.notify("you have enable " .. self.name .. " plugin")
+        vim.notify("you have enable " .. self.name .. " mod")
     end
 end
 function BaseMod:disable()
@@ -46,7 +45,7 @@ function BaseMod:disable()
         self:disable_mod_autocmd()
     end)
     if not ok then
-        vim.notify("you have disable " .. self.name .. " plugin")
+        vim.notify("you have disable " .. self.name .. " mod")
     end
 end
 function BaseMod:render()

@@ -64,6 +64,7 @@ hlchunk.setup = function(params)
     for mod_name, enabled in pairs(mods_status) do
         if enabled then
             local _, mod = pcall(require, "hlchunk.mods." .. mod_name)
+            mod:set_options(params[mod_name])
             mod:enable()
         end
     end
