@@ -110,13 +110,4 @@ function blank_mod:disable_mod_autocmd()
     api.nvim_del_augroup_by_name("hl_blank_augroup")
 end
 
-function blank_mod:create_mod_usercmd()
-    api.nvim_create_user_command("EnableHLBlank", function()
-        blank_mod:enable()
-    end, {})
-    api.nvim_create_user_command("DisableHLBlank", function()
-        blank_mod:disable()
-    end, {})
-end
-
 return blank_mod

@@ -69,15 +69,6 @@ function line_num_mod:disable_mod_autocmd()
     api.nvim_del_augroup_by_name("hl_line_augroup")
 end
 
-function line_num_mod:create_mod_usercmd()
-    api.nvim_create_user_command("EnableHLLineNum", function()
-        line_num_mod:enable()
-    end, {})
-    api.nvim_create_user_command("DisableHLLineNum", function()
-        line_num_mod:disable()
-    end, {})
-end
-
 function line_num_mod:set_signs()
     if type(self.options.style) == "table" then
         local tbl = {}
@@ -101,6 +92,7 @@ function line_num_mod:enable()
         self:set_signs()
         self:render()
         self:enable_mod_autocmd()
+        self:create_mod_usercmd()
     end)
     if not ok then
         vim.notify("you have disable this plugin")

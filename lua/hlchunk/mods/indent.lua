@@ -120,13 +120,4 @@ function indent_mod:disable_mod_autocmd()
     api.nvim_del_augroup_by_name("hl_indent_augroup")
 end
 
-function indent_mod:create_mod_usercmd()
-    api.nvim_create_user_command("EnableHLIndent", function()
-        indent_mod:enable()
-    end, {})
-    api.nvim_create_user_command("DisableHLIndent", function()
-        indent_mod:disable()
-    end, {})
-end
-
 return indent_mod

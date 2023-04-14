@@ -115,13 +115,4 @@ function chunk_mod:disable_mod_autocmd()
     api.nvim_del_augroup_by_name("hl_chunk_augroup")
 end
 
-function chunk_mod:create_mod_usercmd()
-    api.nvim_create_user_command("EnableHLChunk", function()
-        chunk_mod:enable()
-    end, {})
-    api.nvim_create_user_command("DisableHLChunk", function()
-        chunk_mod:disable()
-    end, {})
-end
-
 return chunk_mod

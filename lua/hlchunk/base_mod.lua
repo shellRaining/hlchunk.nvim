@@ -33,6 +33,7 @@ function BaseMod:enable()
         self:set_hl(self.options.style)
         self:render()
         self:enable_mod_autocmd()
+        self:create_mod_usercmd()
     end)
     if not ok then
         vim.notify("you have enable " .. self.name .. " plugin")
@@ -61,7 +62,18 @@ function BaseMod:disable_mod_autocmd()
     vim.notify("not implemented disable_mod_autocmd " .. self.name, vim.log.levels.ERROR)
 end
 function BaseMod:create_mod_usercmd()
-    vim.notify("not implemented create_mod_usercmd " .. self.name, vim.log.levels.ERROR)
+    local token_array = Array:from(stringx.split(self.name, "_"))
+    local mod_name = token_array
+        :map(function(value)
+            return stringx.firstToUpper(value)
+        end)
+        :join()
+    api.nvim_create_user_command("EnableHL" .. mod_name, function()
+        self:enable()
+    end, {})
+    api.nvim_create_user_command("DisableHL" .. mod_name, function()
+        self:disable()
+    end, {})
 end
 
 local function set_hl(hl_base_name, args)
