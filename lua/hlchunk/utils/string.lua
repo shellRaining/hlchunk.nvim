@@ -19,4 +19,15 @@ function stringx.at(s, idx)
     return s:sub(idx, idx)
 end
 
+---@param tbl string[]
+---@param sep? string
+function stringx.join(tbl, sep)
+    sep = sep or ""
+    local res = ""
+    for _, value in pairs(tbl) do
+        res = res .. value .. sep
+    end
+    return res
+end
+
 return stringx

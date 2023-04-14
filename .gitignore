@@ -1,3 +1,5 @@
 .luarc.json
 plugin/.hlchunk.lua
 note
+lua/hlchunk/utils/inspect.lua
+lua/hlchunk/utils/test.lua
