@@ -9,7 +9,7 @@
 ---@field push fun(self: Array, v: any): Array
 ---@field pop fun(self: Array): any
 ---@field shift fun(self: Array): any
----@field join fun(self: Array, sep: string): string
+---@field join fun(self: Array, sep?: string): string
 local Array = {}
 
 -- this is constructor of Array class
@@ -140,9 +140,10 @@ end
 
 -- join a table to a string
 ---@param self Array
----@param sep string
+---@param sep? string
 ---@return string
 function Array:join(sep)
+    sep = sep or ""
     local res = ""
     for k, v in pairs(self) do
         if k == 1 then

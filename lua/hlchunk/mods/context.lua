@@ -116,6 +116,7 @@ end
 function context_mod:enable()
     pcall(function()
         self.options.enable = true
+        self:set_hl(self.options.style)
         self:render()
         self:enable_mod_autocmd()
     end)

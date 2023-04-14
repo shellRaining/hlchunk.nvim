@@ -25,7 +25,6 @@ local exclude_ft = {
     [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
 }
 
----@class IndentMod : BaseMod
 local indent_mod = BaseMod:new({
     name = "indent",
     options = {
@@ -133,6 +132,7 @@ end
 function indent_mod:enable()
     local ok, _ = pcall(function()
         self.options.enable = true
+        self:set_hl(self.options.style)
         self:render()
         self:enable_mod_autocmd()
     end)

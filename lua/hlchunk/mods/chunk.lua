@@ -127,6 +127,7 @@ end
 function chunk_mod:enable()
     local ok, _ = pcall(function()
         self.options.enable = true
+        self:set_hl(self.options.style)
         self:render()
         self:enable_mod_autocmd()
     end)

@@ -1,4 +1,6 @@
 local stringx = require("hlchunk.utils.string")
+local Array = require("hlchunk.utils.array")
+local api = vim.api
 
 ---@class BaseMod
 ---@field name string
@@ -46,36 +48,45 @@ function BaseMod:create_mod_usercmd()
     vim.notify("not implemented create_mod_usercmd " .. self.name, vim.log.levels.ERROR)
 end
 
--- set highlight for mod
----@class HLOpts
----@field fg? string (or foreground): color name or "#RRGGBB", see note.
----@field bg? string (or background): color name or "#RRGGBB", see note.
----@field sp? string (or special): color name or "#RRGGBB"
----@field blend? integer integer between 0 and 100
----@field bold? boolean
----@field standout? boolean
----@field underline? boolean
----@field undercurl? boolean
----@field underdouble? boolean
----@field underdotted? boolean
----@field underdashed? boolean
----@field strikethrough? boolean
----@field italic? boolean
----@field reverse? boolean
----@field nocombine? boolean
----@field link? string name of another highlight group to link to
----@field ctermfg? string Sets foreground of cterm color
----@field ctermbg? string Sets background of cterm color
----@field cterm? string cterm attribute map
+local function set_hl(hl_base_name, args)
+    local count = 1
 
----@param args HLOpts
-function BaseMod:set_hl(args)
-    local token_list = stringx.split(self.name, "_")
-    local hl_name = ""
-    for _, value in pairs(token_list) do
-        hl_name = hl_name .. stringx.firstToUpper(value)
+    return function()
+        if type(args) == "string" then
+            api.nvim_set_hl(0, hl_base_name .. "1", {
+                fg = args,
+            })
+        elseif type(args) == "table" then
+            for _, value in pairs(args) do
+                local hl_name = hl_base_name .. tostring(count)
+                if type(value) == "string" then
+                    api.nvim_set_hl(0, hl_name, {
+                        fg = value,
+                    })
+                elseif type(value) == "table" then
+                    api.nvim_set_hl(0, hl_name, {
+                        fg = value[1],
+                        bg = value[2],
+                        nocombine = true,
+                    })
+                end
+                count = count + 1
+            end
+        else
+            vim.notify("highlight format error")
+        end
     end
-    vim.api.nvim_set_hl(0, hl_name, args)
+end
+
+---@param args table
+function BaseMod:set_hl(args)
+    local token_array = Array:from(stringx.split(self.name, "_"))
+    local hl_name = "HL" .. token_array
+        :map(function(value)
+            return stringx.firstToUpper(value)
+        end)
+        :join() .. "Style"
+    set_hl(hl_name, args)()
 end
 
 -- set options for mod, if the mod dont have default config, it will notify you

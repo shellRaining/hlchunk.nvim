@@ -1,4 +1,3 @@
-
 local utils = require("hlchunk.utils.utils")
 local api = vim.api
 local fn = vim.fn
@@ -90,9 +89,27 @@ function line_num_mod:disable()
     end
 end
 
+function line_num_mod:set_signs()
+    if type(self.options.style) == "table" then
+        local tbl = {}
+        for i = 1, 1 do
+            local sign_name = "sign" .. tostring(i)
+            local hl_name = "HLLineNumStyle" .. tostring(i)
+            tbl[#tbl + 1] = { name = sign_name, numhl = hl_name }
+        end
+        fn.sign_define(tbl)
+    else
+        fn.sign_define("sign1", {
+            numhl = "HLLineNumStyle1",
+        })
+    end
+end
+
 function line_num_mod:enable()
     local ok, _ = pcall(function()
         self.options.enable = true
+        self:set_hl(self.options.style)
+        self:set_signs()
         self:render()
         self:enable_mod_autocmd()
     end)

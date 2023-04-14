@@ -37,8 +37,7 @@ local blank_mod = BaseMod:new({
             { whitespaceStyle, "" },
         },
         exclude_filetype = exclude_ft,
-
-    }
+    },
 })
 
 local ns_id = -1
@@ -123,6 +122,7 @@ end
 function blank_mod:enable()
     local ok, _ = pcall(function()
         self.options.enable = true
+        self:set_hl(self.options.style)
         self:render()
         self:enable_mod_autocmd()
     end)
