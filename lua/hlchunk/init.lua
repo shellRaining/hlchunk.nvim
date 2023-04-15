@@ -17,7 +17,8 @@
 local hlchunk = {}
 local api = vim.api
 
--- get the status(whether enabled) of mods, return a table, the first key is the mod name, the second key is a bool variables to represent whether enabled
+-- get the status(whether enabled) of mods, return a table
+-- the first key is the mod name, the second key is a bool variables to represent whether enabled
 ---@param plugin_config PlugConfig
 ---@return table<string, boolean>
 local function get_mods_status(plugin_config)

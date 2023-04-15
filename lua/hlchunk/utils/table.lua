@@ -1,6 +1,5 @@
 local Array = {}
 
-
 -- this is constructor of Array class
 ---@param self Array
 ---@param ... any
