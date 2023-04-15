@@ -1,7 +1,7 @@
 local BaseMod = require("hlchunk.base_mod")
 
 local utils = require("hlchunk.utils.utils")
-local tablex = require("hlchunk.utils.table")
+local Array = require("hlchunk.utils.array")
 local stringx = require("hlchunk.utils.string")
 local api = vim.api
 local fn = vim.fn
@@ -76,8 +76,8 @@ function blank_mod:render()
             local c = stringx.at(text, i)
             if not c:match("%s") then
                 count = count + 1
-                local Blank_chars_num = tablex.size(self.options.chars)
-                local Blank_style_num = tablex.size(self.options.style)
+                local Blank_chars_num = Array:from(self.options.style):size()
+                local Blank_style_num = Array:from(self.options.chars):size()
                 local char = self.options.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
                 local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
                 row_opts.virt_text = { { char, style } }

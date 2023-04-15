@@ -1,7 +1,7 @@
 local BaseMod = require("hlchunk.base_mod")
 
 local utils = require("hlchunk.utils.utils")
-local tablex = require("hlchunk.utils.table")
+local Array = require("hlchunk.utils.array")
 local stringx = require("hlchunk.utils.string")
 local api = vim.api
 local fn = vim.fn
@@ -79,8 +79,8 @@ function indent_mod:render()
             local c = stringx.at(text, i)
             if not c:match("%s") then
                 count = count + 1
-                local Indent_chars_num = tablex.size(self.options.chars)
-                local Indent_style_num = tablex.size(self.options.style)
+                local Indent_chars_num = Array:from(self.options.style):size()
+                local Indent_style_num = Array:from(self.options.style):size()
                 local char = self.options.chars[(i - 1) % Indent_chars_num + 1]
                 local style = "HLIndentStyle" .. tostring((count - 1) % Indent_style_num + 1)
                 row_opts.virt_text = { { char, style } }
