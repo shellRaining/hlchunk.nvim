@@ -63,7 +63,6 @@ function context_mod:render()
     for i = beg_row, end_row do
         row_opts.virt_text = { { self.options.chars[1], "HLContextStyle1" } }
         row_opts.virt_text_win_col = start_col
-        ---@diagnostic disable-next-line: undefined-field
         local space_tab = (" "):rep(vim.o.shiftwidth)
         local line_val = fn.getline(i):gsub("\t", space_tab)
         if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then

@@ -1,4 +1,3 @@
----@diagnostic disable: param-type-mismatch
 local M = {}
 
 local fn = vim.fn
