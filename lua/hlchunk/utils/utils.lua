@@ -3,6 +3,18 @@ local M = {}
 
 local fn = vim.fn
 
+function M.get_chunk_range_ts(line)
+    line = line or vim.api.nvim_get_current_line()
+    local beg_row, end_row
+    local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
+    if not node then return nil end
+    beg_row, _, end_row, _ = vim.treesitter.get_node_range(node)
+    if beg_row <= 0 or end_row <= 0 then
+        return nil
+    end
+    return {beg_row + 1, end_row + 1}
+end
+
 ---@param line? number the line number we want to get the chunk range
 ---@return table<number, number> | nil
 function M.get_chunk_range(line)
