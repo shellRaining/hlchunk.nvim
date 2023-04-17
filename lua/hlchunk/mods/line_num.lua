@@ -11,6 +11,8 @@ local support_ft = {
     "*.json",
     "*.go",
     "*.c",
+    "*.lua",
+    "*.py",
     "*.cpp",
     "*.rs",
     "*.h",
@@ -22,6 +24,7 @@ local support_ft = {
 local line_num_mod = require("hlchunk.base_mod"):new({
     name = "line_num",
     options = {
+        use_treesitter = false,
         enable = true,
         style = "#806d9c",
         support_filetypes = support_ft,
@@ -35,7 +38,9 @@ function line_num_mod:render()
 
     self:clear()
 
-    local cur_chunk_range = utils.get_chunk_range()
+    local cur_chunk_range =
+        self.options.use_treesitter and utils.get_chunk_range_ts()
+        or utils.get_chunk_range()
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         for i = beg_row, end_row do
