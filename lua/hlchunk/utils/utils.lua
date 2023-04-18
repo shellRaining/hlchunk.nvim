@@ -29,16 +29,13 @@ function M.get_indent_range(line)
     line = line or fn.line(".")
 
     local rows_indent_list = M.get_rows_indent(nil, nil, { use_treesitter = false, virt_indent = true })
-    if not rows_indent_list then
-        return nil
-    end
-    if rows_indent_list[line] < 0 then
+    if not rows_indent_list or rows_indent_list[line] < 0 then
         return nil
     end
 
-    if rows_indent_list[line + 1] and rows_indent_list[line + 1] > rows_indent_list[line] then
+    if rows_indent_list[line + 1] and rows_indent_list[line + 1] == rows_indent_list[line] + vim.o.shiftwidth then
         line = line + 1
-    elseif rows_indent_list[line - 1] and rows_indent_list[line - 1] > rows_indent_list[line] then
+    elseif rows_indent_list[line - 1] and rows_indent_list[line - 1] == rows_indent_list[line] + vim.o.shiftwidth then
         line = line - 1
     end
 
@@ -60,7 +57,7 @@ function M.get_indent_range(line)
     up = math.max(up, wbegin)
     down = math.min(down, wend)
 
-    return { up, down }
+    return { up + 1, down -1 }
 end
 
 -- when virt_indent is false, there are three cases:

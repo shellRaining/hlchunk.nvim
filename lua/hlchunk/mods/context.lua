@@ -43,15 +43,15 @@ function context_mod:render()
     end
 
     self:clear()
+    ns_id = api.nvim_create_namespace("hl_context")
 
     local indent_range = utils.get_indent_range()
     if not indent_range then
         return
     end
     local beg_row, end_row = unpack(indent_range)
-    ns_id = api.nvim_create_namespace("hl_context")
 
-    local start_col = math.min(fn.indent(beg_row), fn.indent(end_row))
+    local start_col = math.min(fn.indent(beg_row), fn.indent(end_row)) - vim.o.shiftwidth
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
