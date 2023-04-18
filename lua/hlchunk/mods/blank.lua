@@ -63,7 +63,7 @@ function blank_mod:render()
         priority = 1,
     }
     for index, _ in pairs(rows_indent) do
-        local render_char_num = rows_indent[index] / vim.o.shiftwidth
+        local render_char_num = math.floor(rows_indent[index] / vim.o.shiftwidth)
         local win_info = fn.winsaveview()
         local text = ""
         for _ = 1, render_char_num do
