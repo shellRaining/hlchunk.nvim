@@ -24,3 +24,5 @@
 - [ ] add nowrap support for all mods
 
 - [ ] Optimize context algorithm, expand context range when get too few info
+
+- [ ] add is comment function

@@ -75,6 +75,7 @@ function chunk_mod:render()
             api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
             row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
             api.nvim_buf_set_extmark(0, ns_id, end_row - 1, 0, row_opts)
+        -- elseif is to fix bug, see https://github.com/shellRaining/hlchunk.nvim/issues/13
         elseif beg_blank_len > 0 then
             start_col = 0
             local beg_virt_text = self.options.chars.left_top
