@@ -75,14 +75,14 @@ function chunk_mod:render()
             api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
             row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
             api.nvim_buf_set_extmark(0, ns_id, end_row - 1, 0, row_opts)
-        elseif beg_blank_len >= 0 then
+        elseif beg_blank_len > 0 then
             start_col = 0
             local beg_virt_text = self.options.chars.left_top
                 .. self.options.chars.horizontal_line:rep(beg_blank_len - start_col - 1)
             row_opts.virt_text = { { beg_virt_text, "HLChunkStyle1" } }
             row_opts.virt_text_win_col = start_col
             api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
-        elseif end_blank_len >= 0 then
+        elseif end_blank_len > 0 then
             start_col = 0
             local end_virt_text = self.options.chars.left_bottom
                 .. self.options.chars.horizontal_line:rep(end_blank_len - start_col - 2)
