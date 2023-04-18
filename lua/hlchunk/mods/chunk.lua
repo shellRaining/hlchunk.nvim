@@ -13,6 +13,8 @@ local support_ft = {
     "*.json",
     "*.go",
     "*.c",
+    "*.lua",
+    "*.py",
     "*.cpp",
     "*.rs",
     "*.h",
@@ -25,6 +27,7 @@ local chunk_mod = BaseMod:new({
     name = "chunk",
     options = {
         enable = true,
+        use_treesitter = false,
         support_filetypes = support_ft,
         chars = {
             horizontal_line = "─",
@@ -50,8 +53,10 @@ function chunk_mod:render()
 
     self:clear()
     ns_id = api.nvim_create_namespace("hlchunk")
-
-    local cur_chunk_range = utils.get_chunk_range()
+    
+    local cur_chunk_range =
+        self.options.use_treesitter and utils.get_chunk_range_ts()
+        or utils.get_chunk_range_ts()
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
