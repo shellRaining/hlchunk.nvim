@@ -23,6 +23,4 @@
 
 - [ ] add nowrap support for all mods
 
-- [ ] move the plugin config to mod config (it is helpful to enhance performance)
-
-- [ ] Optimize context algorithm
+- [ ] Optimize context algorithm, expand context range when get too few info
