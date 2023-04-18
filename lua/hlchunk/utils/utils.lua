@@ -57,7 +57,7 @@ function M.get_indent_range(line)
     up = math.max(up, wbegin)
     down = math.min(down, wend)
 
-    return { up + 1, down -1 }
+    return { up + 1, down - 1 }
 end
 
 -- when virt_indent is false, there are three cases:
