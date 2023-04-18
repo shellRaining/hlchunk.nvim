@@ -53,11 +53,10 @@ function chunk_mod:render()
 
     local cur_chunk_range = utils.get_chunk_range()
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
-        local beg_row, end_row = table.unpack(cur_chunk_range)
+        local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
         local end_blank_len = fn.indent(end_row)
-        local start_col = math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth
-        start_col = start_col > 0 and start_col or 0
+        local start_col = math.max(math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth, 0)
 
         local row_opts = {
             virt_text_pos = "overlay",
