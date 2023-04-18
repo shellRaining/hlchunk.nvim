@@ -57,6 +57,7 @@ function chunk_mod:render()
         local beg_blank_len = fn.indent(beg_row)
         local end_blank_len = fn.indent(end_row)
         local start_col = math.max(math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth, 0)
+        local offset = fn.winsaveview().leftcol
 
         local row_opts = {
             virt_text_pos = "overlay",
@@ -67,8 +68,11 @@ function chunk_mod:render()
 
         -- render beg_row
         if beg_blank_len > 0 then
+            local virt_text_len = beg_blank_len - start_col
             local beg_virt_text = self.options.chars.left_top
-                .. self.options.chars.horizontal_line:rep(beg_blank_len - start_col - 1)
+                .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
+            local utfBeg = vim.str_byteindex(beg_virt_text, math.min(offset, virt_text_len))
+            beg_virt_text = beg_virt_text:sub(utfBeg + 1)
 
             row_opts.virt_text = { { beg_virt_text, "HLChunkStyle1" } }
             row_opts.virt_text_win_col = start_col
@@ -77,9 +81,12 @@ function chunk_mod:render()
 
         -- render end_row
         if end_blank_len > 0 then
+            local virt_text_len = end_blank_len - start_col
             local end_virt_text = self.options.chars.left_bottom
                 .. self.options.chars.horizontal_line:rep(end_blank_len - start_col - 2)
                 .. self.options.chars.right_arrow
+            local utfBeg = vim.str_byteindex(end_virt_text, math.min(offset, virt_text_len))
+            end_virt_text = end_virt_text:sub(utfBeg + 1)
             row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
             row_opts.virt_text_win_col = start_col
             api.nvim_buf_set_extmark(0, ns_id, end_row - 1, 0, row_opts)
@@ -93,7 +100,9 @@ function chunk_mod:render()
             local space_tab = (" "):rep(vim.o.shiftwidth)
             local line_val = fn.getline(i):gsub("\t", space_tab)
             if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
-                api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+                if utils.col_in_screen(start_col) then
+                    api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+                end
             end
         end
     end
