@@ -135,4 +135,9 @@ function M.get_virt_indent(rows_indent, line)
     return -1
 end
 
+function M.col_in_screen(col)
+    local leftcol = vim.fn.winsaveview().leftcol
+    return col >= leftcol
+end
+
 return M

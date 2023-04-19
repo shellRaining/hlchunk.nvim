@@ -62,43 +62,56 @@ function chunk_mod:render()
         local beg_blank_len = fn.indent(beg_row)
         local end_blank_len = fn.indent(end_row)
         local start_col = math.max(math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth, 0)
+        local offset = fn.winsaveview().leftcol
 
         local row_opts = {
             virt_text_pos = "overlay",
-            virt_text_win_col = start_col,
             hl_mode = "combine",
             priority = 100,
         }
 
         -- render beg_row
         if beg_blank_len > 0 then
+            local virt_text_len = beg_blank_len - start_col
             local beg_virt_text = self.options.chars.left_top
-                .. self.options.chars.horizontal_line:rep(beg_blank_len - start_col - 1)
+                .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
+
+            if not utils.col_in_screen(start_col) then
+                local utfBeg = vim.str_byteindex(beg_virt_text, math.min(offset, virt_text_len))
+                beg_virt_text = beg_virt_text:sub(utfBeg + 1)
+            end
 
             row_opts.virt_text = { { beg_virt_text, "HLChunkStyle1" } }
-            row_opts.virt_text_win_col = start_col
+            row_opts.virt_text_win_col = start_col - offset
             api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
         end
 
         -- render end_row
         if end_blank_len > 0 then
+            local virt_text_len = end_blank_len - start_col
             local end_virt_text = self.options.chars.left_bottom
                 .. self.options.chars.horizontal_line:rep(end_blank_len - start_col - 2)
                 .. self.options.chars.right_arrow
+
+            if not utils.col_in_screen(start_col) then
+                local utfBeg = vim.str_byteindex(end_virt_text, math.min(offset, virt_text_len))
+                end_virt_text = end_virt_text:sub(utfBeg + 1)
+            end
             row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
-            row_opts.virt_text_win_col = start_col
+            row_opts.virt_text_win_col = start_col - offset
             api.nvim_buf_set_extmark(0, ns_id, end_row - 1, 0, row_opts)
         end
 
         -- render middle section
         for i = beg_row + 1, end_row - 1 do
-            start_col = math.max(0, start_col)
             row_opts.virt_text = { { self.options.chars.vertical_line, "HLChunkStyle1" } }
-            row_opts.virt_text_win_col = start_col
+            row_opts.virt_text_win_col = start_col - offset
             local space_tab = (" "):rep(vim.o.shiftwidth)
             local line_val = fn.getline(i):gsub("\t", space_tab)
             if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
-                api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+                if utils.col_in_screen(start_col) then
+                    api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+                end
             end
         end
     end
