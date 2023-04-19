@@ -53,10 +53,8 @@ function chunk_mod:render()
 
     self:clear()
     ns_id = api.nvim_create_namespace("hlchunk")
-    
-    local cur_chunk_range =
-        self.options.use_treesitter and utils.get_chunk_range_ts()
-        or utils.get_chunk_range_ts()
+
+    local cur_chunk_range = self.options.use_treesitter and utils.get_chunk_range_ts() or utils.get_chunk_range()
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
