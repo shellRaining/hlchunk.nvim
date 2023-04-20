@@ -1,4 +1,3 @@
-local stringx = require("hlchunk.utils.string")
 local Array = require("hlchunk.utils.array")
 local api = vim.api
 
@@ -27,7 +26,7 @@ function BaseMod:new(o)
 end
 
 function BaseMod:enable()
-    local ok, _ = pcall(function()
+    local ok, info = pcall(function()
         self.options.enable = true
         self:set_hl(self.options.style)
         self:render()
@@ -35,7 +34,8 @@ function BaseMod:enable()
         self:create_mod_usercmd()
     end)
     if not ok then
-        vim.notify("you have enable " .. self.name .. " mod")
+        -- vim.notify("you have enable " .. self.name .. " mod")
+        vim.notify(tostring(info))
     end
 end
 function BaseMod:disable()
@@ -61,10 +61,10 @@ function BaseMod:disable_mod_autocmd()
     vim.notify("not implemented disable_mod_autocmd " .. self.name, vim.log.levels.ERROR)
 end
 function BaseMod:create_mod_usercmd()
-    local token_array = Array:from(stringx.split(self.name, "_"))
+    local token_array = Array:from(self.name:split("_"))
     local mod_name = token_array
         :map(function(value)
-            return stringx.firstToUpper(value)
+            return value:firstToUpper()
         end)
         :join()
     api.nvim_create_user_command("EnableHL" .. mod_name, function()
@@ -108,11 +108,11 @@ end
 -- set highlight for mod
 ---@param args table
 function BaseMod:set_hl(args)
-    local token_array = Array:from(stringx.split(self.name, "_"))
+    local token_array = Array:from(self.name:split("_"))
     local hl_name = "HL"
         .. token_array
             :map(function(value)
-                return stringx.firstToUpper(value)
+                return value:firstToUpper()
             end)
             :join()
         .. "Style"

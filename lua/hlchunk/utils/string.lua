@@ -1,33 +1,49 @@
-local stringx = {}
+local mt = getmetatable("")
 
-function stringx.split(s, sep)
+---@param self string
+---@param sep? string
+mt.__index.split = function(self, sep)
     if sep == nil then
         sep = "%s"
     end
     local t = {}
-    for str in string.gmatch(s, "([^" .. sep .. "]+)") do
+    for str in string.gmatch(self, "([^" .. sep .. "]+)") do
+        -- t:insert(str)
         table.insert(t, str)
     end
     return t
 end
 
-function stringx.firstToUpper(s)
-    return (s:gsub("^%l", string.upper))
+---@param self string
+mt.__index.firstToUpper = function(self)
+    return (self:gsub("^%l", string.upper))
 end
 
-function stringx.at(s, idx)
-    return s:sub(idx, idx)
+---@param self string
+---@param idx number
+mt.__index.at = function(self, idx)
+    return self:sub(idx, idx)
 end
 
----@param tbl string[]
----@param sep? string
-function stringx.join(tbl, sep)
-    sep = sep or ""
-    local res = ""
-    for _, value in pairs(tbl) do
-        res = res .. value .. sep
-    end
-    return res
-end
+-- function string:split(sep)
+--     if sep == nil then
+--         sep = "%s"
+--     end
+--     local t = {}
+--     for str in string.gmatch(self, "([^" .. sep .. "]+)") do
+--         -- t:insert(str)
+--         table.insert(t, str)
+--     end
+--     return t
+-- end
 
-return stringx
+-- function string:firstToUpper()
+--     return (self:gsub("^%l", string.upper))
+-- end
+
+-- function string:at(idx)
+-- local start = vim.str_byteindex(self, idx)
+-- local finish = vim.str_byteindex(self, idx + 1)
+-- return self:sub(start + 1, finish)
+--     return self:sub(idx, idx)
+-- end

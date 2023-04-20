@@ -60,6 +60,7 @@ end
 
 ---@param params PlugConfig
 hlchunk.setup = function(params)
+    require("hlchunk.utils.string")
     local mods_status = get_mods_status(params)
     set_usercmds(mods_status)
     for mod_name, enabled in pairs(mods_status) do

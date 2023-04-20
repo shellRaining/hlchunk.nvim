@@ -2,7 +2,6 @@ local BaseMod = require("hlchunk.base_mod")
 
 local utils = require("hlchunk.utils.utils")
 local Array = require("hlchunk.utils.array")
-local stringx = require("hlchunk.utils.string")
 local api = vim.api
 local fn = vim.fn
 
@@ -76,7 +75,7 @@ function indent_mod:render()
         -- it may case get wronged char
         local count = 0
         for i = 1, #text do
-            local c = stringx.at(text, i)
+            local c = text:at(i)
             if not c:match("%s") then
                 count = count + 1
                 local Indent_chars_num = Array:from(self.options.style):size()
