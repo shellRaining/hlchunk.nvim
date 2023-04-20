@@ -75,12 +75,12 @@ function chunk_mod:render()
                 .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
 
             if not utils.col_in_screen(start_col) then
-                local utfBeg = vim.str_byteindex(beg_virt_text, math.min(offset, virt_text_len))
+                local utfBeg = vim.str_byteindex(beg_virt_text, math.min(offset - start_col, virt_text_len))
                 beg_virt_text = beg_virt_text:sub(utfBeg + 1)
             end
 
             row_opts.virt_text = { { beg_virt_text, "HLChunkStyle1" } }
-            row_opts.virt_text_win_col = start_col - offset
+            row_opts.virt_text_win_col = math.max(start_col - offset, 0)
             api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
         end
 
@@ -92,11 +92,11 @@ function chunk_mod:render()
                 .. self.options.chars.right_arrow
 
             if not utils.col_in_screen(start_col) then
-                local utfBeg = vim.str_byteindex(end_virt_text, math.min(offset, virt_text_len))
+                local utfBeg = vim.str_byteindex(end_virt_text, math.min(offset - start_col, virt_text_len))
                 end_virt_text = end_virt_text:sub(utfBeg + 1)
             end
             row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
-            row_opts.virt_text_win_col = start_col - offset
+            row_opts.virt_text_win_col = math.max(start_col - offset, 0)
             api.nvim_buf_set_extmark(0, ns_id, end_row - 1, 0, row_opts)
         end
 
