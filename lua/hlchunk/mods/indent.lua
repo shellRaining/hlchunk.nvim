@@ -71,8 +71,6 @@ function indent_mod:render()
         end
         text = text:sub(win_info.leftcol + 1)
 
-        -- WARNING: please note the indentline you used maybe Unicode char, so dont use stirngx.at directly
-        -- it may case get wronged char
         local count = 0
         for i = 1, #text do
             local c = text:at(i)
