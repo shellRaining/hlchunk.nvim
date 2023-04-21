@@ -23,12 +23,31 @@ local support_ft = {
     "*.vue",
 }
 
+local exclude_ft = {
+    aerial = true,
+    dashboard = true,
+    help = true,
+    lspinfo = true,
+    lspsagafinder = true,
+    packer = true,
+    checkhealth = true,
+    man = true,
+    mason = true,
+    NvimTree = true,
+    ["neo-tree"] = true,
+    plugin = true,
+    lazy = true,
+    TelescopePrompt = true,
+    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+}
+
 local chunk_mod = BaseMod:new({
     name = "chunk",
     options = {
         enable = true,
         use_treesitter = false,
         support_filetypes = support_ft,
+        exclude_filetype = exclude_ft,
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -47,7 +66,7 @@ local ns_id = -1
 
 -- set new virtual text to the right place
 function chunk_mod:render()
-    if not self.options.enable then
+    if not self.options.enable or self.options.exclude_filetype[vim.bo.ft] then
         return
     end
 

@@ -1,11 +1,36 @@
 local M = {}
 
 local fn = vim.fn
+local treesitter = vim.treesitter
+
+function M.has_treesitter(bufnr)
+    local ok = pcall(require, "nvim-treesitter")
+    if not ok then
+        return false
+    end
+
+    local has_lang, lang = pcall(treesitter.language.get_lang, vim.bo[bufnr].filetype)
+    if not has_lang then
+        return false
+    end
+
+    local has, parser = pcall(treesitter.get_parser, bufnr, lang)
+    if not has or not parser then
+        return false
+    end
+    return true
+end
 
 -- TODO: maybe we can merge this function with get_chunk_range
-function M.get_chunk_range_ts()
+function M.get_chunk_range_ts(line)
+    line = line or fn.line(".")
+
+    if not M.has_treesitter(0) then
+        vim.notify("not have parser for " .. vim.bo.filetype)
+        return nil
+    end
     local beg_row, end_row
-    local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
+    local node = treesitter.get_node({ bufnr = 0, pos = { line, 0 } })
     if not node then
         return nil
     end

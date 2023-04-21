@@ -21,6 +21,24 @@ local support_ft = {
     "*.vue",
 }
 
+local exclude_ft = {
+    aerial = true,
+    dashboard = true,
+    help = true,
+    lspinfo = true,
+    lspsagafinder = true,
+    packer = true,
+    checkhealth = true,
+    man = true,
+    mason = true,
+    NvimTree = true,
+    ["neo-tree"] = true,
+    plugin = true,
+    lazy = true,
+    TelescopePrompt = true,
+    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+}
+
 local line_num_mod = require("hlchunk.base_mod"):new({
     name = "line_num",
     options = {
@@ -28,11 +46,12 @@ local line_num_mod = require("hlchunk.base_mod"):new({
         enable = true,
         style = "#806d9c",
         support_filetypes = support_ft,
+        exclude_filetype = exclude_ft,
     },
 })
 
 function line_num_mod:render()
-    if not self.options.enable then
+    if not self.options.enable or self.options.exclude_filetype[vim.bo.ft] then
         return
     end
 
