@@ -11,4 +11,11 @@ ignore = {
 -- Global objects defined by the C code
 read_globals = {
     "vim",
+    string = {
+        fields = {
+            firstToUpper = { read_only = false },
+            split = { read_only = false },
+            at = { read_only = false },
+        },
+    },
 }
