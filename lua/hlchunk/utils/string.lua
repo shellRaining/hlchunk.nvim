@@ -17,6 +17,7 @@ function string:firstToUpper()
     return (self:gsub("^%l", string.upper))
 end
 
+-- get the char in a string at a given byte index, notice the base is 0, has an option to use utf8
 ---@param self string
 ---@param idx number
 ---@param options? {utf8: boolean}
