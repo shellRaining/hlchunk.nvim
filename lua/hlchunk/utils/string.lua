@@ -31,3 +31,10 @@ function string:at(idx, options)
         return self:sub(idx, idx)
     end
 end
+
+-- trim the blank of a string
+---@param self string
+---@return string
+function string:trim()
+    return self:match("^%s*(.-)%s*$")
+end

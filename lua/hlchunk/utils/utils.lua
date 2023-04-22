@@ -41,6 +41,17 @@ function M.get_chunk_range_ts(line)
     return { beg_row + 1, end_row + 1 }
 end
 
+---@param line? number
+function M.is_comment(line)
+    line = line or fn.line(".")
+
+    local str = fn.getline(line)
+    str:trim()
+    return str:match("^%-%-[^\r\n]*$") ~= nil
+        or string.match(str, "^%s*/%*.-%*/%s*$") ~= nil
+        or string.match(str, "^%s*//.*$") ~= nil
+end
+
 ---@param line? number the line number we want to get the chunk range
 ---@return table<number, number> | nil
 function M.get_chunk_range(line)
@@ -56,6 +67,10 @@ function M.get_chunk_range(line)
     end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
 
     if beg_row <= 0 or end_row <= 0 then
+        return nil
+    end
+
+    if M.is_comment(beg_row) or M.is_comment(end_row) then
         return nil
     end
 
