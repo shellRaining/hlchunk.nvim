@@ -22,6 +22,7 @@ local exclude_ft = {
     lazy = true,
     TelescopePrompt = true,
     [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+    notify = true,
 }
 
 local indent_mod = BaseMod:new({
@@ -97,7 +98,14 @@ end
 function indent_mod:enable_mod_autocmd()
     api.nvim_create_augroup("hl_indent_augroup", { clear = true })
 
-    api.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
+    api.nvim_create_autocmd({ "WinScrolled" }, {
+        group = "hl_indent_augroup",
+        pattern = tostring(fn.win_getid()),
+        callback = function()
+            indent_mod:render()
+        end,
+    })
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
         group = "hl_indent_augroup",
         pattern = "*",
         callback = function()

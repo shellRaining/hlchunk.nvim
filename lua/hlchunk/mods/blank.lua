@@ -96,9 +96,23 @@ end
 function blank_mod:enable_mod_autocmd()
     api.nvim_create_augroup("hl_blank_augroup", { clear = true })
 
-    api.nvim_create_autocmd({ "WinScrolled", "TextChanged", "TextChangedI", "BufWinEnter", "CompleteChanged" }, {
+    api.nvim_create_autocmd({ "WinScrolled" }, {
+        group = "hl_blank_augroup",
+        pattern = tostring(fn.win_getid()),
+        callback = function()
+            blank_mod:render()
+        end,
+    })
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
         group = "hl_blank_augroup",
         pattern = "*",
+        callback = function()
+            blank_mod:render()
+        end,
+    })
+    api.nvim_create_autocmd({ "OptionSet" }, {
+        group = "hl_blank_augroup",
+        pattern = "list,listchars,shiftwidth,tabstop,expandtab",
         callback = function()
             blank_mod:render()
         end,
