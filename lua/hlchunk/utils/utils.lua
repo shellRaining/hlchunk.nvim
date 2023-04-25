@@ -145,8 +145,8 @@ function M.get_rows_indent(begRow, endRow, options)
             vim.notify_once("hl_indent: treesitter not loaded")
             return nil
         end
-        get_indent = function(i)
-            return math.min(ts_indent.get_indent(i) or 0, fn.indent(i))
+        get_indent = function(row)
+            return math.min(ts_indent.get_indent(row) or 0, fn.indent(row))
         end
     end
 

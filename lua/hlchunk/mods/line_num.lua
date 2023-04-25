@@ -48,6 +48,7 @@ local line_num_mod = require("hlchunk.base_mod"):new({
         support_filetypes = support_ft,
         exclude_filetype = exclude_ft,
     },
+    old_win_info = fn.winsaveview(),
 })
 
 function line_num_mod:render()
@@ -82,7 +83,13 @@ function line_num_mod:enable_mod_autocmd()
         group = "hl_line_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
-            line_num_mod:render()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = line_num_mod.old_win_info
+
+            if cur_win_info.lnum ~= old_win_info.lnum or cur_win_info.leftcol ~= old_win_info.leftcol then
+                line_num_mod.old_win_info = cur_win_info
+                line_num_mod:render()
+            end
         end,
     })
 end
@@ -117,7 +124,7 @@ function line_num_mod:enable()
         self:create_mod_usercmd()
     end)
     if not ok then
-        vim.notify("you have disable this plugin")
+        vim.notify("you have disable line_num mod")
     end
 end
 

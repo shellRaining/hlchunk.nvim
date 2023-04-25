@@ -60,6 +60,7 @@ local chunk_mod = BaseMod:new({
             primrose = "#c06f98",
         },
     },
+    old_win_info = fn.winsaveview(),
 })
 
 local ns_id = -1
@@ -143,11 +144,24 @@ end
 
 function chunk_mod:enable_mod_autocmd()
     api.nvim_create_augroup("hl_chunk_augroup", { clear = true })
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "TextChanged" }, {
+    api.nvim_create_autocmd({ "TextChanged" }, {
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
+        end,
+    })
+    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        group = "hl_chunk_augroup",
+        pattern = self.options.support_filetypes,
+        callback = function()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = chunk_mod.old_win_info
+
+            if cur_win_info.lnum ~= old_win_info.lnum or cur_win_info.leftcol ~= old_win_info.leftcol then
+                chunk_mod.old_win_info = cur_win_info
+                chunk_mod:render()
+            end
         end,
     })
 end
