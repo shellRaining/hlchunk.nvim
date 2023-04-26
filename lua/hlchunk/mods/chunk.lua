@@ -135,7 +135,7 @@ end
 
 function chunk_mod:enable_mod_autocmd()
     api.nvim_create_augroup("hl_chunk_augroup", { clear = true })
-    api.nvim_create_autocmd({ "TextChanged" }, {
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
