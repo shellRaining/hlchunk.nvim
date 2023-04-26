@@ -39,15 +39,13 @@ local blank_mod = BaseMod:new({
     },
 })
 
-local ns_id = -1
-
 function blank_mod:render()
     if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
         return
     end
 
     self:clear()
-    ns_id = api.nvim_create_namespace("hl_blank_augroup")
+    self.ns_id = api.nvim_create_namespace("hl_blank_augroup")
 
     local rows_indent = utils.get_rows_indent(nil, nil, {
         use_treesitter = self.options.use_treesitter,
@@ -81,15 +79,9 @@ function blank_mod:render()
                 local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
                 row_opts.virt_text = { { char, style } }
                 row_opts.virt_text_win_col = i - 1
-                api.nvim_buf_set_extmark(0, ns_id, index - 1, 0, row_opts)
+                api.nvim_buf_set_extmark(0, self.ns_id, index - 1, 0, row_opts)
             end
         end
-    end
-end
-
-function blank_mod:clear()
-    if ns_id ~= -1 then
-        api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
     end
 end
 

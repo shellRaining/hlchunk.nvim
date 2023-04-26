@@ -63,8 +63,6 @@ local chunk_mod = BaseMod:new({
     old_win_info = fn.winsaveview(),
 })
 
-local ns_id = -1
-
 -- set new virtual text to the right place
 function chunk_mod:render()
     if not self.options.enable or self.options.exclude_filetype[vim.bo.ft] then
@@ -72,7 +70,7 @@ function chunk_mod:render()
     end
 
     self:clear()
-    ns_id = api.nvim_create_namespace("hlchunk")
+    self.ns_id = api.nvim_create_namespace("hlchunk")
 
     local cur_chunk_range = self.options.use_treesitter and utils.get_chunk_range_ts() or utils.get_chunk_range()
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
@@ -101,7 +99,7 @@ function chunk_mod:render()
 
             row_opts.virt_text = { { beg_virt_text, "HLChunkStyle1" } }
             row_opts.virt_text_win_col = math.max(start_col - offset, 0)
-            api.nvim_buf_set_extmark(0, ns_id, beg_row - 1, 0, row_opts)
+            api.nvim_buf_set_extmark(0, self.ns_id, beg_row - 1, 0, row_opts)
         end
 
         -- render end_row
@@ -117,7 +115,7 @@ function chunk_mod:render()
             end
             row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
             row_opts.virt_text_win_col = math.max(start_col - offset, 0)
-            api.nvim_buf_set_extmark(0, ns_id, end_row - 1, 0, row_opts)
+            api.nvim_buf_set_extmark(0, self.ns_id, end_row - 1, 0, row_opts)
         end
 
         -- render middle section
@@ -128,17 +126,10 @@ function chunk_mod:render()
             local line_val = fn.getline(i):gsub("\t", space_tab)
             if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
                 if utils.col_in_screen(start_col) then
-                    api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+                    api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
                 end
             end
         end
-    end
-end
-
--- clear the virtual text marked before
-function chunk_mod:clear()
-    if ns_id ~= -1 then
-        api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
     end
 end
 

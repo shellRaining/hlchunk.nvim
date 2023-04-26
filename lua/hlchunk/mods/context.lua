@@ -35,15 +35,13 @@ local context_mod = require("hlchunk.base_mod"):new({
     },
 })
 
-local ns_id = -1
-
 function context_mod:render()
     if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
         return
     end
 
     self:clear()
-    ns_id = api.nvim_create_namespace("hl_context")
+    self.ns_id = api.nvim_create_namespace("hl_context")
 
     local indent_range = utils.get_indent_range()
     if not indent_range then
@@ -66,14 +64,8 @@ function context_mod:render()
         local space_tab = (" "):rep(vim.o.shiftwidth)
         local line_val = fn.getline(i):gsub("\t", space_tab)
         if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
-            api.nvim_buf_set_extmark(0, ns_id, i - 1, 0, row_opts)
+            api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
         end
-    end
-end
-
-function context_mod:clear()
-    if ns_id ~= -1 then
-        api.nvim_buf_clear_namespace(0, ns_id, 0, -1)
     end
 end
 

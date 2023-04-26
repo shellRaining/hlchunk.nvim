@@ -16,6 +16,7 @@ local api = vim.api
 local BaseMod = {
     name = "",
     options = nil,
+    ns_id = -1,
 }
 
 function BaseMod:new(o)
@@ -52,7 +53,9 @@ function BaseMod:render()
     vim.notify("not implemented render " .. self.name, vim.log.levels.ERROR)
 end
 function BaseMod:clear()
-    vim.notify("not implemented clear " .. self.name, vim.log.levels.ERROR)
+    if self.ns_id ~= -1 then
+        api.nvim_buf_clear_namespace(0, self.ns_id, 0, -1)
+    end
 end
 function BaseMod:enable_mod_autocmd()
     vim.notify("not implemented enable_mod_autocmd " .. self.name, vim.log.levels.ERROR)
