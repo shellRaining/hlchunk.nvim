@@ -29,15 +29,26 @@ function M.get_chunk_range_ts(line)
         vim.notify("not have parser for " .. vim.bo.filetype)
         return nil
     end
+
     local beg_row, end_row
-    local node = treesitter.get_node({ bufnr = 0, pos = { line, 0 } })
+    local node = treesitter.get_node()
     if not node then
         return nil
     end
-    beg_row, _, end_row, _ = vim.treesitter.get_node_range(node)
-    if beg_row <= 0 or end_row <= 0 then
+
+    beg_row, _, end_row, _ = treesitter.get_node_range(node)
+    while beg_row == end_row do
+        if not node:parent() then
+            break
+        end
+        node = node:parent()
+        beg_row, _, end_row, _ = treesitter.get_node_range(node)
+    end
+
+    if not node:parent() then
         return nil
     end
+
     return { beg_row + 1, end_row + 1 }
 end
 
