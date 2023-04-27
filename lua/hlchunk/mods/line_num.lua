@@ -48,7 +48,6 @@ local line_num_mod = require("hlchunk.base_mod"):new({
         support_filetypes = support_ft,
         exclude_filetype = exclude_ft,
     },
-    old_win_info = fn.winsaveview(),
 })
 
 function line_num_mod:render()

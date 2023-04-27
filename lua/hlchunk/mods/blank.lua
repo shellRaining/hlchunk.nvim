@@ -24,8 +24,12 @@ local exclude_ft = {
 }
 
 local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
+
+---@class BlankMod: BaseMod
+---@field cached_lines table<number, number>
 local blank_mod = BaseMod:new({
     name = "blank",
+    cached_lines = {},
     options = {
         enable = true,
         chars = {
@@ -39,12 +43,46 @@ local blank_mod = BaseMod:new({
     },
 })
 
-function blank_mod:render()
+function blank_mod:render_line(index, indent)
+    local row_opts = {
+        virt_text_pos = "overlay",
+        hl_mode = "combine",
+        priority = 1,
+    }
+    local render_char_num = math.floor(indent / vim.o.shiftwidth)
+    local win_info = fn.winsaveview()
+    local text = ""
+    for _ = 1, render_char_num do
+        text = text .. "." .. (" "):rep(vim.o.shiftwidth - 1)
+    end
+    text = text:sub(win_info.leftcol + 1)
+
+    local count = 0
+    for i = 1, #text do
+        local c = text:at(i)
+        if not c:match("%s") then
+            count = count + 1
+            local Blank_chars_num = Array:from(self.options.style):size()
+            local Blank_style_num = Array:from(self.options.chars):size()
+            local char = self.options.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
+            local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
+            row_opts.virt_text = { { char, style } }
+            row_opts.virt_text_win_col = i - 1
+            api.nvim_buf_set_extmark(0, self.ns_id, index - 1, 0, row_opts)
+        end
+    end
+end
+
+function blank_mod:render(scrolled)
+    scrolled = scrolled or false
+
     if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
         return
     end
 
-    self:clear()
+    if not scrolled then
+        self:clear()
+    end
     self.ns_id = api.nvim_create_namespace("hl_blank_augroup")
 
     local rows_indent = utils.get_rows_indent(nil, nil, {
@@ -54,33 +92,10 @@ function blank_mod:render()
     if not rows_indent then
         return
     end
-    local row_opts = {
-        virt_text_pos = "overlay",
-        hl_mode = "combine",
-        priority = 1,
-    }
     for index, _ in pairs(rows_indent) do
-        local render_char_num = math.floor(rows_indent[index] / vim.o.shiftwidth)
-        local win_info = fn.winsaveview()
-        local text = ""
-        for _ = 1, render_char_num do
-            text = text .. "." .. (" "):rep(vim.o.shiftwidth - 1)
-        end
-        text = text:sub(win_info.leftcol + 1)
-
-        local count = 0
-        for i = 1, #text do
-            local c = text:at(i)
-            if not c:match("%s") then
-                count = count + 1
-                local Blank_chars_num = Array:from(self.options.style):size()
-                local Blank_style_num = Array:from(self.options.chars):size()
-                local char = self.options.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
-                local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
-                row_opts.virt_text = { { char, style } }
-                row_opts.virt_text_win_col = i - 1
-                api.nvim_buf_set_extmark(0, self.ns_id, index - 1, 0, row_opts)
-            end
+        if not (scrolled and self.cached_lines[index] and self.cached_lines[index] > 0) then
+            self:render_line(index, rows_indent[index])
+            self.cached_lines[index] = rows_indent[index]
         end
     end
 end
@@ -92,13 +107,20 @@ function blank_mod:enable_mod_autocmd()
         group = "hl_blank_augroup",
         pattern = tostring(fn.win_getid()),
         callback = function()
-            blank_mod:render()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = blank_mod.old_win_info
+
+            if cur_win_info.lnum ~= old_win_info.lnum or cur_win_info.leftcol ~= old_win_info.leftcol then
+                blank_mod.old_win_info = cur_win_info
+                blank_mod:render(true)
+            end
         end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
         group = "hl_blank_augroup",
         pattern = "*",
         callback = function()
+            blank_mod.cached_lines = {}
             blank_mod:render()
         end,
     })

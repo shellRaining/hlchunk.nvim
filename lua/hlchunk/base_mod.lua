@@ -1,5 +1,6 @@
 local Array = require("hlchunk.utils.array")
 local api = vim.api
+local fn = vim.fn
 
 ---@class BaseMod
 ---@field name string
@@ -17,6 +18,7 @@ local BaseMod = {
     name = "",
     options = nil,
     ns_id = -1,
+    old_win_info = fn.winsaveview(),
 }
 
 function BaseMod:new(o)

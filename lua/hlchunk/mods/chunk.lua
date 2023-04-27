@@ -60,7 +60,6 @@ local chunk_mod = BaseMod:new({
             primrose = "#c06f98",
         },
     },
-    old_win_info = fn.winsaveview(),
 })
 
 -- set new virtual text to the right place
