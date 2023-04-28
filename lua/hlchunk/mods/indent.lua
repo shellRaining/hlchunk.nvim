@@ -106,15 +106,18 @@ function indent_mod:enable_mod_autocmd()
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = "hl_indent_augroup",
-        pattern = tostring(fn.win_getid()),
+        -- TODO: how to get the window attact with current buffer?
+        pattern = "*",
         callback = function()
             local cur_win_info = fn.winsaveview()
             local old_win_info = indent_mod.old_win_info
 
-            if cur_win_info.lnum ~= old_win_info.lnum or cur_win_info.leftcol ~= old_win_info.leftcol then
-                indent_mod.old_win_info = cur_win_info
+            if cur_win_info.lnum ~= old_win_info.lnum then
                 indent_mod:render(true)
+            elseif cur_win_info.leftcol ~= old_win_info.leftcol then
+                indent_mod:render(false)
             end
+            indent_mod.old_win_info = cur_win_info
         end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {

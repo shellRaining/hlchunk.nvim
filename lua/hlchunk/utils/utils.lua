@@ -78,7 +78,7 @@ function M.get_chunk_range(line)
 end
 
 ---@param line? number the line number we want to get the indent range
----@return table<number, number> | nil
+---@return table<number, number> | nil not include end point
 function M.get_indent_range(line)
     line = line or fn.line(".")
 

@@ -49,7 +49,7 @@ function context_mod:render()
     end
     local beg_row, end_row = unpack(indent_range)
 
-    local start_col = math.min(fn.indent(beg_row), fn.indent(end_row)) - vim.o.shiftwidth
+    local start_col = math.max(math.min(fn.indent(beg_row), fn.indent(end_row)) - vim.o.shiftwidth, 0)
     local row_opts = {
         virt_text_pos = "overlay",
         virt_text_win_col = start_col,
@@ -58,27 +58,41 @@ function context_mod:render()
     }
 
     -- render middle section
+    local offset = fn.winsaveview().leftcol
     for i = beg_row, end_row do
+        -- TODO: dont use HLContextStyle1, but use varible defined in base_mod
         row_opts.virt_text = { { self.options.chars[1], "HLContextStyle1" } }
-        row_opts.virt_text_win_col = start_col
+        row_opts.virt_text_win_col = start_col - offset
         local space_tab = (" "):rep(vim.o.shiftwidth)
         local line_val = fn.getline(i):gsub("\t", space_tab)
         if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
-            api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
+            if utils.col_in_screen(start_col) then
+                api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
+            end
         end
     end
 end
 
 function context_mod:enable_mod_autocmd()
     api.nvim_create_augroup("hl_context_augroup", { clear = true })
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "WinScrolled" }, {
+    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_context_augroup",
         pattern = "*",
         callback = function()
-            local ok, info = pcall(context_mod.render, context_mod)
-            if not ok then
-                vim.notify(tostring(info))
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = context_mod.old_win_info
+
+            if cur_win_info.lnum ~= old_win_info.lnum or cur_win_info.leftcol ~= old_win_info.leftcol then
+                context_mod.old_win_info = cur_win_info
+                context_mod:render()
             end
+        end,
+    })
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+        group = "hl_context_augroup",
+        pattern = "*",
+        callback = function()
+            context_mod:render()
         end,
     })
 end
