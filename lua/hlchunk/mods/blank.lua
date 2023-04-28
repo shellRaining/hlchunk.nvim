@@ -81,7 +81,7 @@ function blank_mod:render(scrolled)
     end
 
     if not scrolled then
-        self:clear()
+        self:clear(fn.line("w0"), fn.line("w$"))
     end
     self.ns_id = api.nvim_create_namespace("hl_blank_augroup")
 

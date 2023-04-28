@@ -9,7 +9,7 @@ local fn = vim.fn
 ---@field enable fun(self: BaseMod)
 ---@field disable fun(self: BaseMod)
 ---@field render fun(self: BaseMod)
----@field clear fun(self: BaseMod)
+---@field clear fun(self: BaseMod, line_start: number | nil, line_end: number | nil)
 ---@field enable_mod_autocmd fun(self: BaseMod)
 ---@field disable_mod_autocmd fun(self: BaseMod)
 ---@field create_mod_usercmd fun(self: BaseMod)
@@ -54,9 +54,13 @@ end
 function BaseMod:render()
     vim.notify("not implemented render " .. self.name, vim.log.levels.ERROR)
 end
-function BaseMod:clear()
+
+function BaseMod:clear(line_start, line_end)
+    line_start = line_start or 0
+    line_end = line_end or -1
+
     if self.ns_id ~= -1 then
-        api.nvim_buf_clear_namespace(0, self.ns_id, 0, -1)
+        api.nvim_buf_clear_namespace(0, self.ns_id, line_start, line_end)
     end
 end
 function BaseMod:enable_mod_autocmd()
