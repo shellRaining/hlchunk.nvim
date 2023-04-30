@@ -57,7 +57,7 @@ function line_num_mod:render()
 
     self:clear()
 
-    local cur_chunk_range = self.options.use_treesitter and utils.get_chunk_range_ts() or utils.get_chunk_range()
+    local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         for i = beg_row, end_row do

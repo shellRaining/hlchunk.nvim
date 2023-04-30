@@ -21,35 +21,6 @@ function M.has_treesitter(bufnr)
     return true
 end
 
--- TODO: maybe we can merge this function with get_chunk_range
-function M.get_chunk_range_ts()
-    if not M.has_treesitter(0) then
-        vim.notify("not have parser for " .. vim.bo.filetype)
-        return nil
-    end
-
-    local beg_row, end_row
-    local node = treesitter.get_node()
-    if not node then
-        return nil
-    end
-
-    beg_row, _, end_row, _ = treesitter.get_node_range(node)
-    while beg_row == end_row do
-        if not node:parent() then
-            break
-        end
-        node = node:parent()
-        beg_row, _, end_row, _ = treesitter.get_node_range(node)
-    end
-
-    if not node:parent() then
-        return nil
-    end
-
-    return { beg_row + 1, end_row + 1 }
-end
-
 ---@param line? number
 function M.is_comment(line)
     line = line or fn.line(".")
@@ -62,11 +33,41 @@ function M.is_comment(line)
 end
 
 ---@param line? number the line number we want to get the chunk range
+---@param opts? {use_treesitter: boolean}
 ---@return table<number, number> | nil
-function M.get_chunk_range(line)
+function M.get_chunk_range(line, opts)
+    opts = opts or { use_treesitter = false }
     line = line or fn.line(".")
 
     local beg_row, end_row
+
+    if opts.use_treesitter then
+        if not M.has_treesitter(0) then
+            vim.notify_once("not have parser for " .. vim.bo.filetype)
+            return nil
+        end
+
+        local node = treesitter.get_node()
+        if not node then
+            return nil
+        end
+
+        beg_row, _, end_row, _ = treesitter.get_node_range(node)
+        while beg_row == end_row do
+            if not node:parent() then
+                break
+            end
+            node = node:parent()
+            beg_row, _, end_row, _ = treesitter.get_node_range(node)
+        end
+
+        if not node:parent() then
+            return nil
+        end
+
+        return { beg_row + 1, end_row + 1 }
+    end
+
     local base_flag = "nWz"
     local cur_row_val = fn.getline(line)
     local cur_col = fn.col(".")
