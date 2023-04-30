@@ -29,7 +29,7 @@ local context_mod = require("hlchunk.base_mod"):new({
             "┃", -- Box Drawings Heavy Vertical
         },
         style = {
-            { "#806d9c", "" },
+            "#806d9c",
         },
         exclude_filetype = exclude_ft,
     },
@@ -61,7 +61,7 @@ function context_mod:render()
     local offset = fn.winsaveview().leftcol
     for i = beg_row, end_row do
         -- TODO: dont use HLContextStyle1, but use varible defined in base_mod
-        row_opts.virt_text = { { self.options.chars[1], "HLContextStyle1" } }
+        row_opts.virt_text = { { self.options.chars[1], "HLContext1" } }
         row_opts.virt_text_win_col = start_col - offset
         local space_tab = (" "):rep(vim.o.shiftwidth)
         local line_val = fn.getline(i):gsub("\t", space_tab)
@@ -74,7 +74,7 @@ function context_mod:render()
 end
 
 function context_mod:enable_mod_autocmd()
-    api.nvim_create_augroup("hl_context_augroup", { clear = true })
+    api.nvim_create_augroup(self.augroup_name, { clear = true })
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_context_augroup",
         pattern = "*",
@@ -95,10 +95,6 @@ function context_mod:enable_mod_autocmd()
             context_mod:render()
         end,
     })
-end
-
-function context_mod:disable_mod_autocmd()
-    api.nvim_del_augroup_by_name("hl_context_augroup")
 end
 
 return context_mod

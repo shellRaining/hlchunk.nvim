@@ -77,7 +77,7 @@ function line_num_mod:clear()
 end
 
 function line_num_mod:enable_mod_autocmd()
-    api.nvim_create_augroup("hl_line_augroup", { clear = true })
+    api.nvim_create_augroup(self.augroup_name, { clear = true })
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = "hl_line_augroup",
         pattern = self.options.support_filetypes,
@@ -93,22 +93,18 @@ function line_num_mod:enable_mod_autocmd()
     })
 end
 
-function line_num_mod:disable_mod_autocmd()
-    api.nvim_del_augroup_by_name("hl_line_augroup")
-end
-
 function line_num_mod:set_signs()
     if type(self.options.style) == "table" then
         local tbl = {}
         for i = 1, 1 do
             local sign_name = "sign" .. tostring(i)
-            local hl_name = "HLLineNumStyle" .. tostring(i)
+            local hl_name = "HLLineNum" .. tostring(i)
             tbl[#tbl + 1] = { name = sign_name, numhl = hl_name }
         end
         fn.sign_define(tbl)
     else
         fn.sign_define("sign1", {
-            numhl = "HLLineNumStyle1",
+            numhl = "HLLineNum1",
         })
     end
 end
@@ -116,7 +112,7 @@ end
 function line_num_mod:enable()
     local ok, _ = pcall(function()
         self.options.enable = true
-        self:set_hl(self.options.style)
+        self:set_hl()
         self:set_signs()
         self:render()
         self:enable_mod_autocmd()

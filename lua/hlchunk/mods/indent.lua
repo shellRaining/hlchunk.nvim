@@ -37,7 +37,7 @@ local indent_mod = BaseMod:new({
             "│",
         },
         style = {
-            { whitespaceStyle, "" },
+            whitespaceStyle,
         },
         exclude_filetype = exclude_ft,
     },
@@ -65,7 +65,7 @@ function indent_mod:render_line(index, indent)
             local Indent_chars_num = Array:from(self.options.style):size()
             local Indent_style_num = Array:from(self.options.style):size()
             local char = self.options.chars[(i - 1) % Indent_chars_num + 1]
-            local style = "HLIndentStyle" .. tostring((count - 1) % Indent_style_num + 1)
+            local style = "HLIndent" .. tostring((count - 1) % Indent_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1
             api.nvim_buf_set_extmark(0, self.ns_id, index - 1, 0, row_opts)
@@ -102,7 +102,7 @@ function indent_mod:render(scrolled)
 end
 
 function indent_mod:enable_mod_autocmd()
-    api.nvim_create_augroup("hl_indent_augroup", { clear = true })
+    api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = "hl_indent_augroup",
@@ -135,10 +135,6 @@ function indent_mod:enable_mod_autocmd()
             indent_mod:render()
         end,
     })
-end
-
-function indent_mod:disable_mod_autocmd()
-    api.nvim_del_augroup_by_name("hl_indent_augroup")
 end
 
 return indent_mod

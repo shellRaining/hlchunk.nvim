@@ -3,8 +3,22 @@ local api = vim.api
 local fn = vim.fn
 
 ---@class BaseMod
----@field name string
----@field options table | nil
+---@field name string the name of mod, use Snake_case naming style, such as line_num
+---@field ns_id number
+---@field old_win_info table used to record old window info such as leftcol, curline and top line and so on
+---@field options table | nil default config for mod, and user can change it when setup
+---@field augroup_name string with format hl_{mod_name}_augroup, such as hl_chunk_augroup
+---@field hl_base_name string with format HL{mod_name:firstToUpper()}, such as HLChunk
+local BaseMod = {
+    name = "",
+    options = nil,
+    ns_id = -1,
+    old_win_info = fn.winsaveview(),
+    augroup_name = "",
+    hl_base_name = "",
+}
+
+---@class BaseMod
 ---@field new fun(self: BaseMod, o: table): BaseMod
 ---@field enable fun(self: BaseMod)
 ---@field disable fun(self: BaseMod)
@@ -14,15 +28,10 @@ local fn = vim.fn
 ---@field disable_mod_autocmd fun(self: BaseMod)
 ---@field create_mod_usercmd fun(self: BaseMod)
 ---@field set_options fun(self: BaseMod, options: table | nil)
-local BaseMod = {
-    name = "",
-    options = nil,
-    ns_id = -1,
-    old_win_info = fn.winsaveview(),
-}
-
 function BaseMod:new(o)
     o = o or {}
+    o.augroup_name = o.augroup_name or ("hl_" .. o.name .. "_augroup")
+    o.hl_base_name = o.hl_base_name or ("HL" .. o.name:firstToUpper())
     self.__index = self
     setmetatable(o, self)
     return o
@@ -31,16 +40,16 @@ end
 function BaseMod:enable()
     local ok, info = pcall(function()
         self.options.enable = true
-        self:set_hl(self.options.style)
+        self:set_hl()
         self:render()
         self:enable_mod_autocmd()
         self:create_mod_usercmd()
     end)
     if not ok then
-        -- vim.notify("you have enable " .. self.name .. " mod")
         vim.notify(tostring(info))
     end
 end
+
 function BaseMod:disable()
     local ok, _ = pcall(function()
         self.options.enable = false
@@ -49,8 +58,10 @@ function BaseMod:disable()
     end)
     if not ok then
         vim.notify("you have disable " .. self.name .. " mod")
+        vim.notify(tostring(_))
     end
 end
+
 function BaseMod:render()
     vim.notify("not implemented render " .. self.name, vim.log.levels.ERROR)
 end
@@ -63,12 +74,15 @@ function BaseMod:clear(line_start, line_end)
         api.nvim_buf_clear_namespace(0, self.ns_id, line_start, line_end)
     end
 end
+
 function BaseMod:enable_mod_autocmd()
-    vim.notify("not implemented enable_mod_autocmd " .. self.name, vim.log.levels.ERROR)
+    api.nvim_create_augroup(self.augroup_name, { clear = true })
 end
+
 function BaseMod:disable_mod_autocmd()
-    vim.notify("not implemented disable_mod_autocmd " .. self.name, vim.log.levels.ERROR)
+    api.nvim_del_augroup_by_name(self.augroup_name)
 end
+
 function BaseMod:create_mod_usercmd()
     local token_array = Array:from(self.name:split("_"))
     local mod_name = token_array
@@ -84,48 +98,22 @@ function BaseMod:create_mod_usercmd()
     end, {})
 end
 
-local function set_hl(hl_base_name, args)
-    local count = 1
+-- set highlight for mod
+function BaseMod:set_hl()
+    local hl_opts = self.options.style
+    if type(hl_opts) == "string" then
+        api.nvim_set_hl(0, self.hl_base_name .. "1", { fg = hl_opts })
+        return
+    end
 
-    return function()
-        if type(args) == "string" then
-            api.nvim_set_hl(0, hl_base_name .. "1", {
-                fg = args,
-            })
-        elseif type(args) == "table" then
-            for _, value in pairs(args) do
-                local hl_name = hl_base_name .. tostring(count)
-                if type(value) == "string" then
-                    api.nvim_set_hl(0, hl_name, {
-                        fg = value,
-                    })
-                elseif type(value) == "table" then
-                    api.nvim_set_hl(0, hl_name, {
-                        fg = value[1],
-                        bg = value[2],
-                        nocombine = true,
-                    })
-                end
-                count = count + 1
-            end
-        else
-            vim.notify("highlight format error")
+    for idx, value in ipairs(hl_opts) do
+        local value_type = type(value)
+        if value_type == "table" then
+            api.nvim_set_hl(0, self.hl_base_name .. idx, value)
+        elseif value_type == "string" then
+            api.nvim_set_hl(0, self.hl_base_name .. idx, { fg = value })
         end
     end
-end
-
--- set highlight for mod
----@param args table
-function BaseMod:set_hl(args)
-    local token_array = Array:from(self.name:split("_"))
-    local hl_name = "HL"
-        .. token_array
-            :map(function(value)
-                return value:firstToUpper()
-            end)
-            :join()
-        .. "Style"
-    set_hl(hl_name, args)()
 end
 
 -- set options for mod, if the mod dont have default config, it will notify you

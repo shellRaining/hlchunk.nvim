@@ -56,8 +56,8 @@ local chunk_mod = BaseMod:new({
             right_arrow = ">",
         },
         style = {
-            hibiscus = "#806d9c",
-            primrose = "#c06f98",
+            "#806d9c",
+            "#c06f98",
         },
     },
 })
@@ -96,7 +96,7 @@ function chunk_mod:render()
                 beg_virt_text = beg_virt_text:sub(utfBeg + 1)
             end
 
-            row_opts.virt_text = { { beg_virt_text, "HLChunkStyle1" } }
+            row_opts.virt_text = { { beg_virt_text, "HLChunk1" } }
             row_opts.virt_text_win_col = math.max(start_col - offset, 0)
             api.nvim_buf_set_extmark(0, self.ns_id, beg_row - 1, 0, row_opts)
         end
@@ -112,14 +112,14 @@ function chunk_mod:render()
                 local utfBeg = vim.str_byteindex(end_virt_text, math.min(offset - start_col, virt_text_len))
                 end_virt_text = end_virt_text:sub(utfBeg + 1)
             end
-            row_opts.virt_text = { { end_virt_text, "HLChunkStyle1" } }
+            row_opts.virt_text = { { end_virt_text, "HLChunk1" } }
             row_opts.virt_text_win_col = math.max(start_col - offset, 0)
             api.nvim_buf_set_extmark(0, self.ns_id, end_row - 1, 0, row_opts)
         end
 
         -- render middle section
         for i = beg_row + 1, end_row - 1 do
-            row_opts.virt_text = { { self.options.chars.vertical_line, "HLChunkStyle1" } }
+            row_opts.virt_text = { { self.options.chars.vertical_line, "HLChunk1" } }
             row_opts.virt_text_win_col = start_col - offset
             local space_tab = (" "):rep(vim.o.shiftwidth)
             local line_val = fn.getline(i):gsub("\t", space_tab)
@@ -133,7 +133,7 @@ function chunk_mod:render()
 end
 
 function chunk_mod:enable_mod_autocmd()
-    api.nvim_create_augroup("hl_chunk_augroup", { clear = true })
+    api.nvim_create_augroup(self.augroup_name, { clear = true })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
@@ -148,10 +148,6 @@ function chunk_mod:enable_mod_autocmd()
             chunk_mod:render()
         end,
     })
-end
-
-function chunk_mod:disable_mod_autocmd()
-    api.nvim_del_augroup_by_name("hl_chunk_augroup")
 end
 
 return chunk_mod

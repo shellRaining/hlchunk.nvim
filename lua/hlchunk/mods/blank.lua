@@ -36,8 +36,7 @@ local blank_mod = BaseMod:new({
             "․",
         },
         style = {
-            -- { "", cursorline },
-            { whitespaceStyle, "" },
+            whitespaceStyle,
         },
         exclude_filetype = exclude_ft,
     },
@@ -65,7 +64,7 @@ function blank_mod:render_line(index, indent)
             local Blank_chars_num = Array:from(self.options.style):size()
             local Blank_style_num = Array:from(self.options.chars):size()
             local char = self.options.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
-            local style = "HLBlankStyle" .. tostring((count - 1) % Blank_style_num + 1)
+            local style = "HLBlank" .. tostring((count - 1) % Blank_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1
             api.nvim_buf_set_extmark(0, self.ns_id, index - 1, 0, row_opts)
@@ -101,7 +100,7 @@ function blank_mod:render(scrolled)
 end
 
 function blank_mod:enable_mod_autocmd()
-    api.nvim_create_augroup("hl_blank_augroup", { clear = true })
+    api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = "hl_blank_augroup",
@@ -133,10 +132,6 @@ function blank_mod:enable_mod_autocmd()
             blank_mod:render()
         end,
     })
-end
-
-function blank_mod:disable_mod_autocmd()
-    api.nvim_del_augroup_by_name("hl_blank_augroup")
 end
 
 return blank_mod
