@@ -145,13 +145,7 @@ function chunk_mod:enable_mod_autocmd()
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
-            local cur_win_info = fn.winsaveview()
-            local old_win_info = chunk_mod.old_win_info
-
-            if cur_win_info.lnum ~= old_win_info.lnum or cur_win_info.leftcol ~= old_win_info.leftcol then
-                chunk_mod.old_win_info = cur_win_info
-                chunk_mod:render()
-            end
+            chunk_mod:render()
         end,
     })
 end

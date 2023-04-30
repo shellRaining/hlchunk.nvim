@@ -22,9 +22,7 @@ function M.has_treesitter(bufnr)
 end
 
 -- TODO: maybe we can merge this function with get_chunk_range
-function M.get_chunk_range_ts(line)
-    line = line or fn.line(".")
-
+function M.get_chunk_range_ts()
     if not M.has_treesitter(0) then
         vim.notify("not have parser for " .. vim.bo.filetype)
         return nil
