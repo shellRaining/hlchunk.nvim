@@ -79,7 +79,7 @@ end
 function line_num_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        group = "hl_line_augroup",
+        group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             local cur_win_info = fn.winsaveview()
@@ -98,13 +98,13 @@ function line_num_mod:set_signs()
         local tbl = {}
         for i = 1, 1 do
             local sign_name = "sign" .. tostring(i)
-            local hl_name = "HLLineNum" .. tostring(i)
+            local hl_name = "HLLine_num" .. tostring(i)
             tbl[#tbl + 1] = { name = sign_name, numhl = hl_name }
         end
         fn.sign_define(tbl)
     else
         fn.sign_define("sign1", {
-            numhl = "HLLineNum1",
+            numhl = "HLLine_num1",
         })
     end
 end
