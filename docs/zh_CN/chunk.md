@@ -1,4 +1,10 @@
-# 怎样配置 hl_chunk
+# chunk
+
+## chunk 用来做什么
+
+是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目 😊）
+
+# 怎样配置 chunk
 
 ## 配置项
 
@@ -51,7 +57,7 @@ chunk = {
 },
 ```
 
-你可以按照下面的配置来使你的样式看起来像是 GIF 里演示的那样
+<a id='chunk_gif'>你可以按照下面的配置来使你的样式看起来像是 GIF 里演示的那样</a>
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 

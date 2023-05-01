@@ -1,70 +1,68 @@
-<h1 align="center">hlchunk.nvim</h1>
+<center><img width='400px' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_hlchunk_logo.png'></center>
+<h1 align='center'>hlchunk.nvim</h1>
 
 <p align='center'>
 <b>English</b> | <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
 </p>
 
-This is the lua implementation of [nvim-hlchunk](https://github.com/yaocccc/nvim-hlchunk), and add some new features like highlighting indentline, specially thanks [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim), during the process of writing this plugin, this repo provided a lot of help and inspiration for me
+## What can this plugin do
 
-## brief
+similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim), this plugin can highlight the indent line, and highlight the code chunk according to the current cursor position.
 
-this plugin now have four parts (future will add more... `^v^`)
+## What is the advantage of this plugin
 
-1. hl_chunk
-2. hl_indent
-3. hl_line_num
-4. hl_blank
+1. more extensible
+2. faster rendering speed (0.04 seconds per thousand renderings, with a line height of 50 lines)
+3. more active maintenance (the author is a student with a lot of time to maintain this plugin, haha)
 
-the first one is to highlight the current chunk, a chunk is defined as `the closest pair of curly braces and the code in between`, so it might not work very well in lua or python source code. In the future, I might define a chunk by using indentation (so, this plugin may become another `indent_blankline` in the future 😊)
+## Brief introduction
 
-the second one is to highlight indentline like `indent_blankline`, you can choose a different indent render mode, one is base treesitter, another is base on the number of blank. the advantage of treeitter is that it is very accurate, but it may have low performance, and doesn't support some filetype, such as markdown, if you choose the latter mode, it will render faster (maybe), but will have some issues in particular situation, example below.
+this plugin now have five parts (future will add more... `^v^`)
 
-<img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk5.png">
+1. chunk
+2. indent
+3. line_num
+4. blank
+5. context (experimental)
 
-base on blank number
+one picture to understand what these mods do
 
-<img width="400" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk6.png">
+<img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_intro.png'>
 
-base on treesitter
-
-the third one is similar to hl_chunk, the difference is that it will highlight line number, you can set front color or background color for it
-
-the last one is hl_blank, which can highlight the blank with some funny char and style, you can see in the example below, you can find many useful chars in this website [Unicode Plus](https://unicodeplus.com/)
-
-## example
+## more details about each mod
 
 <b><font color='red'> NOTE: you can click the picture to get more information about how to configure like this </font></b>
 
-### hl_chunk
+### chunk
 
 <a href='./docs/en/chunk.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 </a>
 
-### hl_indent
+### indent
 
 <a href='./docs/en/indent.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/27_hlchunk4.png">
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/13_hlindent_bg.png">
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2305/01_indent.png">
 </a>
 
-### hl_line_num
+### line_num
 
 <a href='./docs/en/line_num.md'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
 </a>
 
-### hl_blank
+### blank
 
 <a href='./docs/en/blank.md'>
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
+<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 </a>
 
 ## Requirements
 
-neovim version `>= 0.7.0` (maybe, just test at this version)
+neovim version `>= 0.7.0`
 
 ## Installation
 
@@ -97,6 +95,7 @@ The script comes with the following defaults:
 {
     chunk = {
         enable = true,
+        use_treesitter = true,
         support_filetypes = {
             "*.ts",
             "*.tsx",
@@ -126,13 +125,11 @@ The script comes with the following defaults:
     indent = {
         enable = true,
         use_treesitter = false,
-        -- You can uncomment to get more indented line look like
         chars = {
             "│",
         },
-        -- you can uncomment to get more indented line style
         style = {
-            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+            FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetype = {
             dashboard = true,
@@ -150,7 +147,7 @@ The script comes with the following defaults:
     line_num = {
         enable = true,
         support_filetypes = {
-            "..."
+            "..."  -- same as chunk
         },
         style = "#806d9c",
     },
@@ -170,7 +167,11 @@ The script comes with the following defaults:
 
 <hr>
 
-example:
+</details>
+
+<hr>
+
+setup example:
 
 ```lua
 require('hlchunk').setup({
@@ -181,10 +182,12 @@ require('hlchunk').setup({
             "#8B00FF",
         },
     },
+    blank = {
+        enable = false,
+    }
 })
 ```
 
-</details>
 
 ## command
 
