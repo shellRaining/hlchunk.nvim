@@ -1,5 +1,7 @@
-<center><img width='400px' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_hlchunk_logo.png'></center>
+<div>
+<center><img width='400px' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_logo_bg.png'></center>
 <h1 align='center'>hlchunk.nvim</h1>
+</div>
 
 <p align='center'>
 <b>English</b> | <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
@@ -187,7 +189,6 @@ require('hlchunk').setup({
     }
 })
 ```
-
 
 ## command
 

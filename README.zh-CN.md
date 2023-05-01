@@ -1,5 +1,7 @@
-<center><img width='400px' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_hlchunk_logo.png'></center>
-<h1 align="center">hlchunk.nvim</h1>
+<div>
+<center><img width='400px' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_logo_bg.png'></center>
+<h1 align='center'>hlchunk.nvim</h1>
+</div>
 
 <p align='center'>
 <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.md">English</a> | <b>简体中文</b>
