@@ -61,9 +61,9 @@ function blank_mod:render_line(index, indent)
         local c = text:at(i)
         if not c:match("%s") then
             count = count + 1
-            local Blank_chars_num = Array:from(self.options.style):size()
-            local Blank_style_num = Array:from(self.options.chars):size()
-            local char = self.options.chars[(i - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
+            local Blank_chars_num = Array:from(self.options.chars):size()
+            local Blank_style_num = Array:from(self.options.style):size()
+            local char = self.options.chars[(count - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
             local style = "HLBlank" .. tostring((count - 1) % Blank_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1

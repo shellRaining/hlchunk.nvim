@@ -51,14 +51,14 @@ function BaseMod:enable()
 end
 
 function BaseMod:disable()
-    local ok, _ = pcall(function()
+    local ok, info = pcall(function()
         self.options.enable = false
         self:clear()
         self:disable_mod_autocmd()
     end)
     if not ok then
         vim.notify("you have disable " .. self.name .. " mod")
-        vim.notify(tostring(_))
+        vim.notify(tostring(info))
     end
 end
 

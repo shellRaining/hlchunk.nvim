@@ -62,9 +62,9 @@ function indent_mod:render_line(index, indent)
         local c = text:at(i)
         if not c:match("%s") then
             count = count + 1
-            local Indent_chars_num = Array:from(self.options.style):size()
+            local Indent_chars_num = Array:from(self.options.chars):size()
             local Indent_style_num = Array:from(self.options.style):size()
-            local char = self.options.chars[(i - 1) % Indent_chars_num + 1]
+            local char = self.options.chars[(count - 1) % Indent_chars_num + 1]
             local style = "HLIndent" .. tostring((count - 1) % Indent_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1
