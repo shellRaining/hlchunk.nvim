@@ -149,6 +149,7 @@ Plug "shellRaining/hlchunk.nvim"
 
     line_num = {
         enable = true,
+        use_treesitter = false,
         support_filetypes = {
             "..."  -- same as chunk
         },
