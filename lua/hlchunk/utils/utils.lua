@@ -52,18 +52,18 @@ function M.get_chunk_range(line, opts)
             return nil
         end
 
-        beg_row, _, end_row, _ = treesitter.get_node_range(node)
-        while beg_row == end_row do
+        repeat
+            if node:type() ~= 'block' and node:type() ~= 'binary_expression'
+                  and node:type() ~= 'preproc_include' and node:type() ~= 'ERROR'
+                  and node:type() ~= 'dot_index_expression' and node:type() ~= 'function_call' then
+                beg_row, _, end_row, _ = treesitter.get_node_range(node)
+            end
+
             if not node:parent() then
-                break
+                return nil
             end
             node = node:parent()
-            beg_row, _, end_row, _ = treesitter.get_node_range(node)
-        end
-
-        if not node:parent() then
-            return nil
-        end
+        until beg_row ~= end_row
 
         return { beg_row + 1, end_row + 1 }
     end
