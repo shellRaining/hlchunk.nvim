@@ -90,11 +90,9 @@ function chunk_mod:render()
                 .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
 
             if not utils.col_in_screen(start_col) then
-                print('math.min:', math.min(offset - start_col, virt_text_len))
-                print('beg_virt_text:', beg_virt_text)
-                print('#beg_virt_text:', #beg_virt_text)
-                local utfBeg = vim.str_byteindex(beg_virt_text, math.max(math.min(offset - start_col, virt_text_len), 1) )
-                utfBeg = 1
+                local byte_idx = math.min(offset - start_col, virt_text_len)
+                if byte_idx >= fn.strwidth(beg_virt_text) then byte_idx = fn.strwidth(beg_virt_text) end
+                local utfBeg = vim.str_byteindex(beg_virt_text, byte_idx)
                 beg_virt_text = beg_virt_text:sub(utfBeg + 1)
             end
 
