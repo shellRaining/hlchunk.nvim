@@ -91,6 +91,7 @@ function chunk_mod:render()
 
             if not utils.col_in_screen(start_col) then
                 local utfBeg = vim.str_byteindex(beg_virt_text, math.min(offset - start_col, virt_text_len))
+                print('debug utfBeg:', utfBeg)
                 beg_virt_text = beg_virt_text:sub(utfBeg + 1)
             end
 
