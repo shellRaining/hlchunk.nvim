@@ -109,7 +109,9 @@ function chunk_mod:render()
                 .. self.options.chars.right_arrow
 
             if not utils.col_in_screen(start_col) then
-                local utfBeg = vim.str_byteindex(end_virt_text, math.min(offset - start_col, virt_text_len))
+                local byte_idx = math.min(offset - start_col, virt_text_len)
+                if byte_idx >= fn.strwidth(end_virt_text) then byte_idx = fn.strwidth(end_virt_text) end
+                local utfBeg = vim.str_byteindex(end_virt_text, byte_idx)
                 end_virt_text = end_virt_text:sub(utfBeg + 1)
             end
             row_opts.virt_text = { { end_virt_text, "HLChunk1" } }
