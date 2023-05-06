@@ -52,10 +52,17 @@ function M.get_chunk_range(line, opts)
             return nil
         end
 
+        local ignore_node_type = {
+            block = true,
+            binary_expression = true,
+            preproc_include = true,
+            ERROR = true,
+            dot_index_expression = true,
+            function_call = true,
+        }
+
         repeat
-            if node:type() ~= 'block' and node:type() ~= 'binary_expression'
-                  and node:type() ~= 'preproc_include' and node:type() ~= 'ERROR'
-                  and node:type() ~= 'dot_index_expression' and node:type() ~= 'function_call' then
+            if not ignore_node_type[node:type()] then
                 beg_row, _, end_row, _ = treesitter.get_node_range(node)
             end
 
