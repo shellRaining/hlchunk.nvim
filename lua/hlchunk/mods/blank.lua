@@ -134,4 +134,9 @@ function blank_mod:enable_mod_autocmd()
     })
 end
 
+function blank_mod:disable()
+    blank_mod.cached_lines = {}
+    BaseMod.disable(self)
+end
+
 return blank_mod

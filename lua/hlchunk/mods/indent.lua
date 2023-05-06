@@ -137,4 +137,9 @@ function indent_mod:enable_mod_autocmd()
     })
 end
 
+function indent_mod:disable()
+    indent_mod.cached_lines = {}
+    BaseMod.disable(self)
+end
+
 return indent_mod
