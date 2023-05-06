@@ -140,14 +140,26 @@ end
 
 function chunk_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+    api.nvim_create_autocmd({ "TextChanged" }, {
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI" }, {
+        group = "hl_chunk_augroup",
+        pattern = self.options.support_filetypes,
+        callback = function()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = chunk_mod.old_win_info
+            if cur_win_info.lnum ~= old_win_info.lnum then
+                chunk_mod:render()
+            end
+            chunk_mod.old_win_info = cur_win_info
+        end,
+    })
+    api.nvim_create_autocmd({ "CursorMoved" }, {
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
