@@ -1,52 +1,16 @@
 local BaseMod = require("hlchunk.base_mod")
 local utils = require("hlchunk.utils.utils")
+local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
-
-local support_ft = {
-    "*.ts",
-    "*.tsx",
-    "*.js",
-    "*.jsx",
-    "*.html",
-    "*.json",
-    "*.go",
-    "*.c",
-    "*.lua",
-    "*.py",
-    "*.cpp",
-    "*.rs",
-    "*.h",
-    "*.hpp",
-    "*.lua",
-    "*.vue",
-}
-
-local exclude_ft = {
-    aerial = true,
-    dashboard = true,
-    help = true,
-    lspinfo = true,
-    lspsagafinder = true,
-    packer = true,
-    checkhealth = true,
-    man = true,
-    mason = true,
-    NvimTree = true,
-    ["neo-tree"] = true,
-    plugin = true,
-    lazy = true,
-    TelescopePrompt = true,
-    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
-}
 
 local chunk_mod = BaseMod:new({
     name = "chunk",
     options = {
         enable = true,
         use_treesitter = false,
-        support_filetypes = support_ft,
-        exclude_filetype = exclude_ft,
+        support_filetypes = ft.support_filetype,
+        exclude_filetype = ft.exclude_filetype,
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -151,11 +115,6 @@ function chunk_mod:enable_mod_autocmd()
         group = "hl_chunk_augroup",
         pattern = self.options.support_filetypes,
         callback = function()
-            -- local cur_win_info = fn.winsaveview()
-            -- local old_win_info = chunk_mod.old_win_info
-            -- if cur_win_info.lnum ~= old_win_info.lnum then
-            -- end
-            -- chunk_mod.old_win_info = cur_win_info
             chunk_mod:render()
         end,
     })

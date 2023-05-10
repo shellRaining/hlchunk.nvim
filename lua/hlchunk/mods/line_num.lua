@@ -1,25 +1,7 @@
 local utils = require("hlchunk.utils.utils")
+local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
-
-local support_ft = {
-    "*.ts",
-    "*.tsx",
-    "*.js",
-    "*.jsx",
-    "*.html",
-    "*.json",
-    "*.go",
-    "*.c",
-    "*.lua",
-    "*.py",
-    "*.cpp",
-    "*.rs",
-    "*.h",
-    "*.hpp",
-    "*.lua",
-    "*.vue",
-}
 
 local exclude_ft = {
     aerial = true,
@@ -45,7 +27,7 @@ local line_num_mod = require("hlchunk.base_mod"):new({
         use_treesitter = false,
         enable = true,
         style = "#806d9c",
-        support_filetypes = support_ft,
+        support_filetypes = ft.support_filetype,
         exclude_filetype = exclude_ft,
     },
 })

@@ -1,24 +1,7 @@
 local utils = require("hlchunk.utils.utils")
+local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
-
-local exclude_ft = {
-    aerial = true,
-    dashboard = true,
-    help = true,
-    lspinfo = true,
-    lspsagafinder = true,
-    packer = true,
-    checkhealth = true,
-    man = true,
-    mason = true,
-    NvimTree = true,
-    ["neo-tree"] = true,
-    plugin = true,
-    lazy = true,
-    TelescopePrompt = true,
-    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
-}
 
 local context_mod = require("hlchunk.base_mod"):new({
     name = "context",
@@ -31,7 +14,7 @@ local context_mod = require("hlchunk.base_mod"):new({
         style = {
             "#806d9c",
         },
-        exclude_filetype = exclude_ft,
+        exclude_filetype = ft.exclude_filetype,
     },
 })
 

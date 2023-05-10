@@ -2,26 +2,9 @@ local BaseMod = require("hlchunk.base_mod")
 
 local utils = require("hlchunk.utils.utils")
 local Array = require("hlchunk.utils.array")
+local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
-
-local exclude_ft = {
-    aerial = true,
-    dashboard = true,
-    help = true,
-    lspinfo = true,
-    lspsagafinder = true,
-    packer = true,
-    checkhealth = true,
-    man = true,
-    mason = true,
-    NvimTree = true,
-    ["neo-tree"] = true,
-    plugin = true,
-    lazy = true,
-    TelescopePrompt = true,
-    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
-}
 
 local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
 
@@ -38,7 +21,7 @@ local blank_mod = BaseMod:new({
         style = {
             whitespaceStyle,
         },
-        exclude_filetype = exclude_ft,
+        exclude_filetype = ft.exclude_filetype,
     },
 })
 

@@ -43,7 +43,7 @@ function M.get_chunk_range(line, opts)
 
     if opts.use_treesitter then
         if not M.has_treesitter(0) then
-            vim.notify_once("not have parser for " .. vim.bo.filetype)
+            vim.notify_once("[hlchunk]: not have parser for " .. vim.bo.filetype)
             return nil
         end
 
@@ -71,6 +71,7 @@ function M.get_chunk_range(line, opts)
                 "table",
                 "tuple",
                 "do_block",
+                "block",
             }
             for _, rgx in ipairs(type_patterns) do
                 if node_type:find(rgx) then
