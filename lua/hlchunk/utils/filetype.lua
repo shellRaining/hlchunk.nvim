@@ -57,7 +57,6 @@ M.type_patterns = {
     "tuple",
     "do_block",
     "variable_declaration",
-    "block",
     "return",
 }
 
