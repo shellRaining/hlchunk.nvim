@@ -36,4 +36,28 @@ M.exclude_filetype = {
     [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
 }
 
+M.type_patterns = {
+    "class",
+    "^func",
+    "method",
+    "^if",
+    "while",
+    "for",
+    "with",
+    "try",
+    "except",
+    "match",
+    "arguments",
+    "argument_list",
+    "object",
+    "dictionary",
+    "element",
+    "table",
+    "tuple",
+    "do_block",
+    "variable_declaration",
+    "block",
+    "return",
+}
+
 return M

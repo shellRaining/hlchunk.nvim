@@ -1,5 +1,6 @@
 local M = {}
 
+local ft = require("hlchunk.utils.filetype")
 local fn = vim.fn
 local treesitter = vim.treesitter
 
@@ -52,28 +53,7 @@ function M.get_chunk_range(line, opts)
         -- TODO: refact this statement
         while cursor_node do
             local node_type = cursor_node:type()
-            local type_patterns = {
-                "class",
-                "^func",
-                "method",
-                "^if",
-                "while",
-                "for",
-                "with",
-                "try",
-                "except",
-                "match",
-                "arguments",
-                "argument_list",
-                "object",
-                "dictionary",
-                "element",
-                "table",
-                "tuple",
-                "do_block",
-                "block",
-            }
-            for _, rgx in ipairs(type_patterns) do
+            for _, rgx in ipairs(ft.type_patterns) do
                 if node_type:find(rgx) then
                     local node_start, _, node_end, _ = cursor_node:range()
                     if node_start ~= node_end then
@@ -83,33 +63,6 @@ function M.get_chunk_range(line, opts)
             end
             cursor_node = cursor_node:parent()
         end
-
-        -- local node = treesitter.get_node()
-        -- if not node then
-        --     return nil
-        -- end
-        --
-        -- local ignore_node_type = {
-        --     block = true,
-        --     binary_expression = true,
-        --     preproc_include = true,
-        --     ERROR = true,
-        --     dot_index_expression = true,
-        --     function_call = true,
-        -- }
-        --
-        -- repeat
-        --     if not ignore_node_type[node:type()] then
-        --         beg_row, _, end_row, _ = treesitter.get_node_range(node)
-        --     end
-        --
-        --     if not node:parent() then
-        --         return nil
-        --     end
-        --     node = node:parent()
-        -- until beg_row ~= end_row
-        --
-        -- return { beg_row + 1, end_row + 1 }
     end
 
     local base_flag = "nWz"

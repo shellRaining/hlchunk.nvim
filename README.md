@@ -14,7 +14,7 @@ similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.
 ## What is the advantage of this plugin
 
 1. more extensible
-2. faster rendering speed (0.04 seconds per thousand renderings, with a line height of 50 lines)
+2. faster rendering speed (0.04 seconds per thousand renderings, with the window have 50 lines)
 3. more active maintenance (the author is a student with a lot of time to maintain this plugin, haha)
 
 ## Brief introduction
