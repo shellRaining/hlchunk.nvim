@@ -41,6 +41,7 @@ M.type_patterns = {
     "^func",
     "method",
     "^if",
+    "else",
     "while",
     "for",
     "with",
