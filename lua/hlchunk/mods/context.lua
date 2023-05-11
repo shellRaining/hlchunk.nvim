@@ -78,6 +78,12 @@ function context_mod:enable_mod_autocmd()
             context_mod:render()
         end,
     })
+    api.nvim_create_autocmd({ "ColorScheme" }, {
+        pattern = "*",
+        callback = function()
+            context_mod:enable()
+        end,
+    })
 end
 
 return context_mod

@@ -125,6 +125,12 @@ function chunk_mod:enable_mod_autocmd()
             chunk_mod:render()
         end,
     })
+    api.nvim_create_autocmd({ "ColorScheme" }, {
+        pattern = "*",
+        callback = function()
+            chunk_mod:enable()
+        end,
+    })
 end
 
 return chunk_mod
