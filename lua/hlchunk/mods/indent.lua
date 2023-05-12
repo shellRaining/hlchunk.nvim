@@ -119,6 +119,7 @@ function indent_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
+        group = "hl_indent_augroup",
         pattern = "*",
         callback = function()
             indent_mod:enable()

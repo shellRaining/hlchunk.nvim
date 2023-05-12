@@ -126,6 +126,7 @@ function chunk_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
+        group = "hl_chunk_augroup",
         pattern = "*",
         callback = function()
             chunk_mod:enable()

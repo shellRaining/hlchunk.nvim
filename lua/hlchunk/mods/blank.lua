@@ -116,6 +116,7 @@ function blank_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
+        group = "hl_blank_augroup",
         pattern = "*",
         callback = function()
             blank_mod:enable()
