@@ -3,24 +3,6 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
-local exclude_ft = {
-    aerial = true,
-    dashboard = true,
-    help = true,
-    lspinfo = true,
-    lspsagafinder = true,
-    packer = true,
-    checkhealth = true,
-    man = true,
-    mason = true,
-    NvimTree = true,
-    ["neo-tree"] = true,
-    plugin = true,
-    lazy = true,
-    TelescopePrompt = true,
-    [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
-}
-
 local line_num_mod = require("hlchunk.base_mod"):new({
     name = "line_num",
     options = {
@@ -28,7 +10,7 @@ local line_num_mod = require("hlchunk.base_mod"):new({
         enable = true,
         style = "#806d9c",
         support_filetypes = ft.support_filetype,
-        exclude_filetype = exclude_ft,
+        exclude_filetype = ft.exclude_filetype,
     },
 })
 
@@ -38,24 +20,17 @@ function line_num_mod:render()
     end
 
     self:clear()
+    self.ns_id = api.nvim_create_namespace("hlline_num")
 
     local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         for i = beg_row, end_row do
-            ---@diagnostic disable-next-line: param-type-mismatch
-            fn.sign_place("", "LineNumberGroup", "sign1", fn.bufname("%"), {
-                lnum = i,
-            })
+            local row_opts = {}
+            row_opts.number_hl_group = "HLLine_num1"
+            api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
         end
     end
-end
-
-function line_num_mod:clear()
-    fn.sign_unplace("LineNumberGroup", {
-        ---@diagnostic disable-next-line: param-type-mismatch
-        buffer = fn.bufname("%"),
-    })
 end
 
 function line_num_mod:enable_mod_autocmd()
@@ -73,36 +48,6 @@ function line_num_mod:enable_mod_autocmd()
             end
         end,
     })
-end
-
-function line_num_mod:set_signs()
-    if type(self.options.style) == "table" then
-        local tbl = {}
-        for i = 1, 1 do
-            local sign_name = "sign" .. tostring(i)
-            local hl_name = "HLLine_num" .. tostring(i)
-            tbl[#tbl + 1] = { name = sign_name, numhl = hl_name }
-        end
-        fn.sign_define(tbl)
-    else
-        fn.sign_define("sign1", {
-            numhl = "HLLine_num1",
-        })
-    end
-end
-
-function line_num_mod:enable()
-    local ok, _ = pcall(function()
-        self.options.enable = true
-        self:set_hl()
-        self:set_signs()
-        self:render()
-        self:enable_mod_autocmd()
-        self:create_mod_usercmd()
-    end)
-    if not ok then
-        vim.notify("you have disable line_num mod")
-    end
 end
 
 return line_num_mod
