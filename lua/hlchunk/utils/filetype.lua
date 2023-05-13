@@ -16,6 +16,7 @@ M.support_filetype = {
     "*.hpp",
     "*.lua",
     "*.vue",
+    "*.java",
 }
 
 M.exclude_filetype = {

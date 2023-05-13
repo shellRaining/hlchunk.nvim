@@ -22,3 +22,7 @@
 - [ ] Optimize context algorithm, expand context range when get too few info
 
 - [ ] Add support for non-multiple indentation
+
+- [ ] optimize base_mod
+
+- [ ] win size changed bug fix
