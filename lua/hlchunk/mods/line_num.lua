@@ -74,6 +74,7 @@ function line_num_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             line_num_mod:enable()

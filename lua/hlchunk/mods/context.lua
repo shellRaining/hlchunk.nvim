@@ -79,6 +79,7 @@ function context_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
+        group = "hl_context_augroup",
         pattern = "*",
         callback = function()
             context_mod:enable()
