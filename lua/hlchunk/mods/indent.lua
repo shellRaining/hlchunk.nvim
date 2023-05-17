@@ -59,7 +59,7 @@ end
 function indent_mod:render(scrolled)
     scrolled = scrolled or false
 
-    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
+    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] or vim.o.shiftwidth == 0 then
         return
     end
 

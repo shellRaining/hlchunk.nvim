@@ -39,11 +39,6 @@ end
 
 function BaseMod:enable()
     local ok, info = pcall(function()
-        -- filetype base set
-        if vim.o.shiftwidth == 0 then
-            vim.o.shiftwidth = 4
-        end
-
         self.options.enable = true
         self:set_hl()
         self:render()
