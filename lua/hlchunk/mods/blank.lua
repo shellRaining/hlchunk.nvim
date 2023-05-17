@@ -86,7 +86,7 @@ function blank_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
-        group = "hl_blank_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             local cur_win_info = fn.winsaveview()
@@ -101,7 +101,7 @@ function blank_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-        group = "hl_blank_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             blank_mod.cached_lines = {}
@@ -109,14 +109,14 @@ function blank_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
-        group = "hl_blank_augroup",
+        group = self.augroup_name,
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
         callback = function()
             blank_mod:render()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = "hl_blank_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             blank_mod:enable()

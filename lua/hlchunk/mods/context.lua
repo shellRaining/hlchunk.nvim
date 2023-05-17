@@ -59,7 +59,7 @@ end
 function context_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-        group = "hl_context_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             local cur_win_info = fn.winsaveview()
@@ -72,14 +72,14 @@ function context_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
-        group = "hl_context_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             context_mod:render()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = "hl_context_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             context_mod:enable()

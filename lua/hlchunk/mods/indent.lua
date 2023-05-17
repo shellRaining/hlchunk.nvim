@@ -88,8 +88,7 @@ function indent_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
-        group = "hl_indent_augroup",
-        -- TODO: how to get the window attact with current buffer?
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             local cur_win_info = fn.winsaveview()
@@ -104,7 +103,7 @@ function indent_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-        group = "hl_indent_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             indent_mod.cached_lines = {}
@@ -112,14 +111,14 @@ function indent_mod:enable_mod_autocmd()
         end,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
-        group = "hl_indent_augroup",
+        group = self.augroup_name,
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
         callback = function()
             indent_mod:render()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = "hl_indent_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             indent_mod:enable()

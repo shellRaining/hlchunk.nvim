@@ -105,28 +105,28 @@ end
 function chunk_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
     api.nvim_create_autocmd({ "TextChanged" }, {
-        group = "hl_chunk_augroup",
+        group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
     api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI" }, {
-        group = "hl_chunk_augroup",
+        group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
     api.nvim_create_autocmd({ "CursorMoved" }, {
-        group = "hl_chunk_augroup",
+        group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
     api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = "hl_chunk_augroup",
+        group = self.augroup_name,
         pattern = "*",
         callback = function()
             chunk_mod:enable()
