@@ -6,6 +6,7 @@ codes = true
 ignore = {
     "212/self", -- Unused argument, In the case of callback function
     "111/_",
+    "122/vim",
 }
 
 -- Global objects defined by the C code

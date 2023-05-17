@@ -149,17 +149,17 @@ function M.get_rows_indent(begRow, endRow, options)
     if options.use_treesitter then
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
         if not ts_indent_status then
-            vim.notify_once("hl_indent: treesitter not loaded")
+            vim.notify_once("[hlchunk.indent]: nvim-treesitter loaded fail")
             return nil
         end
         get_indent = function(row)
-            return math.min(ts_indent.get_indent(row) or 0, fn.indent(row))
+            return ts_indent.get_indent(row) or 0
         end
     end
 
     for i = endRow, begRow, -1 do
         rows_indent[i] = get_indent(i)
-        if rows_indent[i] == 0 and #fn.getline(i) == 0 then
+        if (not options.use_treesitter) and rows_indent[i] == 0 and #fn.getline(i) == 0 then
             rows_indent[i] = options.virt_indent and M.get_virt_indent(rows_indent, i) or -1
         end
     end
