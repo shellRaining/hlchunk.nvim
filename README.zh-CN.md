@@ -99,22 +99,6 @@ Plug "shellRaining/hlchunk.nvim"
     chunk = {
         enable = true,
         use_treesitter = true,
-        support_filetypes = {
-            "*.ts",
-            "*.tsx",
-            "*.js",
-            "*.jsx",
-            "*.html",
-            "*.json",
-            "*.go",
-            "*.c",
-            "*.cpp",
-            "*.rs",
-            "*.h",
-            "*.hpp",
-            "*.lua",
-            "*.vue",
-        },
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -122,7 +106,9 @@ Plug "shellRaining/hlchunk.nvim"
             left_bottom = "╰",
             right_arrow = ">",
         },
-        style = "#00ffff",
+        style = {
+            { fg = "#806d9c" },
+        },
     },
 
     indent = {
@@ -132,27 +118,13 @@ Plug "shellRaining/hlchunk.nvim"
             "│",
         },
         style = {
-            FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui"),
-        },
-        exclude_filetype = {
-            dashboard = true,
-            help = true,
-            lspinfo = true,
-            packer = true,
-            checkhealth = true,
-            man = true,
-            mason = true,
-            NvimTree = true,
-            plugin = true,
+            { fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui") }
         },
     },
 
     line_num = {
         enable = true,
         use_treesitter = false,
-        support_filetypes = {
-            "..."  -- same as chunk
-        },
         style = "#806d9c",
     },
 
@@ -164,7 +136,6 @@ Plug "shellRaining/hlchunk.nvim"
         style = {
             vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
         },
-        exclude_filetype = "...",
     },
 }
 ```

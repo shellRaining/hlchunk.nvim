@@ -8,7 +8,7 @@ local chunk_mod = BaseMod:new({
     name = "chunk",
     options = {
         enable = true,
-        use_treesitter = false,
+        use_treesitter = true,
         support_filetypes = ft.support_filetype,
         exclude_filetype = ft.exclude_filetype,
         chars = {
@@ -19,7 +19,7 @@ local chunk_mod = BaseMod:new({
             right_arrow = ">",
         },
         style = {
-            "#806d9c",
+            { fg = "#806d9c" },
         },
     },
 })
