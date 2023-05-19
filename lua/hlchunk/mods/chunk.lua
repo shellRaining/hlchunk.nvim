@@ -33,7 +33,7 @@ function chunk_mod:render()
     self:clear()
     self.ns_id = api.nvim_create_namespace("hlchunk")
 
-    local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
+    local cur_chunk_range, err = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
@@ -47,6 +47,11 @@ function chunk_mod:render()
             priority = 100,
         }
 
+        if err == 1 then
+            chunk_mod:set_hl("#dd4444")
+        else
+            chunk_mod:set_hl()
+        end
         -- render beg_row
         if beg_blank_len > 0 then
             local virt_text_len = beg_blank_len - start_col

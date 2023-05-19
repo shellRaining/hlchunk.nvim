@@ -99,8 +99,11 @@ function BaseMod:create_mod_usercmd()
 end
 
 -- set highlight for mod
-function BaseMod:set_hl()
+function BaseMod:set_hl(color)
     local hl_opts = self.options.style
+    if color then
+      hl_opts = color
+    end
     if type(hl_opts) == "string" then
         api.nvim_set_hl(0, self.hl_base_name .. "1", { fg = hl_opts })
         return

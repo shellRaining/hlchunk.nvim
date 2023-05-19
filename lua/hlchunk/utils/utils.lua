@@ -50,14 +50,21 @@ function M.get_chunk_range(line, opts)
 
         local ts_utils = require("nvim-treesitter.ts_utils")
         local cursor_node = ts_utils.get_node_at_cursor()
+
+        local err = 0
         -- TODO: refact this statement
         while cursor_node do
             local node_type = cursor_node:type()
             for _, rgx in ipairs(ft.type_patterns) do
                 if node_type:find(rgx) then
                     local node_start, _, node_end, _ = cursor_node:range()
+                    local cursor_line_node = vim.treesitter.get_node({ pos = { node_start, 0 } })
+
+                    if p:has_error() then
+                      err = 1
+                    end
                     if node_start ~= node_end then
-                        return { node_start + 1, node_end + 1 }
+                        return { node_start + 1, node_end + 1 , err}
                     end
                 end
             end
