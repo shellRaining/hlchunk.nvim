@@ -41,6 +41,7 @@ function M.get_chunk_range(line, opts)
     line = line or fn.line(".")
 
     local beg_row, end_row
+    local err = 0
 
     if opts.use_treesitter then
         if not M.has_treesitter(0) then
@@ -51,22 +52,25 @@ function M.get_chunk_range(line, opts)
         local ts_utils = require("nvim-treesitter.ts_utils")
         local cursor_node = ts_utils.get_node_at_cursor()
 
-        local err = 0
         -- TODO: refact this statement
         while cursor_node do
             local node_type = cursor_node:type()
             for _, rgx in ipairs(ft.type_patterns) do
                 if node_type:find(rgx) then
                     local node_start, _, node_end, _ = cursor_node:range()
-                    local cursor_line_node = vim.treesitter.get_node({ pos = { node_start, 0 } })
-
-                    if p:has_error() then
-                      err = 1
+                    if cursor_node:has_error() then
+                        err = 1
+                        if cursor_node:type() == "function_definition" then
+                            break
+                        end
                     end
                     if node_start ~= node_end then
                         return { node_start + 1, node_end + 1 , err}
                     end
                 end
+            end
+            if err == 1 then
+              break
             end
             cursor_node = cursor_node:parent()
         end
@@ -88,7 +92,7 @@ function M.get_chunk_range(line, opts)
         return nil
     end
 
-    return { beg_row, end_row }
+    return { beg_row, end_row, err }
 end
 
 ---@param line? number the line number we want to get the indent range
