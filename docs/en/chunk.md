@@ -55,7 +55,7 @@ chunk = {
 
 you can also set like this gif
 
-<a name="chunk_example1"><img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif"></a>
+<a id="chunk_example1"><img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif"></a>
 
 ```lua
 chunk = {
