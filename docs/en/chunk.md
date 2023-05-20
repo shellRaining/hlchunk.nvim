@@ -1,5 +1,9 @@
 # how to configure chunk mod
 
+## what can chunk do
+
+it is used to highlight the code block where the cursor is located.
+
 ## Configurable items
 
 chunk have four configurable items
@@ -11,11 +15,15 @@ chunk have four configurable items
 5. chars
 6. style
 
-`enable` is used to control whether enable hl_chunk, if set it to false, its usercmd and autocmd will not set, so it will not work
+`enable` is used to control whether the mod is started, the default is true.
 
-`use_treesitter` is used to control whether use treesitter to highlight chunk, if set it to false, it will use vim's match to highlight chunk
+If set to false, the usercmd and autocmd it carries will not be generated, and the mod will be closed at this time
 
-`exclude_filetypes` is a table, you can set like this
+`use_treesitter` is used to control whether to use treesitter to highlight the code block, the default is true
+
+If set to false, vim's match will be used to highlight the code block, otherwise treesitter will be used to determine the current code block
+
+`exclude_filetypes` is a lua table type, example as follows
 
 ```lua
 exclude_filetypes = {
@@ -24,7 +32,7 @@ exclude_filetypes = {
 }
 ```
 
-`support_filetypes` is a table, you can set like this
+`support_filetypes` is a lua table type, example as follows
 
 ```lua
 support_filetypes = {
@@ -33,7 +41,7 @@ support_filetypes = {
 }
 ```
 
-`chars` is used to configure what char to render the chunk line, a chunk line contains five parts
+`chars` is also a lua table, the characters in it are used to indicate how to render the chunk line, which contains five parts
 
 - horizontal_line
 - vertical_line
@@ -41,7 +49,7 @@ support_filetypes = {
 - left_bottom
 - right_arrow
 
-`style` is a RGB string (like "#ffffff") or a table contains many RGB string
+`style` is an RGB string or an RGB string table, the default is "#806d9c".
 
 ## example
 

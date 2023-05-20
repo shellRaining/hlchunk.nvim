@@ -2,7 +2,7 @@
 
 ## chunk 用来做什么
 
-是用来高亮当前代码块，在本项目中代码块的定义是当前光标所处位置最近的一对括号及其中间的代码段，所以这个插件可能不是很适合 lua 和 python 代码。在未来我会用缩进来定义一个代码块（所以这个项目未来可能会变成类似 `indent_blankline` 的项目 😊）
+是用来高亮当前光标所处代码块。
 
 # 怎样配置 chunk
 
@@ -17,9 +17,13 @@ chunk mod 有四个配置项
 5. chars
 6. style
 
-`enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
+`enable` 是用来控制该 mod 是否启动的，默认为 true。
 
-`use_treesitter` 是用来控制是否使用 treesitter 来高亮代码块，如果设置为 false，那么该 mod 将使用 vim 的 match 来高亮代码块
+如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
+
+`use_treesitter` 是用来控制是否使用 treesitter 来高亮代码块，默认为 true
+
+如果设置为 false，将使用 vim 的 match 来高亮代码块，反之使用 treesitter 来判断当前代码块
 
 `exclude_filetypes` 是一个 lua table 类型，例子如下
 
@@ -47,7 +51,7 @@ support_filetypes = {
 - left_bottom
 - right_arrow
 
-`style` 是一个 RGB 字符串或者一个 RGB 字符串表
+`style` 是一个 RGB 字符串或者一个 RGB 字符串表，默认为 "#806d9c"。
 
 ## example
 
