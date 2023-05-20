@@ -69,7 +69,7 @@ function blank_mod:render(scrolled)
 
     local rows_indent = utils.get_rows_indent(nil, nil, {
         use_treesitter = self.options.use_treesitter,
-        virt_indent = false,
+        virt_indent = true,
     })
     if not rows_indent then
         return

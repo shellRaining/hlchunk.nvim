@@ -97,16 +97,14 @@ indent = {
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/13_hlindent_bg.png">
 
 ```lua
-local whitespaceStyle = FN.synIDattr(FN.synIDtrans(FN.hlID("Whitespace")), "fg", "gui")
-
 indent = {
     enable = true,
     use_treesitter = false,
     chars = {
-        "│",
+        " ",
     },
     style = {
-        { whitespaceStyle, whitespaceStyle },
+        { bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui") },
     },
     exclude_filetype = exclude_ft,
 }

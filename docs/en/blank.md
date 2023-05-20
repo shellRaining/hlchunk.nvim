@@ -90,18 +90,19 @@ indent = {
 }
 ```
 
-at last, it can set background color 
+at last, it can set background color
 
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
 
 ```lua
-indent = {
+blank = {
+    enable = true,
     chars = {
-            " ",
+        " ",
     },
     style = {
-        { "", FN.synIDattr(FN.synIDtrans(FN.hlID("cursorline")), "bg", "gui") },
-        { vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"), "" },
+        { bg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("cursorline")), "bg", "gui") },
+        { bg = "", fg = "" },
     },
 }
 ```
