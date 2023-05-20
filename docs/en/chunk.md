@@ -5,13 +5,15 @@
 chunk have four configurable items
 
 1. enable
-2. support_filetypes
-3. chars
-4. style
+2. use_treesitter
+3. exclude_filetypes
+4. support_filetypes
+5. chars
+6. style
 
-enable is used to control whether enable hl_chunk, if set it to false, its usercmd and autocmd will not set, so it will not work
+`enable` is used to control whether enable hl_chunk, if set it to false, its usercmd and autocmd will not set, so it will not work
 
-support_filetypes is a table, you can set like this
+`support_filetypes` is a table, you can set like this
 
 ```lua
 support_filetypes = {
@@ -20,7 +22,7 @@ support_filetypes = {
 }
 ```
 
-chars is used to configure what char to render the chunk line, a chunk line contains five parts
+`chars` is used to configure what char to render the chunk line, a chunk line contains five parts
 
 - horizontal_line
 - vertical_line
@@ -28,7 +30,7 @@ chars is used to configure what char to render the chunk line, a chunk line cont
 - left_bottom
 - right_arrow
 
-style is a RGB string or RGB string list, if it is a table, it will choice different color to render different chunk
+`style` is a RGB string (like "#ffffff") or a table contains many RGB string
 
 ## example
 
@@ -53,7 +55,7 @@ chunk = {
 
 you can also set like this gif
 
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
+<a name="chunk_example1"><img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif"></a>
 
 ```lua
 chunk = {

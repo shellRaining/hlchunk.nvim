@@ -10,7 +10,7 @@ local chunk_mod = BaseMod:new({
         enable = true,
         use_treesitter = true,
         support_filetypes = ft.support_filetype,
-        exclude_filetype = ft.exclude_filetype,
+        exclude_filetypes = ft.exclude_filetype,
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -26,7 +26,7 @@ local chunk_mod = BaseMod:new({
 
 -- set new virtual text to the right place
 function chunk_mod:render()
-    if not self.options.enable or self.options.exclude_filetype[vim.bo.ft] then
+    if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then
         return
     end
 
