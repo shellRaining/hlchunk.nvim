@@ -11,13 +11,26 @@
 chunk mod 有四个配置项
 
 1. enable
-2. support_filetypes
-3. chars
-4. style
+2. use_treesitter
+3. exclude_filetypes
+4. support_filetypes
+5. chars
+6. style
 
-enable 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
+`enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
 
-support_filetypes 是一个 lua table 类型，例子如下
+`use_treesitter` 是用来控制是否使用 treesitter 来高亮代码块，如果设置为 false，那么该 mod 将使用 vim 的 match 来高亮代码块
+
+`exclude_filetypes` 是一个 lua table 类型，例子如下
+
+```lua
+exclude_filetypes = {
+    "lua",
+    "python",
+}
+```
+
+`support_filetypes` 是一个 lua table 类型，例子如下
 
 ```lua
 support_filetypes = {
@@ -26,7 +39,7 @@ support_filetypes = {
 }
 ```
 
-chars 也是一个 lua 表，其中的字符用来指示如何渲染 chunk line，这个表中包含五个部分
+`chars` 也是一个 lua 表，其中的字符用来指示如何渲染 chunk line，这个表中包含五个部分
 
 - horizontal_line
 - vertical_line
@@ -34,7 +47,7 @@ chars 也是一个 lua 表，其中的字符用来指示如何渲染 chunk line�
 - left_bottom
 - right_arrow
 
-style 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 chunk line
+`style` 是一个 RGB 字符串或者一个 RGB 字符串表
 
 ## example
 

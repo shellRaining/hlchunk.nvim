@@ -13,6 +13,17 @@ chunk have four configurable items
 
 `enable` is used to control whether enable hl_chunk, if set it to false, its usercmd and autocmd will not set, so it will not work
 
+`use_treesitter` is used to control whether use treesitter to highlight chunk, if set it to false, it will use vim's match to highlight chunk
+
+`exclude_filetypes` is a table, you can set like this
+
+```lua
+exclude_filetypes = {
+    "lua",
+    "python",
+}
+```
+
 `support_filetypes` is a table, you can set like this
 
 ```lua
