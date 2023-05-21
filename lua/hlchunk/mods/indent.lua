@@ -6,8 +6,6 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
-local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
-
 ---@class IndentMod: BaseMod
 ---@field cached_lines table<number, number>
 local indent_mod = BaseMod:new({
@@ -20,7 +18,7 @@ local indent_mod = BaseMod:new({
             "│",
         },
         style = {
-            whitespaceStyle,
+            fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetypes = ft.exclude_filetypes,
     },
