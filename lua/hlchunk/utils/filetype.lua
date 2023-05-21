@@ -1,6 +1,6 @@
 local M = {}
 
-M.support_filetype = {
+M.support_filetypes = {
     "*.ts",
     "*.tsx",
     "*.js",
@@ -19,7 +19,7 @@ M.support_filetype = {
     "*.java",
 }
 
-M.exclude_filetype = {
+M.exclude_filetypes = {
     aerial = true,
     dashboard = true,
     help = true,

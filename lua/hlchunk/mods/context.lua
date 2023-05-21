@@ -14,12 +14,12 @@ local context_mod = require("hlchunk.base_mod"):new({
         style = {
             "#806d9c",
         },
-        exclude_filetype = ft.exclude_filetype,
+        exclude_filetypes = ft.exclude_filetypes,
     },
 })
 
 function context_mod:render()
-    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] then
+    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] then
         return
     end
 

@@ -22,7 +22,7 @@ local indent_mod = BaseMod:new({
         style = {
             whitespaceStyle,
         },
-        exclude_filetype = ft.exclude_filetype,
+        exclude_filetypes = ft.exclude_filetypes,
     },
 })
 
@@ -59,7 +59,7 @@ end
 function indent_mod:render(scrolled)
     scrolled = scrolled or false
 
-    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] or vim.o.shiftwidth == 0 then
+    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
         return
     end
 

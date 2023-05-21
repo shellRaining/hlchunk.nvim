@@ -9,13 +9,13 @@ local line_num_mod = require("hlchunk.base_mod"):new({
         use_treesitter = false,
         enable = true,
         style = "#806d9c",
-        support_filetypes = ft.support_filetype,
-        exclude_filetype = ft.exclude_filetype,
+        support_filetypes = ft.support_filetypes,
+        exclude_filetypes = ft.exclude_filetypes,
     },
 })
 
 function line_num_mod:render()
-    if not self.options.enable or self.options.exclude_filetype[vim.bo.ft] then
+    if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then
         return
     end
 
