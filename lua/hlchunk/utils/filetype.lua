@@ -35,6 +35,7 @@ M.exclude_filetype = {
     lazy = true,
     TelescopePrompt = true,
     [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+    alpha = true,
 }
 
 M.type_patterns = {
