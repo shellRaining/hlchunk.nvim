@@ -1,29 +1,29 @@
-local BaseMod = require 'hlchunk.base_mod'
-local utils = require 'hlchunk.utils.utils'
-local ft = require 'hlchunk.utils.filetype'
+local BaseMod = require("hlchunk.base_mod")
+local utils = require("hlchunk.utils.utils")
+local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
-local chunk_mod = BaseMod:new {
-    name = 'chunk',
+local chunk_mod = BaseMod:new({
+    name = "chunk",
     options = {
         enable = true,
         use_treesitter = true,
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,
         chars = {
-            horizontal_line = '─',
-            vertical_line = '│',
-            left_top = '╭',
-            left_bottom = '╰',
-            right_arrow = '>',
+            horizontal_line = "─",
+            vertical_line = "│",
+            left_top = "╭",
+            left_bottom = "╰",
+            right_arrow = ">",
         },
         style = {
-            { fg = '#806d9c' },
+            { fg = "#806d9c" },
         },
-        textobject = '',
+        textobject = "",
     },
-}
+})
 
 -- set new virtual text to the right place
 function chunk_mod:render()
@@ -32,7 +32,7 @@ function chunk_mod:render()
     end
 
     self:clear()
-    self.ns_id = api.nvim_create_namespace 'hlchunk'
+    self.ns_id = api.nvim_create_namespace("hlchunk")
 
     local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
@@ -43,8 +43,8 @@ function chunk_mod:render()
         local offset = fn.winsaveview().leftcol
 
         local row_opts = {
-            virt_text_pos = 'overlay',
-            hl_mode = 'combine',
+            virt_text_pos = "overlay",
+            hl_mode = "combine",
             priority = 100,
         }
 
@@ -63,7 +63,7 @@ function chunk_mod:render()
                 beg_virt_text = beg_virt_text:sub(utfBeg + 1)
             end
 
-            row_opts.virt_text = { { beg_virt_text, 'HLChunk1' } }
+            row_opts.virt_text = { { beg_virt_text, "HLChunk1" } }
             row_opts.virt_text_win_col = math.max(start_col - offset, 0)
             api.nvim_buf_set_extmark(0, self.ns_id, beg_row - 1, 0, row_opts)
         end
@@ -83,18 +83,18 @@ function chunk_mod:render()
                 local utfBeg = vim.str_byteindex(end_virt_text, byte_idx)
                 end_virt_text = end_virt_text:sub(utfBeg + 1)
             end
-            row_opts.virt_text = { { end_virt_text, 'HLChunk1' } }
+            row_opts.virt_text = { { end_virt_text, "HLChunk1" } }
             row_opts.virt_text_win_col = math.max(start_col - offset, 0)
             api.nvim_buf_set_extmark(0, self.ns_id, end_row - 1, 0, row_opts)
         end
 
         -- render middle section
         for i = beg_row + 1, end_row - 1 do
-            row_opts.virt_text = { { self.options.chars.vertical_line, 'HLChunk1' } }
+            row_opts.virt_text = { { self.options.chars.vertical_line, "HLChunk1" } }
             row_opts.virt_text_win_col = start_col - offset
-            local space_tab = (' '):rep(vim.o.shiftwidth)
-            local line_val = fn.getline(i):gsub('\t', space_tab)
-            if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match '%s' then
+            local space_tab = (" "):rep(vim.o.shiftwidth)
+            local line_val = fn.getline(i):gsub("\t", space_tab)
+            if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
                 if utils.col_in_screen(start_col) then
                     api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
                 end
@@ -105,30 +105,30 @@ end
 
 function chunk_mod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
-    api.nvim_create_autocmd({ 'TextChanged' }, {
+    api.nvim_create_autocmd({ "TextChanged" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
-    api.nvim_create_autocmd({ 'TextChangedI', 'CursorMovedI' }, {
+    api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
-    api.nvim_create_autocmd({ 'CursorMoved' }, {
+    api.nvim_create_autocmd({ "CursorMoved" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
         end,
     })
-    api.nvim_create_autocmd({ 'ColorScheme' }, {
+    api.nvim_create_autocmd({ "ColorScheme" }, {
         group = self.augroup_name,
-        pattern = '*',
+        pattern = "*",
         callback = function()
             chunk_mod:enable()
         end,
@@ -137,18 +137,24 @@ end
 
 function chunk_mod:extra()
     local textobject = self.options.textobject
-    if #textobject == 0 then return end
-    vim.keymap.set({ 'x', 'o' }, textobject, function()
+    if #textobject == 0 then
+        return
+    end
+    vim.keymap.set({ "x", "o" }, textobject, function()
         local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
-        if not cur_chunk_range then return end
+        if not cur_chunk_range then
+            return
+        end
 
         local s_row, e_row = unpack(cur_chunk_range)
-        local ctrl_v = api.nvim_replace_termcodes('<C-v>', true, true, true)
+        local ctrl_v = api.nvim_replace_termcodes("<C-v>", true, true, true)
         local cur_mode = vim.fn.mode()
-        if cur_mode == 'v' or cur_mode == 'V' or cur_mode == ctrl_v then vim.cmd('normal! ' .. cur_mode) end
+        if cur_mode == "v" or cur_mode == "V" or cur_mode == ctrl_v then
+            vim.cmd("normal! " .. cur_mode)
+        end
 
         api.nvim_win_set_cursor(0, { s_row, 0 })
-        vim.cmd 'normal! V'
+        vim.cmd("normal! V")
         api.nvim_win_set_cursor(0, { e_row, 0 })
     end)
 end

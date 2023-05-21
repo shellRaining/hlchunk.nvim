@@ -17,7 +17,7 @@ local blank_mod = BaseMod:new({
             "․",
         },
         style = {
-            fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
+            fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetypes = ft.exclude_filetypes,
     },
