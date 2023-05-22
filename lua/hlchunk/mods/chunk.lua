@@ -65,7 +65,7 @@ local draw = function(self)
                 virt_text = self.options.chars["horizontal_line"]
                 offset = offset + (i - end_row)
                 line_num = end_row
-            elseif end_row == i then
+            elseif beg_row == i then
                 virt_text = self.options.chars["left_top"]
             elseif end_row == i then
                 virt_text = self.options.chars["left_bottom"]
@@ -75,7 +75,7 @@ local draw = function(self)
             row_opts.virt_text_win_col = offset
 
             api.nvim_buf_set_extmark(0, self.ns_id, line_num - 1, 0, row_opts)
-            utils.pause(self.interval)
+            utils.pause(24)
         end
     end
 end
