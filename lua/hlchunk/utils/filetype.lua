@@ -1,6 +1,6 @@
 local M = {}
 
-M.support_filetype = {
+M.support_filetypes = {
     "*.ts",
     "*.tsx",
     "*.js",
@@ -20,7 +20,7 @@ M.support_filetype = {
     "*.cs",
 }
 
-M.exclude_filetype = {
+M.exclude_filetypes = {
     aerial = true,
     dashboard = true,
     help = true,
@@ -36,6 +36,7 @@ M.exclude_filetype = {
     lazy = true,
     TelescopePrompt = true,
     [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
+    alpha = true,
 }
 
 M.type_patterns = {

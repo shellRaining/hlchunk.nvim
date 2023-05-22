@@ -6,8 +6,6 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
-local whitespaceStyle = fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui")
-
 ---@class IndentMod: BaseMod
 ---@field cached_lines table<number, number>
 local indent_mod = BaseMod:new({
@@ -20,9 +18,9 @@ local indent_mod = BaseMod:new({
             "│",
         },
         style = {
-            whitespaceStyle,
+            fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui"),
         },
-        exclude_filetype = ft.exclude_filetype,
+        exclude_filetypes = ft.exclude_filetypes,
     },
 })
 
@@ -59,7 +57,7 @@ end
 function indent_mod:render(scrolled)
     scrolled = scrolled or false
 
-    if (not self.options.enable) or self.options.exclude_filetype[vim.bo.filetype] or vim.o.shiftwidth == 0 then
+    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
         return
     end
 

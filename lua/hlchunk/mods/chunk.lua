@@ -9,8 +9,8 @@ local chunk_mod = BaseMod:new({
     options = {
         enable = true,
         use_treesitter = true,
-        support_filetypes = ft.support_filetype,
-        exclude_filetypes = ft.exclude_filetype,
+        support_filetypes = ft.support_filetypes,
+        exclude_filetypes = ft.exclude_filetypes,
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -21,6 +21,7 @@ local chunk_mod = BaseMod:new({
         style = {
             { fg = "#806d9c" },
         },
+        textobject = "",
     },
 })
 
@@ -132,6 +133,30 @@ function chunk_mod:enable_mod_autocmd()
             chunk_mod:enable()
         end,
     })
+end
+
+function chunk_mod:extra()
+    local textobject = self.options.textobject
+    if #textobject == 0 then
+        return
+    end
+    vim.keymap.set({ "x", "o" }, textobject, function()
+        local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
+        if not cur_chunk_range then
+            return
+        end
+
+        local s_row, e_row = unpack(cur_chunk_range)
+        local ctrl_v = api.nvim_replace_termcodes("<C-v>", true, true, true)
+        local cur_mode = vim.fn.mode()
+        if cur_mode == "v" or cur_mode == "V" or cur_mode == ctrl_v then
+            vim.cmd("normal! " .. cur_mode)
+        end
+
+        api.nvim_win_set_cursor(0, { s_row, 0 })
+        vim.cmd("normal! V")
+        api.nvim_win_set_cursor(0, { e_row, 0 })
+    end)
 end
 
 return chunk_mod

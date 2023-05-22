@@ -28,6 +28,8 @@ local BaseMod = {
 ---@field disable_mod_autocmd fun(self: BaseMod)
 ---@field create_mod_usercmd fun(self: BaseMod)
 ---@field set_options fun(self: BaseMod, options: table | nil)
+---@field extra fun(self:BaseMod)
+
 function BaseMod:new(o)
     o = o or {}
     o.augroup_name = o.augroup_name or ("hl_" .. o.name .. "_augroup")
@@ -44,6 +46,7 @@ function BaseMod:enable()
         self:render()
         self:enable_mod_autocmd()
         self:create_mod_usercmd()
+        self:extra()
     end)
     if not ok then
         vim.notify(tostring(info))
@@ -125,5 +128,9 @@ function BaseMod:set_options(options)
     end
     self.options = vim.tbl_deep_extend("force", self.options, options or {})
 end
+
+---This is a hook function, you can do some extra things when you enable mod
+---This is a empty implementation, you can override it
+function BaseMod:extra() end
 
 return BaseMod
