@@ -189,4 +189,14 @@ function M.col_in_screen(col)
     return col >= leftcol
 end
 
+-- pause coroutine
+---@param ms number
+function M.pause(ms)
+    local co = coroutine.running()
+    vim.defer_fn(function()
+        coroutine.resume(co)
+    end, ms)
+    coroutine.yield()
+end
+
 return M
