@@ -17,7 +17,7 @@ local blank_mod = BaseMod:new({
             "․",
         },
         style = {
-            api.nvim_get_hl(0, {name = "Whitespace"})
+            api.nvim_get_hl(0, { name = "Whitespace" }),
         },
         exclude_filetypes = ft.exclude_filetypes,
     },
