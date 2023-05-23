@@ -18,7 +18,7 @@ local indent_mod = BaseMod:new({
             "│",
         },
         style = {
-            fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui"),
+            api.nvim_get_hl(0, {name = "Whitespace"})
         },
         exclude_filetypes = ft.exclude_filetypes,
     },

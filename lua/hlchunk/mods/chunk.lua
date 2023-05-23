@@ -42,6 +42,8 @@ function chunk_mod:render()
         local start_col = math.max(math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth, 0)
         local offset = fn.winsaveview().leftcol
 
+        local get_width = api.nvim_strwidth
+
         local row_opts = {
             virt_text_pos = "overlay",
             hl_mode = "combine",
@@ -56,8 +58,8 @@ function chunk_mod:render()
 
             if not utils.col_in_screen(start_col) then
                 local byte_idx = math.min(offset - start_col, virt_text_len)
-                if byte_idx > fn.strwidth(beg_virt_text) then
-                    byte_idx = fn.strwidth(beg_virt_text)
+                if byte_idx > get_width(beg_virt_text) then
+                    byte_idx = get_width(beg_virt_text)
                 end
                 local utfBeg = vim.str_byteindex(beg_virt_text, byte_idx)
                 beg_virt_text = beg_virt_text:sub(utfBeg + 1)
@@ -77,8 +79,8 @@ function chunk_mod:render()
 
             if not utils.col_in_screen(start_col) then
                 local byte_idx = math.min(offset - start_col, virt_text_len)
-                if byte_idx > fn.strwidth(end_virt_text) then
-                    byte_idx = fn.strwidth(end_virt_text)
+                if byte_idx > get_width(end_virt_text) then
+                    byte_idx = get_width(end_virt_text)
                 end
                 local utfBeg = vim.str_byteindex(end_virt_text, byte_idx)
                 end_virt_text = end_virt_text:sub(utfBeg + 1)
