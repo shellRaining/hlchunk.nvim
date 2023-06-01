@@ -62,7 +62,8 @@ function indent_mod:render(scrolled)
     end
 
     if not scrolled then
-        self:clear(fn.line("w0"), fn.line("w$"))
+        -- nvim api is 0-base index, but most of vim.fn is 1-base index
+        self:clear(fn.line("w0") - 1, fn.line("w$") - 1)
     end
     self.ns_id = api.nvim_create_namespace("hl_indent")
 
