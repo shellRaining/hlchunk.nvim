@@ -64,7 +64,9 @@ function chunk_mod:render()
                 local offset = start_col - fn.winsaveview().leftcol
 
                 if beg_row > i then
+                    -- If it is true, replace it with the corresponding symbol
                     virt_text = self.options.chars["horizontal_line"]
+                    --  Here is the start of the horizontal line, so the number of lines cannot be less than beg_row
                     offset, line_num = offset - (i - beg_row), beg_row
                 elseif end_row < i then
                     virt_text = self.options.chars["horizontal_line"]
@@ -76,7 +78,7 @@ function chunk_mod:render()
                 end
 
                 -- Save character data into the table
-                opts.virt_text[i - start_range] = virt_text
+                opts.virt_text[i - start_range] = virt_text -- "i - start_range" makes the index start from zero
                 opts.offset[i - start_range] = offset
                 opts.line_num[i - start_range] = line_num
             end
