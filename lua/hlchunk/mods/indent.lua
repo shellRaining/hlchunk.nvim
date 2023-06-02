@@ -63,9 +63,20 @@ function indent_mod:render(scrolled)
 
     if not scrolled then
         -- nvim api is 0-base index, but most of vim.fn is 1-base index
-        self:clear(fn.line("w0") - 1, fn.line("w$") - 1)
+        local wbegin = fn.line("w0") - 1
+        local wend = fn.line("w$") - 1
+
+        -- when window height is less than buffer height, clear all
+        -- an example:
+        -- a buffer is 10 lines, the window is 20 lines, whne format code, the buffer is 7 lines,
+        -- if not clear all, the last 3 lines will not be cleared
+        if wend - wbegin + 1 < fn.winheight(fn.winnr()) then
+            self:clear()
+        else
+            self:clear(fn.line("w0") - 1, fn.line("w$") - 1)
+        end
     end
-    self.ns_id = api.nvim_create_namespace("hl_indent")
+    self.ns_id = api.nvim_create_namespace(self.name)
 
     local rows_indent = utils.get_rows_indent(nil, nil, {
         use_treesitter = self.options.use_treesitter,
@@ -93,11 +104,12 @@ function indent_mod:enable_mod_autocmd()
             local cur_win_info = fn.winsaveview()
             local old_win_info = indent_mod.old_win_info
 
-            if cur_win_info.lnum ~= old_win_info.lnum then
-                indent_mod:render(true)
-            elseif cur_win_info.leftcol ~= old_win_info.leftcol then
+            if cur_win_info.leftcol ~= old_win_info.leftcol then
                 indent_mod:render(false)
+            elseif cur_win_info.lnum ~= old_win_info.lnum then
+                indent_mod:render(true)
             end
+
             indent_mod.old_win_info = cur_win_info
         end,
     })
