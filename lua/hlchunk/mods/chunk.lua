@@ -42,9 +42,11 @@ function chunk_mod:render()
     local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
+        -- Determine whether the new position is the same as the old position
         local same = ctx_manager.is_same_context(beg_row, end_row)
 
-        if (not ani_manager.get_running() and not same) or not same then
+        -- If not the same, start a new drawing
+        if not same then
             local beg_blank_len, end_blank_len = fn.indent(beg_row), fn.indent(end_row)
             local start_col = math.max(math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth, 0)
 
@@ -55,6 +57,7 @@ function chunk_mod:render()
             local start_range = beg_row - beg_blank_len + start_col
             local end_range = end_row + end_blank_len - start_col
 
+            -- The range of all characters
             for i = start_range + 1, end_range - 1, 1 do
                 local virt_text = self.options.chars["vertical_line"]
                 local line_num = i
@@ -72,6 +75,7 @@ function chunk_mod:render()
                     virt_text = self.options.chars["left_bottom"]
                 end
 
+                -- Save character data into the table
                 opts.virt_text[i - start_range] = virt_text
                 opts.offset[i - start_range] = offset
                 opts.line_num[i - start_range] = line_num
