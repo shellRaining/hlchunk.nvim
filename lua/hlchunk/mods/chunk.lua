@@ -8,6 +8,7 @@ local chunk_mod = BaseMod:new({
     name = "chunk",
     options = {
         enable = true,
+        notify = true,
         use_treesitter = true,
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,

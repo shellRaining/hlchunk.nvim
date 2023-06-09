@@ -48,24 +48,23 @@ function BaseMod:enable()
         self:create_mod_usercmd()
     end)
     if not ok then
-        vim.notify(tostring(info))
+        self:notify(tostring(info))
     end
 end
 
 function BaseMod:disable()
-    local ok, info = pcall(function()
+    local ok, _ = pcall(function()
         self.options.enable = false
         self:clear()
         self:disable_mod_autocmd()
     end)
     if not ok then
-        vim.notify("you have disable " .. self.name .. " mod")
-        vim.notify(tostring(info))
+        self:notify("you have disable " .. self.name .. " mod")
     end
 end
 
 function BaseMod:render()
-    vim.notify("not implemented render " .. self.name, vim.log.levels.ERROR)
+    self:notify("not implemented render " .. self.name, vim.log.levels.ERROR)
 end
 
 function BaseMod:clear(line_start, line_end)
@@ -122,7 +121,7 @@ end
 ---@param options table | nil
 function BaseMod:set_options(options)
     if self.options == nil then
-        vim.notify("not set the default config for " .. self.name, vim.log.levels.ERROR)
+        self:notify("not set the default config for " .. self.name, vim.log.levels.ERROR)
         return
     end
     self.options = vim.tbl_deep_extend("force", self.options, options or {})

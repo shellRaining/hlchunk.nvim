@@ -13,6 +13,7 @@ local indent_mod = BaseMod:new({
     cached_lines = {},
     options = {
         enable = true,
+        notify = true,
         use_treesitter = false,
         chars = {
             "│",

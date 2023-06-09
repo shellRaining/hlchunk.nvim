@@ -13,6 +13,7 @@ local blank_mod = BaseMod:new({
     cached_lines = {},
     options = {
         enable = true,
+        notify = true,
         chars = {
             "․",
         },

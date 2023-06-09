@@ -7,6 +7,7 @@ local context_mod = require("hlchunk.base_mod"):new({
     name = "context",
     options = {
         enable = false,
+        notify = true,
         use_treesitter = false,
         chars = {
             "┃", -- Box Drawings Heavy Vertical
