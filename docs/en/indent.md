@@ -5,16 +5,19 @@
 chunk have five configurable items
 
 1. enable
-2. use_treesitter
-3. chars
-4. style
-5. exclude_filetype
+2. notify
+3. use_treesitter
+4. chars
+5. style
+6. exclude_filetype
 
-enable is used to control whether enable hl_indent, if set it to false, its usercmd and autocmd will not set, so it will not work
+`enable` is used to control whether enable hl_indent, if set it to false, its usercmd and autocmd will not set, so it will not work
 
-use_treesitter is a boolean value, if set it to true, this mod will judge indent by using treesitter
+`notify` is used to control whether notify when some situation(like disable indent mod double time)
 
-chars is used to configure what char to render the indent line, it is a table contains many char, like this
+`use_treesitter` is a boolean value, if set it to true, this mod will judge indent by using treesitter
+
+`chars` is used to configure what char to render the indent line, it is a table contains many char, like this
 
 ```lua
 chars = {
@@ -25,9 +28,9 @@ chars = {
 },
 ```
 
-style is a RGB string or RGB string list, if it is a table, it will choice different color to render different indent line
+`style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different indent line
 
-exclude_filetype is opposite of support_filetypes, it is a lua table like this
+`exclude_filetype` is opposite of support_filetypes, it is a lua table like this
 
 ```lua
 exclude_filetype = {

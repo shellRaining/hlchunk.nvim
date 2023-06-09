@@ -5,14 +5,17 @@
 line_num 有三个配置项
 
 1. enable
+2. notify
 2. style
 3. support_filetypes
 
-enable 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
+`enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
 
-style 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 chunk line
+`notify` 是用来控制是否在某些情况下通知用户，比如禁用 line_num mod 两次
 
-support_filetypes 是一个 lua table 类型，例子如下
+`style` 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 chunk line
+
+`support_filetypes` 是一个 lua table 类型，例子如下
 
 ```lua
 support_filetypes = {

@@ -98,6 +98,7 @@ Plug "shellRaining/hlchunk.nvim"
 {
     chunk = {
         enable = true,
+        notify = true, -- 在某些情况下弹出提示（比如连续两次使用 disableHLChunk 命令）
         use_treesitter = true,
         chars = {
             horizontal_line = "─",

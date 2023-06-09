@@ -5,13 +5,16 @@
 blank have four configurable items
 
 1. enable
-2. chars
-3. style
-4. exclude_filetype
+2. notify
+3. chars
+4. style
+5. exclude_filetype
 
-enable is used to control whether enable hl_blank, if set it to false, its usercmd and autocmd will not set, so it will not work
+`enable` is used to control whether enable hl_blank, if set it to false, its usercmd and autocmd will not set, so it will not work
 
-chars is used to configure what char to render the blank, it is a table contains many char, like this
+`notify` same as chunk mod
+
+`chars` is used to configure what char to render the blank, it is a table contains many char, like this
 
 ```lua
 chars = {
@@ -24,9 +27,9 @@ chars = {
 },
 ```
 
-style is a RGB string or RGB string list, if it is a table, it will choice different color to render different blank (indent)
+`style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different blank (indent)
 
-exclude_filetype is opposite of support_filetypes, it is a lua table like this
+`exclude_filetype` is opposite of support_filetypes, it is a lua table like this
 
 ```lua
 exclude_filetype = {

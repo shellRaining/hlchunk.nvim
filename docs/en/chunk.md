@@ -9,15 +9,18 @@ it is used to highlight the code block where the cursor is located.
 chunk have four configurable items
 
 1. enable
-2. use_treesitter
-3. exclude_filetypes
-4. support_filetypes
-5. chars
-6. style
+2. notify
+3. use_treesitter
+4. exclude_filetypes
+5. support_filetypes
+6. chars
+7. style
 
 `enable` is used to control whether the mod is started, the default is true.
 
 If set to false, the usercmd and autocmd it carries will not be generated, and the mod will be closed at this time
+
+`notify` is used to control whether to pop up a prompt in some cases (such as using the disableHLChunk command twice in a row), the default is true
 
 `use_treesitter` is used to control whether to use treesitter to highlight the code block, the default is true
 

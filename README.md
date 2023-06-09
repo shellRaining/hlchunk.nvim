@@ -98,6 +98,7 @@ The script comes with the following defaults:
     chunk = {
         enable = true,
         use_treesitter = true,
+        notify = true, -- notify if some situation(like disable chunk mod double time)
         chars = {
             horizontal_line = "─",
             vertical_line = "│",

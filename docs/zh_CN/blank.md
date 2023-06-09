@@ -5,13 +5,16 @@
 blank mod 有四个配置项
 
 1. enable
-2. chars
-3. style
-4. exclude_filetype
+2. notify
+3. chars
+4. style
+5. exclude_filetype
 
-enable 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
+`enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
 
-chars 是一个 lua 表，其中的字符用来指示如何渲染 blank 字符
+`notify` 是用来控制是否在某些情况下通知用户，比如禁用 blank mod 两次
+
+`chars` 是一个 lua 表，其中的字符用来指示如何渲染 blank 字符
 
 ```lua
 chars = {
@@ -24,9 +27,9 @@ chars = {
 },
 ```
 
-style 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 blank
+`style` 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 blank
 
-exclude_filetype 是 support_filetype 的反面，用来控制在哪些文件类型不渲染 blank
+`exclude_filetype` 是 support_filetype 的反面，用来控制在哪些文件类型不渲染 blank
 
 ```lua
 exclude_filetype = {

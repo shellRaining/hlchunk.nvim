@@ -5,14 +5,17 @@
 line_num have three configurable items
 
 1. enable
-2. style
-3. support_filetypes
+2. notify
+3. style
+4. support_filetypes
 
-enable is used to control whether enable hl_line_num, if set it to false, its usercmd and autocmd will not set, so it will not work
+`enable` is used to control whether enable hl_line_num, if set it to false, its usercmd and autocmd will not set, so it will not work
 
-style is a RGB string, it will set the color of font color of line number
+`notify` same as chunk mod
 
-support_filetypes is a table, you can set like this
+`style` is a RGB string, it will set the color of font color of line number
+
+`support_filetypes` is a table, you can set like this
 
 ```lua
 support_filetypes = {

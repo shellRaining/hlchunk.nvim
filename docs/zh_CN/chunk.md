@@ -11,15 +11,18 @@
 chunk mod 有四个配置项
 
 1. enable
-2. use_treesitter
-3. exclude_filetypes
-4. support_filetypes
-5. chars
-6. style
+2. notify
+3. use_treesitter
+4. exclude_filetypes
+5. support_filetypes
+6. chars
+7. style
 
 `enable` 是用来控制该 mod 是否启动的，默认为 true。
 
 如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
+
+`notify` 是用来控制是否在某些情况下弹出提示（比如连续两次使用 disableHLChunk 命令），默认为 true
 
 `use_treesitter` 是用来控制是否使用 treesitter 来高亮代码块，默认为 true
 
