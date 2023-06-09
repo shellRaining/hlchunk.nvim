@@ -25,6 +25,12 @@ local chunk_mod = BaseMod:new({
     },
 })
 
+-- chunk_mod can use text object, so add a new function extra to handle it
+function chunk_mod:enable()
+    BaseMod.enable(self)
+    self:extra()
+end
+
 -- set new virtual text to the right place
 function chunk_mod:render()
     if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then

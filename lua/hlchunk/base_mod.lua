@@ -46,7 +46,6 @@ function BaseMod:enable()
         self:render()
         self:enable_mod_autocmd()
         self:create_mod_usercmd()
-        self:extra()
     end)
     if not ok then
         vim.notify(tostring(info))
@@ -129,8 +128,12 @@ function BaseMod:set_options(options)
     self.options = vim.tbl_deep_extend("force", self.options, options or {})
 end
 
----This is a hook function, you can do some extra things when you enable mod
----This is a empty implementation, you can override it
-function BaseMod:extra() end
+function BaseMod:notify(msg, level)
+    -- notice that if self.options.notify is nil, it will still notify you
+    if self.options == nil or self.options.notify == false then
+        return
+    end
+    vim.notify(msg, level)
+end
 
 return BaseMod
