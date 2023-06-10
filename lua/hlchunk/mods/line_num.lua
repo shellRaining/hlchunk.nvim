@@ -1,9 +1,10 @@
+local BaseMod = require("hlchunk.base_mod")
 local utils = require("hlchunk.utils.utils")
 local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
-local line_num_mod = require("hlchunk.base_mod"):new({
+local line_num_mod = BaseMod:new({
     name = "line_num",
     options = {
         enable = true,
@@ -35,7 +36,8 @@ function line_num_mod:render()
 end
 
 function line_num_mod:enable_mod_autocmd()
-    api.nvim_create_augroup(self.augroup_name, { clear = true })
+    BaseMod.enable_mod_autocmd(self)
+
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
@@ -47,13 +49,6 @@ function line_num_mod:enable_mod_autocmd()
                 line_num_mod.old_win_info = cur_win_info
                 line_num_mod:render()
             end
-        end,
-    })
-    api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = self.augroup_name,
-        pattern = "*",
-        callback = function()
-            line_num_mod:enable()
         end,
     })
 end

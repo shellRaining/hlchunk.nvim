@@ -96,7 +96,7 @@ function indent_mod:render(scrolled)
 end
 
 function indent_mod:enable_mod_autocmd()
-    api.nvim_create_augroup(self.augroup_name, { clear = true })
+    BaseMod.enable_mod_autocmd(self)
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = self.augroup_name,
@@ -127,13 +127,6 @@ function indent_mod:enable_mod_autocmd()
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
         callback = function()
             indent_mod:render()
-        end,
-    })
-    api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = self.augroup_name,
-        pattern = "*",
-        callback = function()
-            indent_mod:enable()
         end,
     })
 end

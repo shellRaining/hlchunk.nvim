@@ -1,9 +1,10 @@
+local BaseMod = require("hlchunk.base_mod")
 local utils = require("hlchunk.utils.utils")
 local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
-local context_mod = require("hlchunk.base_mod"):new({
+local context_mod = BaseMod:new({
     name = "context",
     options = {
         enable = false,
@@ -58,7 +59,8 @@ function context_mod:render()
 end
 
 function context_mod:enable_mod_autocmd()
-    api.nvim_create_augroup(self.augroup_name, { clear = true })
+    BaseMod.enable_mod_autocmd(self)
+
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = self.augroup_name,
         pattern = "*",
@@ -77,13 +79,6 @@ function context_mod:enable_mod_autocmd()
         pattern = "*",
         callback = function()
             context_mod:render()
-        end,
-    })
-    api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = self.augroup_name,
-        pattern = "*",
-        callback = function()
-            context_mod:enable()
         end,
     })
 end

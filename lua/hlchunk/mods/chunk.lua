@@ -113,7 +113,8 @@ function chunk_mod:render()
 end
 
 function chunk_mod:enable_mod_autocmd()
-    api.nvim_create_augroup(self.augroup_name, { clear = true })
+    BaseMod.enable_mod_autocmd(self)
+
     api.nvim_create_autocmd({ "TextChanged" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
@@ -133,13 +134,6 @@ function chunk_mod:enable_mod_autocmd()
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
-        end,
-    })
-    api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = self.augroup_name,
-        pattern = "*",
-        callback = function()
-            chunk_mod:enable()
         end,
     })
 end

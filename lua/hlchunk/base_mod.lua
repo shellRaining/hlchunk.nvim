@@ -78,6 +78,15 @@ end
 
 function BaseMod:enable_mod_autocmd()
     api.nvim_create_augroup(self.augroup_name, { clear = true })
+
+    local this = self
+    api.nvim_create_autocmd({ "ColorScheme" }, {
+        group = self.augroup_name,
+        pattern = "*",
+        callback = function()
+            this:set_hl()
+        end,
+    })
 end
 
 function BaseMod:disable_mod_autocmd()
