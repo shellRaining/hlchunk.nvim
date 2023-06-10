@@ -109,8 +109,21 @@ function BaseMod:create_mod_usercmd()
 end
 
 -- set highlight for mod
+-- there are four types to config
+-- 1. style = "#abcabc"
+-- 2. style = {"#abcabc", "#cdefef"}
+-- 3. style = {
+--      { fg = "#abcabc", bg = "#cdefef" },
+--      { fg = "#abcabc", bg = "#cdefef" },
+-- }
+-- 4. style = {
+--      { fg = fg1cb, bg = bg1cb },
+--      { fg = "#abcabc", bg = "#cdefef"},
+-- }
 function BaseMod:set_hl()
     local hl_opts = self.options.style
+
+    -- such as style = "#abcabc"
     if type(hl_opts) == "string" then
         api.nvim_set_hl(0, self.hl_base_name .. "1", { fg = hl_opts })
         return
@@ -119,8 +132,28 @@ function BaseMod:set_hl()
     for idx, value in ipairs(hl_opts) do
         local value_type = type(value)
         if value_type == "table" then
+            --[[
+            such as style = {
+                { fg = fg1cb, bg = bg1cb },
+                { fg = "#abcabc", bg = "#cdefef"},
+            }
+            --]]
+            if type(value.fg) == "function" or type(value.bg) == "function" then
+                local value_tmp = vim.deepcopy(value)
+                value_tmp.fg = type(value.fg) == "function" and value.fg() or value.fg
+                value_tmp.bg = type(value.bg) == "function" and value.bg() or value.bg
+                api.nvim_set_hl(0, self.hl_base_name .. idx, value_tmp)
+                return
+            end
+            --[[
+            such as style = {
+                { fg = "#abcabc", bg = "#cdefef" },
+                { fg = "#abcabc", bg = "#cdefef" },
+            }
+            --]]
             api.nvim_set_hl(0, self.hl_base_name .. idx, value)
         elseif value_type == "string" then
+            -- such as style = {"#abcabc", "#cdefef"}
             api.nvim_set_hl(0, self.hl_base_name .. idx, { fg = value })
         end
     end
