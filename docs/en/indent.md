@@ -30,12 +30,12 @@ chars = {
 
 `style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different indent line
 
-`exclude_filetype` is opposite of support_filetypes, it is a lua table like this
+`exclude_filetype` is opposite of support_filetypes, it is a lua table like this, the default exclude_filetypes can be found in the [default config](../../lua/hlchunk/utils/filetype.lua)
 
 ```lua
 exclude_filetype = {
-    "help",
-    "plugin",
+    aerial = true,
+    NvimTree = true,
 }
 ```
 

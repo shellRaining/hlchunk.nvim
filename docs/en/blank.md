@@ -29,12 +29,12 @@ chars = {
 
 `style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different blank (indent)
 
-`exclude_filetype` is opposite of support_filetypes, it is a lua table like this
+`exclude_filetype` is opposite of support_filetypes, it is a lua table like this, same as chunk mod
 
 ```lua
 exclude_filetype = {
-    "help",
-    "plugin",
+    aerial = true,
+    NvimTree = true,
 }
 ```
 

@@ -99,6 +99,14 @@ The script comes with the following defaults:
         enable = true,
         use_treesitter = true,
         notify = true, -- notify if some situation(like disable chunk mod double time)
+        exclude_filetypes = {
+            aerial = true,
+            dashboard = true,
+        }
+        support_filetypes = {
+            "*.lua",
+            "*.js",
+        }
         chars = {
             horizontal_line = "─",
             vertical_line = "│",

@@ -28,12 +28,12 @@ chunk mod 有四个配置项
 
 如果设置为 false，将使用 vim 的 match 来高亮代码块，反之使用 treesitter 来判断当前代码块
 
-`exclude_filetypes` 是一个 lua table 类型，例子如下
+`exclude_filetypes` 是一个 lua table 类型，例子如下，默认的 exclude_filetypes 可以在 [default config](../../lua/hlchunk/utils/filetype.lua) 中找到
 
 ```lua
 exclude_filetypes = {
-    "lua",
-    "python",
+    aerial = true,
+    dashboard = true,
 }
 ```
 

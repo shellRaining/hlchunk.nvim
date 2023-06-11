@@ -26,12 +26,12 @@ If set to false, the usercmd and autocmd it carries will not be generated, and t
 
 If set to false, vim's match will be used to highlight the code block, otherwise treesitter will be used to determine the current code block
 
-`exclude_filetypes` is a lua table type, example as follows
+`exclude_filetypes` is a lua table type, example as follows, the default exclude_filetypes can be found in the [default config](../../lua/hlchunk/utils/filetype.lua)
 
 ```lua
 exclude_filetypes = {
-    "lua",
-    "python",
+    aerial = true,
+    dashboard = true,
 }
 ```
 

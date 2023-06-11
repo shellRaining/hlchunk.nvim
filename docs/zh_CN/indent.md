@@ -30,12 +30,12 @@ chars = {
 
 `style` 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 indent line
 
-`exclude_filetype` 是 support_filetype 的反面，用来控制在哪些文件类型不渲染 indent line
+`exclude_filetype` 是 support_filetype 的反面，用来控制在哪些文件类型不渲染 indent line，默认的 exclude_filetypes 可以在 [default config](../../lua/hlchunk/utils/filetype.lua) 中找到
 
 ```lua
 exclude_filetype = {
-    "help",
-    "plugin",
+    aerial = true,
+    NvimTree = true,
 }
 ```
 
