@@ -63,6 +63,7 @@ function M.get_chunk_range(line, opts)
             end
             cursor_node = cursor_node:parent()
         end
+        return nil
     end
 
     local base_flag = "nWz"
