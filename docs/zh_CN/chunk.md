@@ -17,6 +17,7 @@ chunk mod 有四个配置项
 5. support_filetypes
 6. chars
 7. style
+8. max_file_size
 
 `enable` 是用来控制该 mod 是否启动的，默认为 true。
 
@@ -55,6 +56,8 @@ support_filetypes = {
 - right_arrow
 
 `style` 是一个 RGB 字符串或者一个 RGB 字符串表，默认为 "#806d9c"。
+
+`max_file_size` 是一个数字，默认为 1024*1024(1MB)，当打开的文件大小超过这个值时，将不会高亮
 
 ## example
 

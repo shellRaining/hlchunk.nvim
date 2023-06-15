@@ -142,7 +142,6 @@ function chunk_mod:enable_mod_autocmd()
         callback = function()
             -- get the file size of the current buffer
             local ok, status = pcall(fn.getfsize, fn.expand("%"))
-            self:notify("File size: " .. status)
             if ok and status >= chunk_mod.options.max_file_size then
                 self:notify("File is too large, chunk.nvim will not be loaded")
                 chunk_mod:disable()

@@ -15,6 +15,7 @@ chunk have four configurable items
 5. support_filetypes
 6. chars
 7. style
+8. max_file_size
 
 `enable` is used to control whether the mod is started, the default is true.
 
@@ -53,6 +54,8 @@ support_filetypes = {
 - right_arrow
 
 `style` is an RGB string or an RGB string table, the default is "#806d9c".
+
+`max_file_size` is a number, the default is 1024*1024(1MB), which is used to control the maximum file size that can be highlighted
 
 ## example
 
