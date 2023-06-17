@@ -1,10 +1,12 @@
-local M = {}
-
 local ft = require("hlchunk.utils.filetype")
 local fn = vim.fn
 local treesitter = vim.treesitter
+local ts_utils = require("nvim-treesitter.ts_utils")
 
-function M.has_treesitter(bufnr)
+-- these are helper function for utils
+
+---@param bufnr number check the bufnr has treesitter parser
+local function has_treesitter(bufnr)
     local ok = pcall(require, "nvim-treesitter")
     if not ok then
         return false
@@ -23,7 +25,7 @@ function M.has_treesitter(bufnr)
 end
 
 ---@param line? number
-function M.is_comment(line)
+local function is_comment(line)
     line = line or fn.line(".")
 
     local str = fn.getline(line)
@@ -33,22 +35,46 @@ function M.is_comment(line)
         or string.match(str, "^%s*//.*$") ~= nil
 end
 
+-- get the virtual indent of the given line
+---@param rows_indent table<number, number>
+---@param line number
+---@return number
+local function get_virt_indent(rows_indent, line)
+    local cur = line + 1
+    while rows_indent[cur] do
+        if rows_indent[cur] == 0 then
+            break
+        elseif rows_indent[cur] > 0 then
+            return rows_indent[cur]
+        end
+        cur = cur + 1
+    end
+    return -1
+end
+
+-- this is utils module for hlchunk every mod
+-- every method in this module should pass arguments as follow
+-- 1. mod: BaseMod, for utils function to get mod options
+-- 2. normal arguments
+-- 3. opts: for utils function to get options specific for this function
+local M = {}
+
+---@param mod BaseMod
 ---@param line? number the line number we want to get the chunk range
 ---@param opts? {use_treesitter: boolean}
 ---@return table<number, number> | nil
-function M.get_chunk_range(line, opts)
+function M.get_chunk_range(mod, line, opts)
     opts = opts or { use_treesitter = false }
     line = line or fn.line(".")
 
     local beg_row, end_row
 
     if opts.use_treesitter then
-        if not M.has_treesitter(0) then
+        if not has_treesitter(0) and mod.options.notify then
             vim.notify_once("[hlchunk]: not have parser for " .. vim.bo.filetype)
             return nil
         end
 
-        local ts_utils = require("nvim-treesitter.ts_utils")
         local cursor_node = ts_utils.get_node_at_cursor()
         -- TODO: refact this statement
         while cursor_node do
@@ -64,33 +90,39 @@ function M.get_chunk_range(line, opts)
             cursor_node = cursor_node:parent()
         end
         return nil
+    else
+        local base_flag = "nWz"
+        local cur_row_val = fn.getline(line)
+        local cur_col = fn.col(".")
+        local cur_char = string.sub(cur_row_val, cur_col, cur_col)
+
+        beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
+        end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
+
+        if beg_row <= 0 or end_row <= 0 then
+            return nil
+        end
+
+        if is_comment(beg_row) or is_comment(end_row) then
+            return nil
+        end
+
+        return { beg_row, end_row }
     end
-
-    local base_flag = "nWz"
-    local cur_row_val = fn.getline(line)
-    local cur_col = fn.col(".")
-    local cur_char = string.sub(cur_row_val, cur_col, cur_col)
-
-    beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
-    end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
-
-    if beg_row <= 0 or end_row <= 0 then
-        return nil
-    end
-
-    if M.is_comment(beg_row) or M.is_comment(end_row) then
-        return nil
-    end
-
-    return { beg_row, end_row }
 end
 
+---@param mod BaseMod
 ---@param line? number the line number we want to get the indent range
+---@param opts? {use_treesitter: boolean}
 ---@return table<number, number> | nil not include end point
-function M.get_indent_range(line)
+function M.get_indent_range(mod, line, opts)
     line = line or fn.line(".")
+    opts = opts or { use_treesitter = false }
 
-    local rows_indent_list = M.get_rows_indent(nil, nil, { use_treesitter = false, virt_indent = true })
+    local rows_indent_list = M.get_rows_indent(mod, nil, nil, {
+        use_treesitter = opts.use_treesitter,
+        virt_indent = true,
+    })
     if not rows_indent_list or rows_indent_list[line] < 0 then
         return nil
     end
@@ -136,20 +168,21 @@ end
 -- 5.
 -- 6. this is shellRaining
 -- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
+---@param mod BaseMod
 ---@param begRow? number
 ---@param endRow? number
----@param options? {use_treesitter: boolean, virt_indent: boolean}
+---@param opts? {use_treesitter: boolean, virt_indent: boolean}
 ---@return table<number, number> | nil
-function M.get_rows_indent(begRow, endRow, options)
+function M.get_rows_indent(mod, begRow, endRow, opts)
     begRow = begRow or fn.line("w0")
     endRow = endRow or fn.line("w$")
-    options = options or { use_treesitter = false, virt_indent = false }
+    opts = opts or { use_treesitter = false, virt_indent = false }
 
     local rows_indent = {}
     local get_indent = fn.indent
-    if options.use_treesitter then
+    if opts.use_treesitter then
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
-        if not ts_indent_status then
+        if not ts_indent_status and mod.options.notify then
             vim.notify_once("[hlchunk.indent]: nvim-treesitter loaded fail")
             return nil
         end
@@ -160,29 +193,12 @@ function M.get_rows_indent(begRow, endRow, options)
 
     for i = endRow, begRow, -1 do
         rows_indent[i] = get_indent(i)
-        if (not options.use_treesitter) and rows_indent[i] == 0 and #fn.getline(i) == 0 then
-            rows_indent[i] = options.virt_indent and M.get_virt_indent(rows_indent, i) or -1
+        if (not opts.use_treesitter) and rows_indent[i] == 0 and #fn.getline(i) == 0 then
+            rows_indent[i] = opts.virt_indent and get_virt_indent(rows_indent, i) or -1
         end
     end
 
     return rows_indent
-end
-
--- get the virtual indent of the given line
----@param rows_indent table<number, number>
----@param line number
----@return number
-function M.get_virt_indent(rows_indent, line)
-    local cur = line + 1
-    while rows_indent[cur] do
-        if rows_indent[cur] == 0 then
-            break
-        elseif rows_indent[cur] > 0 then
-            return rows_indent[cur]
-        end
-        cur = cur + 1
-    end
-    return -1
 end
 
 function M.col_in_screen(col)

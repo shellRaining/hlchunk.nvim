@@ -28,7 +28,7 @@ function context_mod:render()
     self:clear()
     self.ns_id = api.nvim_create_namespace("hl_context")
 
-    local indent_range = utils.get_indent_range()
+    local indent_range = utils.get_indent_range(self)
     if not indent_range then
         return
     end

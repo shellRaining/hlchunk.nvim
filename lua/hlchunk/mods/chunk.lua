@@ -41,7 +41,9 @@ function chunk_mod:render()
     self:clear()
     self.ns_id = api.nvim_create_namespace("hlchunk")
 
-    local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
+    local cur_chunk_range = utils.get_chunk_range(self, nil, {
+        use_treesitter = self.options.use_treesitter,
+    })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
@@ -144,7 +146,9 @@ function chunk_mod:extra()
         return
     end
     vim.keymap.set({ "x", "o" }, textobject, function()
-        local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
+        local cur_chunk_range = utils.get_chunk_range(self, nil, {
+            use_treesitter = self.options.use_treesitter,
+        })
         if not cur_chunk_range then
             return
         end

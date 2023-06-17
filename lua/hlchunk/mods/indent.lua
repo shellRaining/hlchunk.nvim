@@ -79,7 +79,7 @@ function indent_mod:render(scrolled)
     end
     self.ns_id = api.nvim_create_namespace(self.name)
 
-    local rows_indent = utils.get_rows_indent(nil, nil, {
+    local rows_indent = utils.get_rows_indent(self, nil, nil, {
         use_treesitter = self.options.use_treesitter,
         virt_indent = true,
     })

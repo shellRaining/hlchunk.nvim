@@ -24,7 +24,9 @@ function line_num_mod:render()
     self:clear()
     self.ns_id = api.nvim_create_namespace("hlline_num")
 
-    local cur_chunk_range = utils.get_chunk_range(nil, { use_treesitter = self.options.use_treesitter })
+    local cur_chunk_range = utils.get_chunk_range(self, nil, {
+        use_treesitter = self.options.use_treesitter,
+    })
     if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         for i = beg_row, end_row do
