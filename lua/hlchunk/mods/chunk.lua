@@ -23,6 +23,7 @@ local chunk_mod = BaseMod:new({
             { fg = "#806d9c" },
         },
         textobject = "",
+        max_file_size = 1024 * 1024,
     },
 })
 
@@ -136,6 +137,17 @@ function chunk_mod:enable_mod_autocmd()
         pattern = self.options.support_filetypes,
         callback = function()
             chunk_mod:render()
+        end,
+    })
+    api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {
+        group = self.augroup_name,
+        callback = function()
+            -- get the file size of the current buffer
+            local ok, status = pcall(fn.getfsize, fn.expand("%"))
+            if ok and status >= chunk_mod.options.max_file_size then
+                self:notify("File is too large, chunk.nvim will not be loaded")
+                chunk_mod:disable()
+            end
         end,
     })
 end

@@ -169,7 +169,10 @@ function BaseMod:set_options(options)
     self.options = vim.tbl_deep_extend("force", self.options, options or {})
 end
 
+---@param msg string
+---@param level number?
 function BaseMod:notify(msg, level)
+    level = level or vim.log.levels.INFO
     -- notice that if self.options.notify is nil, it will still notify you
     if self.options == nil or self.options.notify == false then
         return
