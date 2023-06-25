@@ -118,21 +118,7 @@ end
 function chunk_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "TextChanged" }, {
-        group = self.augroup_name,
-        pattern = self.options.support_filetypes,
-        callback = function()
-            chunk_mod:render()
-        end,
-    })
-    api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI" }, {
-        group = self.augroup_name,
-        pattern = self.options.support_filetypes,
-        callback = function()
-            chunk_mod:render()
-        end,
-    })
-    api.nvim_create_autocmd({ "CursorMoved" }, {
+    api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI", "CursorMoved", "TextChanged" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
