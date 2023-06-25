@@ -4,8 +4,11 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class ChunkMod: BaseMod
+---@field old_chunk_range table<number, number>
 local chunk_mod = BaseMod:new({
     name = "chunk",
+    old_chunk_range = { 1, 1 },
     options = {
         enable = true,
         notify = true,
@@ -39,13 +42,22 @@ function chunk_mod:render()
         return
     end
 
-    self:clear()
-    self.ns_id = api.nvim_create_namespace("hlchunk")
-
     local cur_chunk_range = utils.get_chunk_range(self, nil, {
         use_treesitter = self.options.use_treesitter,
     })
-    if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
+
+    if
+        cur_chunk_range == nil
+        or (cur_chunk_range[1] == self.old_chunk_range[1] and cur_chunk_range[2] == self.old_chunk_range[2])
+    then
+        return
+    end
+
+    self.old_chunk_range = cur_chunk_range
+    self:clear()
+    self.ns_id = api.nvim_create_namespace(self.name)
+
+    if cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
         local end_blank_len = fn.indent(end_row)
