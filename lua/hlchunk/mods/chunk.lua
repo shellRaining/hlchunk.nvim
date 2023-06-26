@@ -57,6 +57,8 @@ function chunk_mod:render(opts)
     local old_chunk_range = self.old_chunk_range
 
     if not cur_chunk_range then
+        self:clear()
+        self.old_chunk_range = { 1, 1 }
         return
     end
 
