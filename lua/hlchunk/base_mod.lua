@@ -2,33 +2,50 @@ local Array = require("hlchunk.utils.array")
 local api = vim.api
 local fn = vim.fn
 
----@class BaseMod
----@field name string the name of mod, use Snake_case naming style, such as line_num
+---@class BaseModOpts
+---@field enable boolean
+---@field style string | table<string> | table<table>
+---@field exclude_filetypes table<string, boolean>
+---@field support_filetypes table<string>
+---@field notify boolean
+
+---@class RuntimeVar
+---@field old_win_info table<number, number>
+
+---@class MetaInfo
+---@field name string
 ---@field ns_id number
----@field old_win_info table used to record old window info such as leftcol, curline and top line and so on
----@field options table | nil default config for mod, and user can change it when setup
----@field augroup_name string with format hl_{mod_name}_augroup, such as hl_chunk_augroup
----@field hl_base_name string with format HL{mod_name:firstToUpper()}, such as HLChunk
-local BaseMod = {
-    name = "",
-    options = nil,
-    ns_id = -1,
-    old_win_info = fn.winsaveview(),
-    augroup_name = "",
-    hl_base_name = "",
-}
+---@field augroup_name string
+---@field hl_base_name string
+
+---@class RenderOpts
+---@field lazy boolean
 
 ---@class BaseMod
+---@field name string the name of mod, use Snake_case naming style, such as line_num
+---@field ns_id number namespace id
+---@field old_win_info table used to record old window info such as leftcol, curline and top line and so on
+---@field options BaseModOpts default config for mod, and user can change it when setup
+---@field augroup_name string with format hl_{mod_name}_augroup, such as hl_chunk_augroup
+---@field hl_base_name string with format HL{mod_name:firstToUpper()}, such as HLChunk
 ---@field new fun(self: BaseMod, o: table): BaseMod
 ---@field enable fun(self: BaseMod)
 ---@field disable fun(self: BaseMod)
----@field render fun(self: BaseMod)
+---@field render fun(self: BaseMod, opts: RenderOpts | nil)
 ---@field clear fun(self: BaseMod, line_start: number | nil, line_end: number | nil)
 ---@field enable_mod_autocmd fun(self: BaseMod)
 ---@field disable_mod_autocmd fun(self: BaseMod)
 ---@field create_mod_usercmd fun(self: BaseMod)
 ---@field set_options fun(self: BaseMod, options: table | nil)
 ---@field extra fun(self:BaseMod)
+local BaseMod = {
+    name = "",
+    options = {},
+    ns_id = -1,
+    old_win_info = fn.winsaveview(),
+    augroup_name = "",
+    hl_base_name = "",
+}
 
 function BaseMod:new(o)
     o = o or {}
@@ -160,7 +177,7 @@ function BaseMod:set_hl()
 end
 
 -- set options for mod, if the mod dont have default config, it will notify you
----@param options table | nil
+---@param options BaseModOpts
 function BaseMod:set_options(options)
     if self.options == nil then
         self:notify("not set the default config for " .. self.name, vim.log.levels.ERROR)

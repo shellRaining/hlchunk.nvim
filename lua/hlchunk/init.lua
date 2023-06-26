@@ -1,18 +1,3 @@
----@class ModOptions
----@field enable? boolean
----@field style? table
----@field chars? table
----@field use_treesitter? boolean
----@field exclude_filetype? table
----@field support_filetype? table
-
----@class PlugConfig
----@field chunk? ModOptions
----@field line_num? ModOptions
----@field indent? ModOptions
----@field blank? ModOptions
----@field context? ModOptions
-
 -- TODO: add package annotations
 local hlchunk = {}
 local api = vim.api
