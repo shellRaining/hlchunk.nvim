@@ -129,7 +129,7 @@ function chunk_mod:render(opts)
             row_opts.virt_text_win_col = start_col - offset
             local space_tab = (" "):rep(vim.o.shiftwidth)
             local line_val = fn.getline(i):gsub("\t", space_tab)
-            if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
+            if #line_val <= start_col or fn.indent(i) > start_col then
                 if utils.col_in_screen(start_col) then
                     api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
                 end
@@ -141,7 +141,7 @@ end
 function chunk_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI", "CursorMoved", "TextChanged" }, {
+    api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
@@ -155,6 +155,13 @@ function chunk_mod:enable_mod_autocmd()
             end
 
             chunk_mod.old_win_info = cur_win_info
+        end,
+    })
+    api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
+        group = self.augroup_name,
+        pattern = self.options.support_filetypes,
+        callback = function()
+            chunk_mod:render({ lazy = false })
         end,
     })
     api.nvim_create_autocmd({ "WinScrolled" }, {
