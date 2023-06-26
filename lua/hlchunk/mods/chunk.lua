@@ -4,8 +4,15 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class ChunkOpts: BaseModOpts
+---@field use_treesitter boolean
+---@field chars table<string, string>
+---@field textobject string
+---@field max_file_size number
+
 ---@class ChunkMod: BaseMod
 ---@field old_chunk_range table<number, number>
+---@field options ChunkOpts
 local chunk_mod = BaseMod:new({
     name = "chunk",
     old_chunk_range = { 1, 1 },
@@ -37,19 +44,23 @@ function chunk_mod:enable()
 end
 
 -- set new virtual text to the right place
-function chunk_mod:render()
+function chunk_mod:render(opts)
     if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then
         return
     end
 
+    opts = opts or { lazy = false }
+
     local cur_chunk_range = utils.get_chunk_range(self, nil, {
         use_treesitter = self.options.use_treesitter,
     })
+    local old_chunk_range = self.old_chunk_range
 
-    if
-        cur_chunk_range == nil
-        or (cur_chunk_range[1] == self.old_chunk_range[1] and cur_chunk_range[2] == self.old_chunk_range[2])
-    then
+    if not cur_chunk_range then
+        return
+    end
+
+    if opts.lazy and cur_chunk_range[1] == old_chunk_range[1] and cur_chunk_range[2] == old_chunk_range[2] then
         return
     end
 
@@ -134,7 +145,32 @@ function chunk_mod:enable_mod_autocmd()
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
-            chunk_mod:render()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = chunk_mod.old_win_info
+
+            if cur_win_info.leftcol ~= old_win_info.leftcol then
+                chunk_mod:render({ lazy = false })
+            elseif cur_win_info.lnum ~= old_win_info.lnum then
+                chunk_mod:render({ lazy = true })
+            end
+
+            chunk_mod.old_win_info = cur_win_info
+        end,
+    })
+    api.nvim_create_autocmd({ "WinScrolled" }, {
+        group = self.augroup_name,
+        pattern = "*",
+        callback = function()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = chunk_mod.old_win_info
+
+            if cur_win_info.leftcol ~= old_win_info.leftcol then
+                chunk_mod:render({ lazy = false })
+            elseif cur_win_info.lnum ~= old_win_info.lnum then
+                chunk_mod:render({ lazy = true })
+            end
+
+            chunk_mod.old_win_info = cur_win_info
         end,
     })
     api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {
