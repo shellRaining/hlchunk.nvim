@@ -93,7 +93,6 @@ M.lua_pattern = {
     return_statement = "return_statement",
     table_argument = "table_argument",
     tableconstructor = "tableconstructor",
-    variable_declaration = "variable_declaration",
     while_statement = "while_statement",
     for_do = "for_do",
     for_end = "for_end",
@@ -134,7 +133,6 @@ M.type_patterns = {
     "table",
     "tuple",
     "do_block",
-    "variable_declaration",
     "return",
 }
 

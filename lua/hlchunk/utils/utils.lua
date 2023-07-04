@@ -79,25 +79,19 @@ function M.get_chunk_range(mod, line, opts)
         -- TODO: refact this statement
         while cursor_node do
             local node_type = cursor_node:type()
-            if vim.bo.ft == "cpp" then
-                if ft.cpp_pattern[node_type] then
-                    local node_start, _, node_end, _ = cursor_node:range()
-                    if node_start ~= node_end then
+            local node_start, _, node_end, _ = cursor_node:range()
+            if node_start ~= node_end then
+                if vim.bo.ft == "cpp" then
+                    if ft.cpp_pattern[node_type] then
+                        return { node_start + 1, node_end + 1 }
+                    end
+                elseif vim.bo.ft == "lua" then
+                    if ft.lua_pattern[node_type] then
                         return { node_start + 1, node_end + 1 }
                     end
                 end
-            elseif vim.bo.ft == "lua" then
-                if ft.lua_pattern[node_type] then
-                    local node_start, _, node_end, _ = cursor_node:range()
-                    if node_start ~= node_end then
-                        return { node_start + 1, node_end + 1 }
-                    end
-                end
-            end
-            for _, rgx in ipairs(ft.type_patterns) do
-                if node_type:find(rgx) then
-                    local node_start, _, node_end, _ = cursor_node:range()
-                    if node_start ~= node_end then
+                for _, rgx in ipairs(ft.type_patterns) do
+                    if node_type:find(rgx) then
                         return { node_start + 1, node_end + 1 }
                     end
                 end
