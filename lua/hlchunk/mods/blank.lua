@@ -6,11 +6,14 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class BlankOpts: BaseModOpts
+---@field use_treesitter boolean
+---@field chars table<string, string>
+
 ---@class BlankMod: BaseMod
----@field cached_lines table<number, number>
+---@field options BlankOpts
 local blank_mod = BaseMod:new({
     name = "blank",
-    cached_lines = {},
     options = {
         enable = true,
         notify = true,
@@ -54,17 +57,13 @@ function blank_mod:render_line(index, indent)
     end
 end
 
-function blank_mod:render(scrolled)
-    scrolled = scrolled or false
-
+function blank_mod:render()
     if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
         return
     end
 
-    if not scrolled then
-        self:clear(fn.line("w0"), fn.line("w$"))
-    end
-    self.ns_id = api.nvim_create_namespace("hl_blank_augroup")
+    self:clear()
+    self.ns_id = api.nvim_create_namespace(self.name)
 
     local rows_indent = utils.get_rows_indent(self, nil, nil, {
         use_treesitter = self.options.use_treesitter,
@@ -74,36 +73,17 @@ function blank_mod:render(scrolled)
         return
     end
     for index, _ in pairs(rows_indent) do
-        if not (scrolled and self.cached_lines[index] and self.cached_lines[index] > 0) then
-            self:render_line(index, rows_indent[index])
-            self.cached_lines[index] = rows_indent[index]
-        end
+        self:render_line(index, rows_indent[index])
     end
 end
 
 function blank_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "WinScrolled" }, {
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" }, {
         group = self.augroup_name,
         pattern = "*",
         callback = function()
-            local cur_win_info = fn.winsaveview()
-            local old_win_info = blank_mod.old_win_info
-
-            if cur_win_info.lnum ~= old_win_info.lnum then
-                blank_mod:render(true)
-            elseif cur_win_info.leftcol ~= old_win_info.leftcol then
-                blank_mod:render(false)
-            end
-            blank_mod.old_win_info = cur_win_info
-        end,
-    })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-        group = self.augroup_name,
-        pattern = "*",
-        callback = function()
-            blank_mod.cached_lines = {}
             blank_mod:render()
         end,
     })
@@ -117,7 +97,6 @@ function blank_mod:enable_mod_autocmd()
 end
 
 function blank_mod:disable()
-    blank_mod.cached_lines = {}
     BaseMod.disable(self)
 end
 
