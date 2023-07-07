@@ -4,6 +4,11 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class LineNumOpts: BaseModOpts
+---@field use_treesitter boolean
+
+---@class LineNumMod: BaseMod
+---@field options LineNumOpts
 local line_num_mod = BaseMod:new({
     name = "line_num",
     options = {
@@ -22,7 +27,7 @@ function line_num_mod:render()
     end
 
     self:clear()
-    self.ns_id = api.nvim_create_namespace("hlline_num")
+    self.ns_id = api.nvim_create_namespace(self.name)
 
     local cur_chunk_range = utils.get_chunk_range(self, nil, {
         use_treesitter = self.options.use_treesitter,

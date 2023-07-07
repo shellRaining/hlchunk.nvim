@@ -56,6 +56,7 @@ function chunk_mod:render(opts)
     })
     local old_chunk_range = self.old_chunk_range
 
+    -- due to cur_chunk_range maybe nil, which means their is no chunk in this postion
     if not cur_chunk_range then
         self:clear()
         self.old_chunk_range = { 1, 1 }
