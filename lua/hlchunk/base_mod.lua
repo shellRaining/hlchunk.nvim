@@ -72,7 +72,9 @@ end
 function BaseMod:disable()
     local ok, _ = pcall(function()
         self.options.enable = false
-        self:clear()
+        for _, bufnr in pairs(api.nvim_list_bufs()) do
+            api.nvim_buf_clear_namespace(bufnr, self.ns_id, 0, -1)
+        end
         self:disable_mod_autocmd()
     end)
     if not ok then

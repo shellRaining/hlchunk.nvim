@@ -4,6 +4,12 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class ContextOpts: BaseModOpts
+---@field use_treesitter boolean
+---@field chars table<string, string>
+
+---@class ContextMod: BaseMod
+---@field options ContextOpts
 local context_mod = BaseMod:new({
     name = "context",
     options = {
@@ -26,7 +32,7 @@ function context_mod:render()
     end
 
     self:clear()
-    self.ns_id = api.nvim_create_namespace("hl_context")
+    self.ns_id = api.nvim_create_namespace(self.name)
 
     local indent_range = utils.get_indent_range(self)
     if not indent_range then

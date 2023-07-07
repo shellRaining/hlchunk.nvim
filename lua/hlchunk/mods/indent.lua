@@ -11,11 +11,9 @@ local fn = vim.fn
 ---@field chars table<string, string>
 
 ---@class IndentMod: BaseMod
----@field cached_lines table<number, number>
 ---@field options IndentOpts
 local indent_mod = BaseMod:new({
     name = "indent",
-    cached_lines = {},
     options = {
         enable = true,
         notify = true,
@@ -60,28 +58,12 @@ function indent_mod:render_line(index, indent)
     end
 end
 
-function indent_mod:render(opts)
-    opts = opts or { lazy = false }
-
+function indent_mod:render()
     if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
         return
     end
 
-    if not opts.lazy then
-        -- nvim api is 0-base index, but most of vim.fn is 1-base index
-        local wbegin = fn.line("w0") - 1
-        local wend = fn.line("w$") - 1
-
-        -- when window height is less than buffer height, clear all
-        -- an example:
-        -- a buffer is 10 lines, the window is 20 lines, whne format code, the buffer is 7 lines,
-        -- if not clear all, the last 3 lines will not be cleared
-        if wend - wbegin + 1 < fn.winheight(fn.winnr()) then
-            self:clear()
-        else
-            self:clear(fn.line("w0") - 1, fn.line("w$") - 1)
-        end
-    end
+    self:clear()
     self.ns_id = api.nvim_create_namespace(self.name)
 
     local rows_indent = utils.get_rows_indent(self, nil, nil, {
@@ -93,37 +75,17 @@ function indent_mod:render(opts)
     end
 
     for index, _ in pairs(rows_indent) do
-        if not (opts.lazy and self.cached_lines[index] and self.cached_lines[index] > 0) then
-            self:render_line(index, rows_indent[index])
-            self.cached_lines[index] = rows_indent[index]
-        end
+        self:render_line(index, rows_indent[index])
     end
 end
 
 function indent_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "WinScrolled" }, {
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" }, {
         group = self.augroup_name,
         pattern = "*",
         callback = function()
-            local cur_win_info = fn.winsaveview()
-            local old_win_info = indent_mod.old_win_info
-
-            if cur_win_info.leftcol ~= old_win_info.leftcol then
-                indent_mod:render({ lazy = false })
-            elseif cur_win_info.lnum ~= old_win_info.lnum then
-                indent_mod:render({ lazy = true })
-            end
-
-            indent_mod.old_win_info = cur_win_info
-        end,
-    })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-        group = self.augroup_name,
-        pattern = "*",
-        callback = function()
-            indent_mod.cached_lines = {}
             indent_mod:render()
         end,
     })
@@ -137,7 +99,6 @@ function indent_mod:enable_mod_autocmd()
 end
 
 function indent_mod:disable()
-    indent_mod.cached_lines = {}
     BaseMod.disable(self)
 end
 
