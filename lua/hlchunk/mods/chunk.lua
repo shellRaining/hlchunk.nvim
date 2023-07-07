@@ -4,8 +4,18 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class ChunkOpts: BaseModOpts
+---@field use_treesitter boolean
+---@field chars table<string, string>
+---@field textobject string
+---@field max_file_size number
+
+---@class ChunkMod: BaseMod
+---@field old_chunk_range table<number, number>
+---@field options ChunkOpts
 local chunk_mod = BaseMod:new({
     name = "chunk",
+    old_chunk_range = { 1, 1 },
     options = {
         enable = true,
         notify = true,
@@ -34,18 +44,33 @@ function chunk_mod:enable()
 end
 
 -- set new virtual text to the right place
-function chunk_mod:render()
+function chunk_mod:render(opts)
     if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then
         return
     end
 
-    self:clear()
-    self.ns_id = api.nvim_create_namespace("hlchunk")
+    opts = opts or { lazy = false }
 
     local cur_chunk_range = utils.get_chunk_range(self, nil, {
         use_treesitter = self.options.use_treesitter,
     })
-    if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
+    local old_chunk_range = self.old_chunk_range
+
+    if not cur_chunk_range then
+        self:clear()
+        self.old_chunk_range = { 1, 1 }
+        return
+    end
+
+    if opts.lazy and cur_chunk_range[1] == old_chunk_range[1] and cur_chunk_range[2] == old_chunk_range[2] then
+        return
+    end
+
+    self.old_chunk_range = cur_chunk_range
+    self:clear()
+    self.ns_id = api.nvim_create_namespace(self.name)
+
+    if cur_chunk_range[1] < cur_chunk_range[2] then
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
         local end_blank_len = fn.indent(end_row)
@@ -106,7 +131,7 @@ function chunk_mod:render()
             row_opts.virt_text_win_col = start_col - offset
             local space_tab = (" "):rep(vim.o.shiftwidth)
             local line_val = fn.getline(i):gsub("\t", space_tab)
-            if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
+            if #line_val <= start_col or fn.indent(i) > start_col then
                 if utils.col_in_screen(start_col) then
                     api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
                 end
@@ -118,25 +143,43 @@ end
 function chunk_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "TextChanged" }, {
+    api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
-            chunk_mod:render()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = chunk_mod.old_win_info
+
+            if cur_win_info.leftcol ~= old_win_info.leftcol then
+                chunk_mod:render({ lazy = false })
+            elseif cur_win_info.lnum ~= old_win_info.lnum then
+                chunk_mod:render({ lazy = true })
+            end
+
+            chunk_mod.old_win_info = cur_win_info
         end,
     })
-    api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI" }, {
+    api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
-            chunk_mod:render()
+            chunk_mod:render({ lazy = false })
         end,
     })
-    api.nvim_create_autocmd({ "CursorMoved" }, {
+    api.nvim_create_autocmd({ "WinScrolled" }, {
         group = self.augroup_name,
-        pattern = self.options.support_filetypes,
+        pattern = "*",
         callback = function()
-            chunk_mod:render()
+            local cur_win_info = fn.winsaveview()
+            local old_win_info = chunk_mod.old_win_info
+
+            if cur_win_info.leftcol ~= old_win_info.leftcol then
+                chunk_mod:render({ lazy = false })
+            elseif cur_win_info.lnum ~= old_win_info.lnum then
+                chunk_mod:render({ lazy = true })
+            end
+
+            chunk_mod.old_win_info = cur_win_info
         end,
     })
     api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {

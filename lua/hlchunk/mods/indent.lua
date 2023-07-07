@@ -6,8 +6,13 @@ local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
 
+---@class IndentOpts: BaseModOpts
+---@field use_treesitter boolean
+---@field chars table<string, string>
+
 ---@class IndentMod: BaseMod
 ---@field cached_lines table<number, number>
+---@field options IndentOpts
 local indent_mod = BaseMod:new({
     name = "indent",
     cached_lines = {},
@@ -55,14 +60,14 @@ function indent_mod:render_line(index, indent)
     end
 end
 
-function indent_mod:render(scrolled)
-    scrolled = scrolled or false
+function indent_mod:render(opts)
+    opts = opts or { lazy = false }
 
     if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
         return
     end
 
-    if not scrolled then
+    if not opts.lazy then
         -- nvim api is 0-base index, but most of vim.fn is 1-base index
         local wbegin = fn.line("w0") - 1
         local wend = fn.line("w$") - 1
@@ -88,7 +93,7 @@ function indent_mod:render(scrolled)
     end
 
     for index, _ in pairs(rows_indent) do
-        if not (scrolled and self.cached_lines[index] and self.cached_lines[index] > 0) then
+        if not (opts.lazy and self.cached_lines[index] and self.cached_lines[index] > 0) then
             self:render_line(index, rows_indent[index])
             self.cached_lines[index] = rows_indent[index]
         end
@@ -106,9 +111,9 @@ function indent_mod:enable_mod_autocmd()
             local old_win_info = indent_mod.old_win_info
 
             if cur_win_info.leftcol ~= old_win_info.leftcol then
-                indent_mod:render(false)
+                indent_mod:render({ lazy = false })
             elseif cur_win_info.lnum ~= old_win_info.lnum then
-                indent_mod:render(true)
+                indent_mod:render({ lazy = true })
             end
 
             indent_mod.old_win_info = cur_win_info
