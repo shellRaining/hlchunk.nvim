@@ -159,7 +159,7 @@ setup example:
 ```lua
 require('hlchunk').setup({
     indent = {
-        chars = { "│", "¦", "┆", "┊", },
+        chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
 
         style = {
             "#8B00FF",

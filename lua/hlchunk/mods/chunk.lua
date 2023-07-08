@@ -92,6 +92,7 @@ function chunk_mod:render(opts)
             local beg_virt_text = self.options.chars.left_top
                 .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
 
+            -- because the char is utf-8, so we need to get the utf-8 byte index
             if not utils.col_in_screen(start_col) then
                 local byte_idx = math.min(offset - start_col, virt_text_len)
                 if byte_idx > get_width(beg_virt_text) then

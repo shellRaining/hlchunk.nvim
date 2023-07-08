@@ -18,6 +18,7 @@ M.support_filetypes = {
     "*.vue",
     "*.java",
     "*.cs",
+    "*.dart",
 }
 
 M.exclude_filetypes = {
