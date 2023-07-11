@@ -40,6 +40,7 @@ M.exclude_filetypes = {
     alpha = true,
     toggleterm = true,
     sagafinder = true,
+    better_term = true,
 }
 
 M.cpp_pattern = {
