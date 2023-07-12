@@ -33,11 +33,12 @@ function blank_mod:render_line(index, indent)
         hl_mode = "combine",
         priority = 1,
     }
-    local render_char_num = math.floor(indent / vim.o.shiftwidth)
+    local shiftwidth = fn.shiftwidth()
+    local render_char_num = math.floor(indent / shiftwidth)
     local win_info = fn.winsaveview()
     local text = ""
     for _ = 1, render_char_num do
-        text = text .. "." .. (" "):rep(vim.o.shiftwidth - 1)
+        text = text .. "." .. (" "):rep(shiftwidth - 1)
     end
     text = text:sub(win_info.leftcol + 1)
 
@@ -48,7 +49,7 @@ function blank_mod:render_line(index, indent)
             count = count + 1
             local Blank_chars_num = Array:from(self.options.chars):size()
             local Blank_style_num = Array:from(self.options.style):size()
-            local char = self.options.chars[(count - 1) % Blank_chars_num + 1]:rep(vim.o.shiftwidth)
+            local char = self.options.chars[(count - 1) % Blank_chars_num + 1]:rep(shiftwidth)
             local style = "HLBlank" .. tostring((count - 1) % Blank_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1
@@ -58,7 +59,7 @@ function blank_mod:render_line(index, indent)
 end
 
 function blank_mod:render()
-    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
+    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or fn.shiftwidth() == 0 then
         return
     end
 

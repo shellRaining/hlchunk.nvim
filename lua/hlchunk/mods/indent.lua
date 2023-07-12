@@ -34,11 +34,12 @@ function indent_mod:render_line(index, indent)
         hl_mode = "combine",
         priority = 2,
     }
-    local render_char_num = math.floor(indent / vim.o.shiftwidth)
+    local shiftwidth = fn.shiftwidth()
+    local render_char_num = math.floor(indent / shiftwidth)
     local win_info = fn.winsaveview()
     local text = ""
     for _ = 1, render_char_num do
-        text = text .. "|" .. (" "):rep(vim.o.shiftwidth - 1)
+        text = text .. "|" .. (" "):rep(shiftwidth - 1)
     end
     text = text:sub(win_info.leftcol + 1)
 
@@ -59,7 +60,7 @@ function indent_mod:render_line(index, indent)
 end
 
 function indent_mod:render()
-    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or vim.o.shiftwidth == 0 then
+    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or fn.shiftwidth() == 0 then
         return
     end
 

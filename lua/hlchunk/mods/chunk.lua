@@ -75,7 +75,8 @@ function chunk_mod:render(opts)
         local beg_row, end_row = unpack(cur_chunk_range)
         local beg_blank_len = fn.indent(beg_row)
         local end_blank_len = fn.indent(end_row)
-        local start_col = math.max(math.min(beg_blank_len, end_blank_len) - vim.o.shiftwidth, 0)
+        local shiftwidth = fn.shiftwidth()
+        local start_col = math.max(math.min(beg_blank_len, end_blank_len) - shiftwidth, 0)
         local offset = fn.winsaveview().leftcol
 
         local get_width = api.nvim_strwidth
@@ -131,7 +132,7 @@ function chunk_mod:render(opts)
         for i = beg_row + 1, end_row - 1 do
             row_opts.virt_text = { { self.options.chars.vertical_line, "HLChunk1" } }
             row_opts.virt_text_win_col = start_col - offset
-            local space_tab = (" "):rep(vim.o.shiftwidth)
+            local space_tab = (" "):rep(shiftwidth)
             local line_val = fn.getline(i):gsub("\t", space_tab)
             if #line_val <= start_col or fn.indent(i) > start_col then
                 if utils.col_in_screen(start_col) then
