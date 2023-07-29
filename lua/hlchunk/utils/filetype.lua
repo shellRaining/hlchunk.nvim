@@ -39,6 +39,7 @@ M.exclude_filetypes = {
     [""] = true, -- because TelescopePrompt will set a empty ft, so add this.
     alpha = true,
     toggleterm = true,
+    sagafinder = true,
 }
 
 M.cpp_pattern = {
