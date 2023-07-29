@@ -136,9 +136,10 @@ function M.get_indent_range(mod, line, opts)
         return nil
     end
 
-    if rows_indent_list[line + 1] and rows_indent_list[line + 1] == rows_indent_list[line] + vim.o.shiftwidth then
+    local shiftwidth = fn.shiftwidth()
+    if rows_indent_list[line + 1] and rows_indent_list[line + 1] == rows_indent_list[line] + shiftwidth then
         line = line + 1
-    elseif rows_indent_list[line - 1] and rows_indent_list[line - 1] == rows_indent_list[line] + vim.o.shiftwidth then
+    elseif rows_indent_list[line - 1] and rows_indent_list[line - 1] == rows_indent_list[line] + shiftwidth then
         line = line - 1
     end
 
