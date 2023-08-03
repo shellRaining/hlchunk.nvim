@@ -3,6 +3,7 @@ local utils = require("hlchunk.utils.utils")
 local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
+local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
 
 ---@class LineNumOpts: BaseModOpts
 ---@field use_treesitter boolean
@@ -29,16 +30,18 @@ function line_num_mod:render()
     self:clear()
     self.ns_id = api.nvim_create_namespace(self.name)
 
-    local cur_chunk_range = utils.get_chunk_range(self, nil, {
+    local retcode, cur_chunk_range = utils.get_chunk_range(self, nil, {
         use_treesitter = self.options.use_treesitter,
     })
-    if cur_chunk_range and cur_chunk_range[1] < cur_chunk_range[2] then
-        local beg_row, end_row = unpack(cur_chunk_range)
-        for i = beg_row, end_row do
-            local row_opts = {}
-            row_opts.number_hl_group = "HLLine_num1"
-            api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
-        end
+    if retcode ~= CHUNK_RANGE_RET.OK then
+        return
+    end
+
+    local beg_row, end_row = unpack(cur_chunk_range)
+    for i = beg_row, end_row do
+        local row_opts = {}
+        row_opts.number_hl_group = "HLLine_num1"
+        api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
     end
 end
 
