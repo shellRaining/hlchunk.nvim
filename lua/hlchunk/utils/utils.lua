@@ -1,7 +1,6 @@
 local ft = require("hlchunk.utils.ts_node_type")
 local fn = vim.fn
 local treesitter = vim.treesitter
-local ts_utils = require("nvim-treesitter.ts_utils")
 
 -- these are helper function for utils
 
@@ -101,11 +100,12 @@ function M.get_chunk_range(mod, line, opts)
             return M.CHUNK_RANGE_RET.NO_TS, {}
         end
 
-        local cursor_node = ts_utils.get_node_at_cursor()
+        local cursor_node = treesitter.get_node()
         while cursor_node do
             local node_type = cursor_node:type()
             local node_start, _, node_end, _ = cursor_node:range()
             if node_start ~= node_end and is_suit_type(node_type) then
+                ---@diagnostic disable-next-line: undefined-field
                 return cursor_node:has_error() and M.CHUNK_RANGE_RET.CHUNK_ERR or M.CHUNK_RANGE_RET.OK,
                     {
                         node_start + 1,

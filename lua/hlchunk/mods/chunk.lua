@@ -165,6 +165,8 @@ function chunk_mod:enable_mod_autocmd()
                 chunk_mod:render({ lazy = false })
             elseif cur_win_info.lnum ~= old_win_info.lnum then
                 chunk_mod:render({ lazy = true })
+            else
+                chunk_mod:render({ lazy = false })
             end
 
             chunk_mod.old_win_info = cur_win_info
