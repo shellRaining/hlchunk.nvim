@@ -1,6 +1,12 @@
--- TODO: add package annotations
 local hlchunk = {}
 local api = vim.api
+
+---@class PlugConfig
+---@field chunk ChunkOpts
+---@field line_num LineNumOpts
+---@field indent IndentOpts
+---@field blank BlankOpts
+---@field context ContextOpts
 
 -- get the status(whether enabled) of mods, return a table
 -- the first key is the mod name, the second key is a bool variables to represent whether enabled
@@ -45,12 +51,12 @@ end
 
 ---@param params PlugConfig
 hlchunk.setup = function(params)
-    require("hlchunk.utils.string")
+    require("hlchunk.utils.string") -- inject string functions
     local mods_status = get_mods_status(params)
     set_usercmds(mods_status)
     for mod_name, enabled in pairs(mods_status) do
         if enabled then
-            local mod = require("hlchunk.mods." .. mod_name)
+            local mod = require("hlchunk.mods")[mod_name]
             mod:set_options(params[mod_name])
             mod:enable()
         end

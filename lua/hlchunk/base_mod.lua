@@ -190,13 +190,20 @@ end
 
 ---@param msg string
 ---@param level number?
-function BaseMod:notify(msg, level)
+---@param opts {once: boolean}?
+function BaseMod:notify(msg, level, opts)
     level = level or vim.log.levels.INFO
+    opts = opts or { once = false }
     -- notice that if self.options.notify is nil, it will still notify you
     if self.options == nil or self.options.notify == false then
         return
     end
-    vim.notify(msg, level)
+
+    if opts.once then
+        vim.notify_once(msg, level, opts)
+    else
+        vim.notify(msg, level, opts)
+    end
 end
 
 return BaseMod
