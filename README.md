@@ -102,11 +102,11 @@ The script comes with the following defaults:
         exclude_filetypes = {
             aerial = true,
             dashboard = true,
-        }
+        },
         support_filetypes = {
             "*.lua",
             "*.js",
-        }
+        },
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
