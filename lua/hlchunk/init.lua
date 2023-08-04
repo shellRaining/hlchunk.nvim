@@ -7,6 +7,7 @@ local api = vim.api
 ---@param plugin_config PlugConfig
 ---@return table<string, boolean>
 local function get_mods_status(plugin_config)
+    plugin_config = plugin_config or {}
     local mods_status = {
         chunk = true,
         line_num = true,
