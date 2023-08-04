@@ -16,6 +16,7 @@ chunk have four configurable items
 6. chars
 7. style
 8. max_file_size
+9. error_sign
 
 `enable` is used to control whether the mod is started, the default is true.
 
@@ -53,9 +54,45 @@ support_filetypes = {
 - left_bottom
 - right_arrow
 
-`style` is an RGB string or an RGB string table, the default is "#806d9c".
+`style` can be many types, as follow
 
-`max_file_size` is a number, the default is 1024*1024(1MB), which is used to control the maximum file size that can be highlighted
+1. string, like `style = "#806d9c"`
+2. table, like `style = {"#806d9c", "#c21f30"}`
+3. table, like
+
+```lua
+style = {
+   { fg = "#806d9c", bg = "#c21f30" },
+   { fg = "#806d9c", bg = "#c21f30" },
+}
+```
+
+4. table with function like
+
+```lua
+local cb = function()
+    if vim.g.colors_name == "tokyonight" then
+        return "#806d9c"
+    else
+        return "#00ffff"
+    end
+end
+style = {
+    { fg = cb },
+    { fg = "#f35336" },
+},
+```
+
+`max_file_size` is a number, the default is 1024\*1024(1MB), which is used to control the maximum file size that can be highlighted
+
+`error_sign` is a boolean, the default is true, if you use treesitter to highlight the chunk, when this is a wrong chunk, it will set the chunk color to maple red (or what other you want), to enable this option, style should have two color, the default style is
+
+```lua
+style = {
+    "#806d9c",
+    "#c21f30",
+},
+```
 
 ## example
 

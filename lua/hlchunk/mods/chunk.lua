@@ -33,7 +33,7 @@ local chunk_mod = BaseMod:new({
         },
         style = {
             { fg = "#806d9c" },
-            { fg = "#FF0000" },
+            { fg = "#c21f30" },
         },
         textobject = "",
         max_file_size = 1024 * 1024,
