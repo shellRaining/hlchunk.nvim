@@ -83,7 +83,12 @@ Plug "shellRaining/hlchunk.nvim"
 ### Lazy
 
 ```lua
-{ "shellRaining/hlchunk.nvim", event = { "UIEnter" }, },
+{ "shellRaining/hlchunk.nvim",
+  event = { "UIEnter" },
+  config = function()
+    require("hlchunk").setup({})
+  end
+},
 ```
 
 ## Setup
