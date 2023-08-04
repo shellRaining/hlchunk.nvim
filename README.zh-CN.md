@@ -77,14 +77,26 @@ use { "shellRaining/hlchunk.nvim" }
 
 ### Plug
 
-```lua
-Plug "shellRaining/hlchunk.nvim"
+```vimscript
+call plug#begin()
+Plug 'shellRaining/hlchunk.nvim'
+call plug#end()
+
+lua << EOF
+require("hlchunk").setup({})
+EOF
 ```
 
 ### Lazy
 
 ```lua
-{ "shellRaining/hlchunk.nvim", event = { "UIEnter" }, },
+{
+  "shellRaining/hlchunk.nvim",
+  event = { "UIEnter" },
+  config = function()
+    require("hlchunk").setup({})
+  end
+},
 ```
 
 ## 设置
