@@ -18,6 +18,7 @@ chunk mod 有四个配置项
 6. chars
 7. style
 8. max_file_size
+9. error_sign
 
 `enable` 是用来控制该 mod 是否启动的，默认为 true。
 
@@ -55,9 +56,54 @@ support_filetypes = {
 - left_bottom
 - right_arrow
 
-`style` 是一个 RGB 字符串或者一个 RGB 字符串表，默认为 "#806d9c"。
+`style` 可以是多种类型，如下
 
-`max_file_size` 是一个数字，默认为 1024*1024(1MB)，当打开的文件大小超过这个值时，将不会高亮
+1. 字符串, 例如 `style = "#806d9c"`
+2. 表, 例如 `style = {"#806d9c", "#c21f30"}`
+3. 表, 例如
+
+```lua
+style = {
+   { fg = "#806d9c", bg = "#c21f30" },
+   { fg = "#806d9c", bg = "#c21f30" },
+}
+```
+
+4. 包含函数的表, 例如
+
+```lua
+local cb = function()
+    if vim.g.colors_name == "tokyonight" then
+        return "#806d9c"
+    else
+        return "#00ffff"
+    end
+end
+style = {
+    { fg = cb },
+    { fg = "#f35336" },
+},
+```
+
+`max_file_size` 是一个数字，默认为 1024\*1024(1MB)，当打开的文件大小超过这个值时，将不会高亮
+
+`error_sign` is a boolean, the default is true, if you use treesitter to highlight the chunk, when this is a wrong chunk, it will set the chunk color to maple red (or what other you want), to enable this option, style should have two color, the default style is
+
+```lua
+style = {
+    "#806d9c",
+    "#c21f30",
+},
+```
+
+`error_sign` 是一个布尔值，默认为 true，如果你使用 treesitter 来高亮代码块，当遇到错误的代码块时，它将会把 chunk 的颜色设置为枫叶红（或者你想要的其他颜色），要启用这个选项，style 应该有两个颜色， 默认的 style 为
+
+```lua
+style = {
+    "#806d9c",
+    "#c21f30",
+},
+```
 
 ## example
 

@@ -140,6 +140,7 @@ end
 --      { fg = "#abcabc", bg = "#cdefef"},
 -- }
 function BaseMod:set_hl()
+    -- TODO: need ref
     local hl_opts = self.options.style
 
     -- such as style = "#abcabc"
@@ -162,7 +163,7 @@ function BaseMod:set_hl()
                 value_tmp.fg = type(value.fg) == "function" and value.fg() or value.fg
                 value_tmp.bg = type(value.bg) == "function" and value.bg() or value.bg
                 api.nvim_set_hl(0, self.hl_base_name .. idx, value_tmp)
-                return
+                goto continue
             end
             --[[
             such as style = {
@@ -175,6 +176,7 @@ function BaseMod:set_hl()
             -- such as style = {"#abcabc", "#cdefef"}
             api.nvim_set_hl(0, self.hl_base_name .. idx, { fg = value })
         end
+        ::continue::
     end
 end
 
@@ -190,13 +192,20 @@ end
 
 ---@param msg string
 ---@param level number?
-function BaseMod:notify(msg, level)
+---@param opts {once: boolean}?
+function BaseMod:notify(msg, level, opts)
     level = level or vim.log.levels.INFO
+    opts = opts or { once = false }
     -- notice that if self.options.notify is nil, it will still notify you
     if self.options == nil or self.options.notify == false then
         return
     end
-    vim.notify(msg, level)
+
+    if opts.once then
+        vim.notify_once(msg, level, opts)
+    else
+        vim.notify(msg, level, opts)
+    end
 end
 
 return BaseMod

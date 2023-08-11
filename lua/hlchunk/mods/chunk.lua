@@ -3,12 +3,14 @@ local utils = require("hlchunk.utils.utils")
 local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
+local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
 
 ---@class ChunkOpts: BaseModOpts
 ---@field use_treesitter boolean
 ---@field chars table<string, string>
 ---@field textobject string
 ---@field max_file_size number
+---@field error_sign boolean
 
 ---@class ChunkMod: BaseMod
 ---@field old_chunk_range table<number, number>
@@ -31,9 +33,11 @@ local chunk_mod = BaseMod:new({
         },
         style = {
             { fg = "#806d9c" },
+            { fg = "#c21f30" },
         },
         textobject = "",
         max_file_size = 1024 * 1024,
+        error_sign = true,
     },
 })
 
@@ -51,19 +55,28 @@ function chunk_mod:render(opts)
 
     opts = opts or { lazy = false }
 
-    local cur_chunk_range = utils.get_chunk_range(self, nil, {
+    local retcode, cur_chunk_range = utils.get_chunk_range(self, nil, {
         use_treesitter = self.options.use_treesitter,
     })
-    local old_chunk_range = self.old_chunk_range
-
-    -- due to cur_chunk_range maybe nil, which means their is no chunk in this postion
-    if not cur_chunk_range then
+    local text_hl = "HLChunk1"
+    if retcode == CHUNK_RANGE_RET.NO_TS and self.options.notify then
+        self:notify("[hlchunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
+        return
+    elseif retcode == CHUNK_RANGE_RET.NO_CHUNK then
         self:clear()
         self.old_chunk_range = { 1, 1 }
         return
+    elseif retcode == CHUNK_RANGE_RET.CHUNK_ERR then
+        text_hl = "HLChunk2"
     end
 
-    if opts.lazy and cur_chunk_range[1] == old_chunk_range[1] and cur_chunk_range[2] == old_chunk_range[2] then
+    local old_chunk_range = self.old_chunk_range
+    if
+        opts.lazy
+        and not self.options.error_sign
+        and cur_chunk_range[1] == old_chunk_range[1]
+        and cur_chunk_range[2] == old_chunk_range[2]
+    then
         return
     end
 
@@ -71,73 +84,68 @@ function chunk_mod:render(opts)
     self:clear()
     self.ns_id = api.nvim_create_namespace(self.name)
 
-    if cur_chunk_range[1] < cur_chunk_range[2] then
-        local beg_row, end_row = unpack(cur_chunk_range)
-        local beg_blank_len = fn.indent(beg_row)
-        local end_blank_len = fn.indent(end_row)
-        local shiftwidth = fn.shiftwidth()
-        local start_col = math.max(math.min(beg_blank_len, end_blank_len) - shiftwidth, 0)
-        local offset = fn.winsaveview().leftcol
+    local beg_row, end_row = unpack(cur_chunk_range)
+    local beg_blank_len = fn.indent(beg_row)
+    local end_blank_len = fn.indent(end_row)
+    local shiftwidth = fn.shiftwidth()
+    local start_col = math.max(math.min(beg_blank_len, end_blank_len) - shiftwidth, 0)
+    local offset = fn.winsaveview().leftcol
+    local get_width = api.nvim_strwidth
+    local row_opts = {
+        virt_text_pos = "overlay",
+        hl_mode = "combine",
+        priority = 100,
+    }
 
-        local get_width = api.nvim_strwidth
+    -- render beg_row
+    if beg_blank_len > 0 then
+        local virt_text_len = beg_blank_len - start_col
+        local beg_virt_text = self.options.chars.left_top .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
 
-        local row_opts = {
-            virt_text_pos = "overlay",
-            hl_mode = "combine",
-            priority = 100,
-        }
-
-        -- render beg_row
-        if beg_blank_len > 0 then
-            local virt_text_len = beg_blank_len - start_col
-            local beg_virt_text = self.options.chars.left_top
-                .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
-
-            -- because the char is utf-8, so we need to get the utf-8 byte index
-            if not utils.col_in_screen(start_col) then
-                local byte_idx = math.min(offset - start_col, virt_text_len)
-                if byte_idx > get_width(beg_virt_text) then
-                    byte_idx = get_width(beg_virt_text)
-                end
-                local utfBeg = vim.str_byteindex(beg_virt_text, byte_idx)
-                beg_virt_text = beg_virt_text:sub(utfBeg + 1)
+        -- because the char is utf-8, so we need to get the utf-8 byte index
+        if not utils.col_in_screen(start_col) then
+            local byte_idx = math.min(offset - start_col, virt_text_len)
+            if byte_idx > get_width(beg_virt_text) then
+                byte_idx = get_width(beg_virt_text)
             end
-
-            row_opts.virt_text = { { beg_virt_text, "HLChunk1" } }
-            row_opts.virt_text_win_col = math.max(start_col - offset, 0)
-            api.nvim_buf_set_extmark(0, self.ns_id, beg_row - 1, 0, row_opts)
+            local utfBeg = vim.str_byteindex(beg_virt_text, byte_idx)
+            beg_virt_text = beg_virt_text:sub(utfBeg + 1)
         end
 
-        -- render end_row
-        if end_blank_len > 0 then
-            local virt_text_len = end_blank_len - start_col
-            local end_virt_text = self.options.chars.left_bottom
-                .. self.options.chars.horizontal_line:rep(end_blank_len - start_col - 2)
-                .. self.options.chars.right_arrow
+        row_opts.virt_text = { { beg_virt_text, text_hl } }
+        row_opts.virt_text_win_col = math.max(start_col - offset, 0)
+        api.nvim_buf_set_extmark(0, self.ns_id, beg_row - 1, 0, row_opts)
+    end
 
-            if not utils.col_in_screen(start_col) then
-                local byte_idx = math.min(offset - start_col, virt_text_len)
-                if byte_idx > get_width(end_virt_text) then
-                    byte_idx = get_width(end_virt_text)
-                end
-                local utfBeg = vim.str_byteindex(end_virt_text, byte_idx)
-                end_virt_text = end_virt_text:sub(utfBeg + 1)
+    -- render end_row
+    if end_blank_len > 0 then
+        local virt_text_len = end_blank_len - start_col
+        local end_virt_text = self.options.chars.left_bottom
+            .. self.options.chars.horizontal_line:rep(end_blank_len - start_col - 2)
+            .. self.options.chars.right_arrow
+
+        if not utils.col_in_screen(start_col) then
+            local byte_idx = math.min(offset - start_col, virt_text_len)
+            if byte_idx > get_width(end_virt_text) then
+                byte_idx = get_width(end_virt_text)
             end
-            row_opts.virt_text = { { end_virt_text, "HLChunk1" } }
-            row_opts.virt_text_win_col = math.max(start_col - offset, 0)
-            api.nvim_buf_set_extmark(0, self.ns_id, end_row - 1, 0, row_opts)
+            local utfBeg = vim.str_byteindex(end_virt_text, byte_idx)
+            end_virt_text = end_virt_text:sub(utfBeg + 1)
         end
+        row_opts.virt_text = { { end_virt_text, text_hl } }
+        row_opts.virt_text_win_col = math.max(start_col - offset, 0)
+        api.nvim_buf_set_extmark(0, self.ns_id, end_row - 1, 0, row_opts)
+    end
 
-        -- render middle section
-        for i = beg_row + 1, end_row - 1 do
-            row_opts.virt_text = { { self.options.chars.vertical_line, "HLChunk1" } }
-            row_opts.virt_text_win_col = start_col - offset
-            local space_tab = (" "):rep(shiftwidth)
-            local line_val = fn.getline(i):gsub("\t", space_tab)
-            if #line_val <= start_col or fn.indent(i) > start_col then
-                if utils.col_in_screen(start_col) then
-                    api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
-                end
+    -- render middle section
+    for i = beg_row + 1, end_row - 1 do
+        row_opts.virt_text = { { self.options.chars.vertical_line, text_hl } }
+        row_opts.virt_text_win_col = start_col - offset
+        local space_tab = (" "):rep(shiftwidth)
+        local line_val = fn.getline(i):gsub("\t", space_tab)
+        if #line_val <= start_col or fn.indent(i) > start_col then
+            if utils.col_in_screen(start_col) then
+                api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
             end
         end
     end
@@ -157,6 +165,8 @@ function chunk_mod:enable_mod_autocmd()
                 chunk_mod:render({ lazy = false })
             elseif cur_win_info.lnum ~= old_win_info.lnum then
                 chunk_mod:render({ lazy = true })
+            else
+                chunk_mod:render({ lazy = false })
             end
 
             chunk_mod.old_win_info = cur_win_info
@@ -204,13 +214,12 @@ function chunk_mod:extra()
         return
     end
     vim.keymap.set({ "x", "o" }, textobject, function()
-        local cur_chunk_range = utils.get_chunk_range(self, nil, {
+        local retcode, cur_chunk_range = utils.get_chunk_range(self, nil, {
             use_treesitter = self.options.use_treesitter,
         })
-        if not cur_chunk_range then
+        if retcode ~= CHUNK_RANGE_RET.OK then
             return
         end
-
         local s_row, e_row = unpack(cur_chunk_range)
         local ctrl_v = api.nvim_replace_termcodes("<C-v>", true, true, true)
         local cur_mode = vim.fn.mode()

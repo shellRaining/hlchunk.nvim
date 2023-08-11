@@ -5,6 +5,7 @@ local Array = require("hlchunk.utils.array")
 local ft = require("hlchunk.utils.filetype")
 local api = vim.api
 local fn = vim.fn
+local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
 
 ---@class IndentOpts: BaseModOpts
 ---@field use_treesitter boolean
@@ -22,7 +23,7 @@ local indent_mod = BaseMod:new({
             "│",
         },
         style = {
-            api.nvim_get_hl(0, { name = "Whitespace" }),
+            fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetypes = ft.exclude_filetypes,
     },
@@ -67,11 +68,12 @@ function indent_mod:render()
     self:clear()
     self.ns_id = api.nvim_create_namespace(self.name)
 
-    local rows_indent = utils.get_rows_indent(self, nil, nil, {
+    local retcode, rows_indent = utils.get_rows_indent(self, nil, nil, {
         use_treesitter = self.options.use_treesitter,
         virt_indent = true,
     })
-    if not rows_indent then
+    if retcode == ROWS_INDENT_RETCODE.NO_TS and self.options.notify then
+        self:notify("[hlchunk.indent]: nvim-treesitter loaded fail")
         return
     end
 
