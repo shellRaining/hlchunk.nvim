@@ -72,7 +72,9 @@ function blank_mod:render()
         virt_indent = true,
     })
     if retcode == ROWS_INDENT_RETCODE.NO_TS and self.options.notify then
-        self:notify("[hlchunk.blank]: nvim-treesitter loaded fail")
+        if self.options.notify then
+            self:notify("[hlchunk.blank]: no parser for " .. vim.bo.filetype, nil, { once = true })
+        end
         return
     end
     for index, _ in pairs(rows_indent) do

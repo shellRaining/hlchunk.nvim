@@ -72,8 +72,10 @@ function indent_mod:render()
         use_treesitter = self.options.use_treesitter,
         virt_indent = true,
     })
-    if retcode == ROWS_INDENT_RETCODE.NO_TS and self.options.notify then
-        self:notify("[hlchunk.indent]: nvim-treesitter loaded fail")
+    if retcode == ROWS_INDENT_RETCODE.NO_TS then
+        if self.options.notify then
+            self:notify("[hlchunk.indent]: no parser for " .. vim.bo.filetype, nil, { once = true })
+        end
         return
     end
 

@@ -59,8 +59,10 @@ function chunk_mod:render(opts)
         use_treesitter = self.options.use_treesitter,
     })
     local text_hl = "HLChunk1"
-    if retcode == CHUNK_RANGE_RET.NO_TS and self.options.notify then
-        self:notify("[hlchunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
+    if retcode == CHUNK_RANGE_RET.NO_TS then
+        if self.options.notify then
+            self:notify("[hlchunk.chunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
+        end
         return
     elseif retcode == CHUNK_RANGE_RET.NO_CHUNK then
         self:clear()

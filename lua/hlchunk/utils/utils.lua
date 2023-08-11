@@ -216,7 +216,7 @@ function M.get_rows_indent(mod, begRow, endRow, opts)
     local get_indent = fn.indent
     if opts.use_treesitter then
         local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
-        if not ts_indent_status and mod.options.notify then
+        if not ts_indent_status then
             return M.ROWS_INDENT_RETCODE.NO_TS, {}
         end
         get_indent = function(row)
