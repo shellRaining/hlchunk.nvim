@@ -60,7 +60,7 @@ function chunk_mod:render(opts)
     })
     local text_hl = "HLChunk1"
     if retcode == CHUNK_RANGE_RET.NO_TS and self.options.notify then
-        self:notify("treesitter is not installed", nil, { once = true })
+        self:notify("[hlchunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
         return
     elseif retcode == CHUNK_RANGE_RET.NO_CHUNK then
         self:clear()
