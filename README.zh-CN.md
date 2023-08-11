@@ -111,14 +111,9 @@ EOF
     chunk = {
         enable = true,
         notify = true, -- 在某些情况下弹出提示（比如连续两次使用 disableHLChunk 命令）
-        exclude_filetypes = {
-            aerial = true,
-            dashboard = true,
-        }
-        support_filetypes = {
-            "*.lua",
-            "*.js",
-        }
+        -- 有关 support_filetypes 和 exclude_filetypes 更多信息请见 https://github.com/shellRaining/hlchunk.nvim/blob/main/lua/hlchunk/utils/filetype.lua
+        support_filetypes = ft.support_filetypes,
+        exclude_filetypes = ft.exclude_filetypes,
         use_treesitter = true,
         chars = {
             horizontal_line = "─",
@@ -129,7 +124,11 @@ EOF
         },
         style = {
             { fg = "#806d9c" },
+            { fg = "#c21f30" }, -- 这个高亮是用来标志错误的代码块
         },
+        textobject = "",
+        max_file_size = 1024 * 1024,
+        error_sign = true,
     },
 
     indent = {
