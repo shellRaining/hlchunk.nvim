@@ -145,7 +145,7 @@ function M.get_indent_range(mod, line, opts)
     line = line or fn.line(".")
     opts = opts or { use_treesitter = false }
 
-    local rows_indent_list = M.get_rows_indent(mod, nil, nil, {
+    local _, rows_indent_list = M.get_rows_indent(mod, nil, nil, {
         use_treesitter = opts.use_treesitter,
         virt_indent = true,
     })
