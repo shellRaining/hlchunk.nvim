@@ -42,6 +42,7 @@ M.exclude_filetypes = {
     sagafinder = true,
     sagaoutline = true,
     better_term = true,
+    fugitiveblame = true,
 }
 
 return M
