@@ -46,6 +46,7 @@ M.exclude_filetypes = {
     Trouble = true,
     qf = true,
     Outline = true,
+    starter = true,
 }
 
 return M
