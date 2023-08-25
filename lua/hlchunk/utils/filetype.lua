@@ -51,6 +51,8 @@ M.exclude_filetypes = {
     NeogitStatus = true,
     DiffviewFiles = true,
     DiffviewFileHistory = true,
+    DressingInput = true,
+    spectre_panel = true,
 }
 
 return M
