@@ -47,6 +47,10 @@ M.exclude_filetypes = {
     qf = true,
     Outline = true,
     starter = true,
+    NeogitPopup = true,
+    NeogitStatus = true,
+    DiffviewFiles = true,
+    DiffviewFileHistory = true,
 }
 
 return M
