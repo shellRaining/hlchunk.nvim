@@ -54,6 +54,7 @@ M.exclude_filetypes = {
     DressingInput = true,
     spectre_panel = true,
     zsh = true,
+    registers = true,
 }
 
 return M
