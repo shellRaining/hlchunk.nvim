@@ -53,6 +53,7 @@ M.exclude_filetypes = {
     DiffviewFileHistory = true,
     DressingInput = true,
     spectre_panel = true,
+    zsh = true,
 }
 
 return M
