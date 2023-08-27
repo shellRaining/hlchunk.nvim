@@ -28,25 +28,24 @@ local fn = vim.fn
 ---@field options BaseModOpts default config for mod, and user can change it when setup
 ---@field augroup_name string with format hl_{mod_name}_augroup, such as hl_chunk_augroup
 ---@field hl_base_name string with format HL{mod_name:firstToUpper()}, such as HLChunk
----@field new fun(self: BaseMod, o: table): BaseMod
----@field enable fun(self: BaseMod)
----@field disable fun(self: BaseMod)
----@field render fun(self: BaseMod, opts: RenderOpts | nil)
----@field clear fun(self: BaseMod, line_start: number | nil, line_end: number | nil)
----@field enable_mod_autocmd fun(self: BaseMod)
----@field disable_mod_autocmd fun(self: BaseMod)
----@field create_mod_usercmd fun(self: BaseMod)
----@field set_options fun(self: BaseMod, options: table | nil)
----@field extra fun(self:BaseMod)
 local BaseMod = {
     name = "",
-    options = {},
+    options = {
+        enable = false,
+        style = "",
+        exclude_filetypes = {},
+        support_filetypes = {},
+        notify = false,
+    },
     ns_id = -1,
     old_win_info = fn.winsaveview(),
     augroup_name = "",
     hl_base_name = "",
 }
 
+---@return BaseMod
+-- create a BaseMod instance, can implemented new feature by using the instance easily
+-- notice that this function will also set `augroup_name` and `hl_base_name` for this instance automatically
 function BaseMod:new(o)
     o = o or {}
     o.augroup_name = o.augroup_name or ("hl_" .. o.name .. "_augroup")
@@ -56,6 +55,7 @@ function BaseMod:new(o)
     return o
 end
 
+-- just enable a mod instance, called when the mod was disable or not init
 function BaseMod:enable()
     local ok, info = pcall(function()
         self.options.enable = true
@@ -70,15 +70,16 @@ function BaseMod:enable()
 end
 
 function BaseMod:disable()
-    local ok, _ = pcall(function()
+    local ok, info = pcall(function()
         self.options.enable = false
         for _, bufnr in pairs(api.nvim_list_bufs()) do
+            -- TODO: need change BaseMod:clear function
             api.nvim_buf_clear_namespace(bufnr, self.ns_id, 0, -1)
         end
         self:disable_mod_autocmd()
     end)
     if not ok then
-        self:notify("you have disable " .. self.name .. " mod")
+        self:notify(tostring(info))
     end
 end
 

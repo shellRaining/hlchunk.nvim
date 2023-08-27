@@ -37,14 +37,14 @@ local function set_usercmds(mods_status)
     api.nvim_create_user_command("EnableHL", function()
         for mod_name, enabled in pairs(mods_status) do
             if enabled then
-                require("hlchunk.mods." .. mod_name):enable()
+                require("hlchunk.mods")[mod_name]:enable()
             end
         end
     end, {})
     api.nvim_create_user_command("DisableHL", function()
         for mod_name, enabled in pairs(mods_status) do
             if enabled then
-                require("hlchunk.mods." .. mod_name):disable()
+                require("hlchunk.mods")[mod_name]:disable()
             end
         end
     end, {})
