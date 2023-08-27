@@ -55,6 +55,7 @@ M.exclude_filetypes = {
     spectre_panel = true,
     zsh = true,
     registers = true,
+    startuptime = true,
 }
 
 return M
