@@ -56,6 +56,8 @@ M.exclude_filetypes = {
     zsh = true,
     registers = true,
     startuptime = true,
+    OverseerList = true,
+    Navbuddy = true,
 }
 
 return M
