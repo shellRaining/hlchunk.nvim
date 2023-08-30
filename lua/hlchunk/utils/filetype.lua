@@ -54,6 +54,10 @@ M.exclude_filetypes = {
     DressingInput = true,
     spectre_panel = true,
     zsh = true,
+    registers = true,
+    startuptime = true,
+    OverseerList = true,
+    Navbuddy = true,
 }
 
 return M
