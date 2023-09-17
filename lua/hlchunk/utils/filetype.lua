@@ -59,6 +59,10 @@ M.exclude_filetypes = {
     OverseerList = true,
     Navbuddy = true,
     noice = true,
+    notify = true,
+    ["dap-repl"] = true,
+    saga_codeaction = true,
+    sagarename = true,
 }
 
 return M
