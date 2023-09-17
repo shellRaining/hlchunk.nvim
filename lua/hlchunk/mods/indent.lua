@@ -33,7 +33,7 @@ function indent_mod:render_line(index, indent)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
-        priority = 2,
+        priority = 12,
     }
     local shiftwidth = fn.shiftwidth()
     local render_char_num = math.floor(indent / shiftwidth)

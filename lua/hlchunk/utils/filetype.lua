@@ -58,6 +58,7 @@ M.exclude_filetypes = {
     startuptime = true,
     OverseerList = true,
     Navbuddy = true,
+    noice = true,
 }
 
 return M
