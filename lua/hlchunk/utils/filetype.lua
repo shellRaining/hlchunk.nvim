@@ -63,6 +63,7 @@ M.exclude_filetypes = {
     ["dap-repl"] = true,
     saga_codeaction = true,
     sagarename = true,
+    cmp_menu = true,
 }
 
 return M
