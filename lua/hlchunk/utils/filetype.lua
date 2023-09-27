@@ -64,6 +64,7 @@ M.exclude_filetypes = {
     saga_codeaction = true,
     sagarename = true,
     cmp_menu = true,
+    ["null-ls-info"] = true,
 }
 
 return M
