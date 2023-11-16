@@ -6,17 +6,13 @@ local function class(base, init)
         init = base
         base = nil
     elseif type(base) == "table" then
-        -- our new class is a shallow copy of the base class!
         for i, v in pairs(base) do
             c[i] = v
         end
         c._base = base
     end
-    -- the class will be the metatable for all its objects,
-    -- and they will look up their methods in it.
     c.__index = c
 
-    -- expose a constructor which can be called by <classname>(<args>)
     local mt = {}
     mt.__call = function(class_tbl, ...)
         local obj = {}
@@ -24,7 +20,6 @@ local function class(base, init)
         if init then
             init(obj, ...)
         else
-            -- make sure that any stuff from the base class is initialized!
             if base and base.init then
                 base.init(obj, ...)
             end

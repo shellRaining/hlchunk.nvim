@@ -1,0 +1,21 @@
+---@class BaseMod
+---@field meta MetaInfo
+---@field conf BaseConf
+---@field init function constructor
+---@field enable function
+---@field disable function
+---@field render function
+---@field clear function
+---@field createUsercmd function
+---@field clearUsercmd function
+---@field createAutocmd function
+---@field clearAutocmd function
+---@field setHl function
+---@field clearHl function
+---@field notify function
+
+-- -@alias MetaInfo {name: string, augroupName: string, hlBaseName: string}
+---@class MetaInfo
+---@field name string
+---@field augroupName string
+---@field hlBaseName string
