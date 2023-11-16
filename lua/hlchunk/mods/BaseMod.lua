@@ -42,7 +42,10 @@ function BaseMod:disable(ns_id)
 end
 
 function BaseMod:render(ns_id, range)
-    -- TODO:
+    if (not self.conf.enable) or self.conf.excludeFiletypes[vim.bo.ft] then
+        return
+    end
+    self:clear(ns_id)
 end
 
 function BaseMod:clear(ns_id, range)
@@ -55,11 +58,13 @@ function BaseMod:clear(ns_id, range)
 end
 
 function BaseMod:createUsercmd()
-    -- TODO:
-end
-
-function BaseMod:clearUsercmd()
-    -- TODO:
+    -- TODO: update the name case
+    api.nvim_create_user_command("EnableHL" .. self.meta.name, function()
+        self:enable()
+    end, {})
+    api.nvim_create_user_command("DisableHL" .. self.meta.name, function()
+        self:disable()
+    end, {})
 end
 
 function BaseMod:createAutocmd()
@@ -75,7 +80,7 @@ function BaseMod:createAutocmd()
 end
 
 function BaseMod:clearAutocmd()
-    -- TODO:
+    api.nvim_del_augroup_by_name(self.meta.augroupName)
 end
 
 function BaseMod:setHl()

@@ -7,7 +7,6 @@
 ---@field render function
 ---@field clear function
 ---@field createUsercmd function
----@field clearUsercmd function
 ---@field createAutocmd function
 ---@field clearAutocmd function
 ---@field setHl function
