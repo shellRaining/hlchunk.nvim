@@ -9,17 +9,17 @@ local BaseMod = class(function(self, meta, conf)
         name = "",
         augroupName = "",
         hlBaseName = "",
+        nsId = api.nvim_create_namespace("")
     }
     self.conf = conf or (BaseConf())
 end)
 
 function BaseMod:enable()
     local ok, info = pcall(function()
-        local ns_id = api.nvim_create_namespace(self.meta.name)
         self.conf.enable = true
         self:setHl()
-        self:render(ns_id)
-        self:createAutocmd(ns_id)
+        self:render()
+        self:createAutocmd()
         self:createUsercmd()
     end)
     if not ok then
@@ -27,12 +27,12 @@ function BaseMod:enable()
     end
 end
 
-function BaseMod:disable(ns_id)
+function BaseMod:disable()
     local ok, info = pcall(function()
         self.conf.enable = false
         for _, bufnr in pairs(api.nvim_list_bufs()) do
             -- TODO: need change BaseMod:clear function
-            api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+            api.nvim_buf_clear_namespace(bufnr, self.meta.nsId, 0, -1)
         end
         self:clearAutocmd()
     end)
@@ -41,19 +41,20 @@ function BaseMod:disable(ns_id)
     end
 end
 
-function BaseMod:render(ns_id, range)
+function BaseMod:render(range)
     if (not self.conf.enable) or self.conf.excludeFiletypes[vim.bo.ft] then
         return
     end
-    self:clear(ns_id)
+    self:clear(range)
 end
 
-function BaseMod:clear(ns_id, range)
+function BaseMod:clear(range)
     local start = range and range.start or 0
     local finish = range and range.finish or -1
 
-    if ns_id ~= -1 then
-        api.nvim_buf_clear_namespace(0, ns_id, start, finish)
+    -- TODO: needed?
+    if self.meta.nsId ~= -1 then
+        api.nvim_buf_clear_namespace(0, self.meta.nsId, start, finish)
     end
 end
 

@@ -18,3 +18,4 @@
 ---@field name string
 ---@field augroupName string
 ---@field hlBaseName string
+---@field nsId number
