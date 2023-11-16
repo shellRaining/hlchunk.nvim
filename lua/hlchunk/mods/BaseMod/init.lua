@@ -5,12 +5,14 @@ local api = vim.api
 
 ---@type BaseMod
 local BaseMod = class(function(self, meta, conf)
-    self.meta = meta or {
-        name = "",
-        augroupName = "",
-        hlBaseName = "",
-        nsId = api.nvim_create_namespace("")
-    }
+    self.meta = meta
+        or {
+            name = "",
+            augroupName = "",
+            hlBaseName = "",
+            nsId = api.nvim_create_namespace(""),
+            hlNameList = {},
+        } --[[@as MetaInfo]]
     self.conf = conf or (BaseConf())
 end)
 
@@ -86,41 +88,43 @@ end
 
 function BaseMod:setHl()
     local hl_conf = self.conf.style
+    self.meta.hlNameList = {}
 
     -- such as style = "#abcabc"
     if type(hl_conf) == "string" then
-        api.nvim_set_hl(0, self.meta.hlBaseName .. "0", { fg = hl_conf })
+        api.nvim_set_hl(0, self.meta.hlBaseName .. "1", { fg = hl_conf })
+        self.meta.hlNameList = { self.meta.hlBaseName .. "1" }
         return
     end
 
     for idx, val in ipairs(hl_conf) do
         local value_type = type(val)
         if value_type == "table" then
-            --[[
-            such as style = {
-                { fg = fg1cb, bg = bg1cb },
-                { fg = "#abcabc", bg = "#cdefef"},
-            }
-            --]]
             if type(val.fg) == "function" or type(val.bg) == "function" then
+                --[[
+                such as style = {
+                    { fg = fg1cb, bg = bg1cb },
+                    { fg = "#abcabc", bg = "#cdefef"},
+                }
+                --]]
                 local value_tmp = vim.deepcopy(val)
                 value_tmp.fg = type(val.fg) == "function" and val.fg() or val.fg
                 value_tmp.bg = type(val.bg) == "function" and val.bg() or val.bg
                 api.nvim_set_hl(0, self.meta.hlBaseName .. idx, value_tmp)
-                goto continue
+            else
+                --[[
+                such as style = {
+                    { fg = "#abcabc", bg = "#cdefef" },
+                    { fg = "#abcabc", bg = "#cdefef" },
+                }
+                --]]
+                api.nvim_set_hl(0, self.meta.hlBaseName .. idx, val)
             end
-            --[[
-            such as style = {
-                { fg = "#abcabc", bg = "#cdefef" },
-                { fg = "#abcabc", bg = "#cdefef" },
-            }
-            --]]
-            api.nvim_set_hl(0, self.meta.hlBaseName .. idx, val)
         elseif value_type == "string" then
             -- such as style = {"#abcabc", "#cdefef"}
             api.nvim_set_hl(0, self.meta.hlBaseName .. idx, { fg = val })
         end
-        ::continue::
+        table.insert(self.meta.hlNameList, self.meta.hlBaseName .. idx)
     end
 end
 

@@ -28,3 +28,4 @@
 ---@field augroupName string
 ---@field hlBaseName string
 ---@field nsId number
+---@field hlNameList string[]

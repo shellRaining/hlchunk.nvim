@@ -11,6 +11,7 @@ hlchunk.setup = function(userConf)
             mod.conf = vim.tbl_deep_extend("force", mod.conf, mod_conf or {})
             -- vim.notify(vim.inspect(mod))
             mod:enable()
+            -- vim.notify(vim.inspect(mod))
         end
     end
 end

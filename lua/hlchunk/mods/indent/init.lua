@@ -3,7 +3,8 @@ local IndentConf = require("hlchunk.mods.indent.IndentConf")
 local class = require("hlchunk.utils.class")
 
 local utils = require("hlchunk.utils.utils")
-local Array = require("hlchunk.utils.array")
+local indentHelper = require("hlchunk.utils.indentHelper")
+
 local api = vim.api
 local fn = vim.fn
 local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
@@ -27,31 +28,17 @@ function IndentMod:renderLine(index, indent)
         hl_mode = "combine",
         priority = self.conf.priority,
     }
-    local win_info = fn.winsaveview()
-    local shiftwidth = fn.shiftwidth()
-    local render_char_num = math.floor(indent / shiftwidth)
-    local shadow_char_num = math.floor(win_info.leftcol / shiftwidth)
+    local blankLine = (" "):rep(indent)
+    local leftcol = fn.winsaveview().leftcol --[[@as number]]
+    local sw = fn.shiftwidth() --[[@as number]]
+    local render_char_num, offset = indentHelper.calc(blankLine, leftcol, sw)
 
-    local text = ""
-    for _ = 1, render_char_num do
-        text = text .. "|" .. (" "):rep(shiftwidth - 1)
-    end
-    text = text:sub(win_info.leftcol + 1)
-
-    local count = 0
-    for i = 1, #text do
-        local c = text:at(i)
-        if not c:match("%s") then
-            count = count + 1
-            local Indent_chars_num = Array:from(self.conf.chars):size()
-            local Indent_style_num = Array:from(self.conf.style):size()
-            local char = self.conf.chars[(count - 1) % Indent_chars_num + 1]
-            -- local style = "HLIndent" .. tostring((count - 1) % Indent_style_num + 1)
-            local style = "HLIndent1"
-            row_opts.virt_text = { { char, style } }
-            row_opts.virt_text_win_col = i - 1
-            api.nvim_buf_set_extmark(0, self.meta.nsId, index - 1, 0, row_opts)
-        end
+    for i = 1, render_char_num do
+        local char = self.conf.chars[(i - 1) % #self.conf.chars + 1]
+        local style = self.meta.hlNameList[(i - 1) % #self.meta.hlNameList + 1]
+        row_opts.virt_text = { { char, style } }
+        row_opts.virt_text_win_col = offset + (i - 1) * sw
+        api.nvim_buf_set_extmark(0, self.meta.nsId, index - 1, 0, row_opts)
     end
 end
 
@@ -96,9 +83,5 @@ function IndentMod:createAutocmd()
         end,
     })
 end
---
--- function IndentMod:disable()
---     BaseMod.disable(self)
--- end
 
 return IndentMod
