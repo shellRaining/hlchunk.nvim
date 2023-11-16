@@ -1,5 +1,5 @@
 local class = require("hlchunk.utils.class")
-local BaseConf = require("hlchunk.mods.BaseConf")
+local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
 
 local api = vim.api
 

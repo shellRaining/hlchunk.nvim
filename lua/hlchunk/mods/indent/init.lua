@@ -25,11 +25,13 @@ function IndentMod:renderLine(index, indent)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
-        priority = 12,
+        priority = self.conf.priority,
     }
+    local win_info = fn.winsaveview()
     local shiftwidth = fn.shiftwidth()
     local render_char_num = math.floor(indent / shiftwidth)
-    local win_info = fn.winsaveview()
+    local shadow_char_num = math.floor(win_info.leftcol / shiftwidth)
+
     local text = ""
     for _ = 1, render_char_num do
         text = text .. "|" .. (" "):rep(shiftwidth - 1)
