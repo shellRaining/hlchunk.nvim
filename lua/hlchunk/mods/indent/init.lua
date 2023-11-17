@@ -22,20 +22,19 @@ local IndentMod = class(BaseMod, function(self, meta, conf)
     BaseMod.init(self, meta, conf)
 end)
 
-function IndentMod:renderLine(index, indent)
+function IndentMod:renderLine(index, blankLen)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
         priority = self.conf.priority,
     }
-    local blankLine = (" "):rep(indent)
     local leftcol = fn.winsaveview().leftcol --[[@as number]]
     local sw = fn.shiftwidth() --[[@as number]]
-    local render_char_num, offset = indentHelper.calc(blankLine, leftcol, sw)
+    local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
 
     for i = 1, render_char_num do
-        local char = self.conf.chars[(i - 1) % #self.conf.chars + 1]
-        local style = self.meta.hlNameList[(i - 1) % #self.meta.hlNameList + 1]
+        local char = self.conf.chars[(i - 1 + shadow_char_num) % #self.conf.chars + 1]
+        local style = self.meta.hlNameList[(i - 1 + shadow_char_num) % #self.meta.hlNameList + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = offset + (i - 1) * sw
         api.nvim_buf_set_extmark(0, self.meta.nsId, index - 1, 0, row_opts)
