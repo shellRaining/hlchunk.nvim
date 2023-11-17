@@ -1,5 +1,5 @@
 ---@class IndentConf : BaseConf
----@field useTreesitter boolean
+---@field use_treesitter boolean
 ---@field chars table<string, string>
 
 ---@class IndentMod : BaseMod

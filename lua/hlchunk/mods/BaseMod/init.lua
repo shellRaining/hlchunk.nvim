@@ -3,23 +3,26 @@ local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
 
 local api = vim.api
 
----@type BaseMod
-local BaseMod = class(function(self, meta, conf)
+local constrctor = function(self, conf, meta)
     self.meta = meta
         or {
             name = "",
-            augroupName = "",
-            hlBaseName = "",
-            nsId = api.nvim_create_namespace(""),
-            hlNameList = {},
+            augroup_name = "",
+            hl_base_name = "",
+            ns_id = api.nvim_create_namespace(""),
+            hl_name_list = {},
         } --[[@as MetaInfo]]
     self.conf = conf or (BaseConf())
-end)
+end
+
+---@overload fun(conf: BaseConf, meta: MetaInfo): BaseMod
+local BaseMod = class(constrctor)
 
 function BaseMod:enable()
     local ok, info = pcall(function()
         self.conf.enable = true
         self:setHl()
+        vim.notify("enableing")
         self:render()
         self:createAutocmd()
         self:createUsercmd()
@@ -34,7 +37,7 @@ function BaseMod:disable()
         self.conf.enable = false
         for _, bufnr in pairs(api.nvim_list_bufs()) do
             -- TODO: need change BaseMod:clear function
-            api.nvim_buf_clear_namespace(bufnr, self.meta.nsId, 0, -1)
+            api.nvim_buf_clear_namespace(bufnr, self.meta.ns_id, 0, -1)
         end
         self:clearAutocmd()
     end)
@@ -44,7 +47,7 @@ function BaseMod:disable()
 end
 
 function BaseMod:render(range)
-    if (not self.conf.enable) or self.conf.excludeFiletypes[vim.bo.ft] then
+    if (not self.conf.enable) or self.conf.exclude_filetypes[vim.bo.ft] then
         return
     end
     self:clear(range)
@@ -55,8 +58,8 @@ function BaseMod:clear(range)
     local finish = range and range.finish or -1
 
     -- TODO: needed?
-    if self.meta.nsId ~= -1 then
-        api.nvim_buf_clear_namespace(0, self.meta.nsId, start, finish)
+    if self.meta.ns_id ~= -1 then
+        api.nvim_buf_clear_namespace(0, self.meta.ns_id, start, finish)
     end
 end
 
@@ -71,10 +74,10 @@ function BaseMod:createUsercmd()
 end
 
 function BaseMod:createAutocmd()
-    api.nvim_create_augroup(self.meta.augroupName, { clear = true })
+    api.nvim_create_augroup(self.meta.augroup_name, { clear = true })
 
     api.nvim_create_autocmd({ "ColorScheme" }, {
-        group = self.meta.augroupName,
+        group = self.meta.augroup_name,
         pattern = "*",
         callback = function()
             self:setHl()
@@ -83,17 +86,18 @@ function BaseMod:createAutocmd()
 end
 
 function BaseMod:clearAutocmd()
-    api.nvim_del_augroup_by_name(self.meta.augroupName)
+    api.nvim_del_augroup_by_name(self.meta.augroup_name)
 end
 
 function BaseMod:setHl()
     local hl_conf = self.conf.style
-    self.meta.hlNameList = {}
+    vim.notify(vim.inspect(hl_conf))
+    self.meta.hl_name_list = {}
 
     -- such as style = "#abcabc"
     if type(hl_conf) == "string" then
-        api.nvim_set_hl(0, self.meta.hlBaseName .. "1", { fg = hl_conf })
-        self.meta.hlNameList = { self.meta.hlBaseName .. "1" }
+        api.nvim_set_hl(0, self.meta.hl_base_name .. "1", { fg = hl_conf })
+        self.meta.hl_name_list = { self.meta.hl_base_name .. "1" }
         return
     end
 
@@ -110,7 +114,7 @@ function BaseMod:setHl()
                 local value_tmp = vim.deepcopy(val)
                 value_tmp.fg = type(val.fg) == "function" and val.fg() or val.fg
                 value_tmp.bg = type(val.bg) == "function" and val.bg() or val.bg
-                api.nvim_set_hl(0, self.meta.hlBaseName .. idx, value_tmp)
+                api.nvim_set_hl(0, self.meta.hl_base_name .. idx, value_tmp)
             else
                 --[[
                 such as style = {
@@ -118,13 +122,13 @@ function BaseMod:setHl()
                     { fg = "#abcabc", bg = "#cdefef" },
                 }
                 --]]
-                api.nvim_set_hl(0, self.meta.hlBaseName .. idx, val)
+                api.nvim_set_hl(0, self.meta.hl_base_name .. idx, val)
             end
         elseif value_type == "string" then
             -- such as style = {"#abcabc", "#cdefef"}
-            api.nvim_set_hl(0, self.meta.hlBaseName .. idx, { fg = val })
+            api.nvim_set_hl(0, self.meta.hl_base_name .. idx, { fg = val })
         end
-        table.insert(self.meta.hlNameList, self.meta.hlBaseName .. idx)
+        table.insert(self.meta.hl_name_list, self.meta.hl_base_name .. idx)
     end
 end
 

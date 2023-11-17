@@ -18,14 +18,14 @@
 ---@class BaseConf
 ---@field enable boolean
 ---@field style StyleType
----@field excludeFiletypes table<string, boolean>
----@field supportFiletypes table<string>
+---@field exclude_filetypes table<string, boolean>
+---@field support_filetypes table<string>
 ---@field notify boolean
 ---@field priority number
 
 ---@class MetaInfo
 ---@field name string
----@field augroupName string
----@field hlBaseName string
----@field nsId number
----@field hlNameList string[]
+---@field augroup_name string
+---@field hl_base_name string
+---@field ns_id number
+---@field hl_name_list string[]

@@ -10,13 +10,13 @@ local fn = vim.fn
 local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
 
 ---@type IndentMod
-local IndentMod = class(BaseMod, function(self, meta, conf)
+local IndentMod = class(BaseMod, function(self, conf, meta)
     meta = meta
         or {
             name = "indent",
-            augroupName = "hlchunk_indent",
-            hlBaseName = "HLIndent",
-            nsId = api.nvim_create_namespace("indent"),
+            augroup_name = "hlchunk_indent",
+            hl_base_name = "HLIndent",
+            ns_id = api.nvim_create_namespace("indent"),
         }
     conf = conf or (IndentConf())
     BaseMod.init(self, meta, conf)
@@ -34,22 +34,22 @@ function IndentMod:renderLine(index, blankLen)
 
     for i = 1, render_char_num do
         local char = self.conf.chars[(i - 1 + shadow_char_num) % #self.conf.chars + 1]
-        local style = self.meta.hlNameList[(i - 1 + shadow_char_num) % #self.meta.hlNameList + 1]
+        local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % #self.meta.hl_name_list + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = offset + (i - 1) * sw
-        api.nvim_buf_set_extmark(0, self.meta.nsId, index - 1, 0, row_opts)
+        api.nvim_buf_set_extmark(0, self.meta.ns_id, index - 1, 0, row_opts)
     end
 end
 
 function IndentMod:render(range)
-    if (not self.conf.enable) or self.conf.excludeFiletypes[vim.bo.filetype] or fn.shiftwidth() == 0 then
+    if (not self.conf.enable) or self.conf.exclude_filetypes[vim.bo.filetype] or fn.shiftwidth() == 0 then
         return
     end
 
     self:clear()
 
     local retcode, rows_indent = utils.get_rows_indent(self, nil, nil, {
-        use_treesitter = self.conf.useTreesitter,
+        use_treesitter = self.conf.use_treesitter,
         virt_indent = true,
     })
     if retcode == ROWS_INDENT_RETCODE.NO_TS then
@@ -68,14 +68,14 @@ function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
 
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" }, {
-        group = self.meta.augroupName,
+        group = self.meta.augroup_name,
         pattern = "*",
         callback = function()
             self:render()
         end,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
-        group = self.meta.augroupName,
+        group = self.meta.augroup_name,
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
         callback = function()
             self:render()

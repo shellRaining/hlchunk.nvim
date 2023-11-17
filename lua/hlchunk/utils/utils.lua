@@ -231,6 +231,7 @@ function M.get_rows_indent(mod, begRow, endRow, opts)
             rows_indent[i] = opts.virt_indent and get_virt_indent(rows_indent, i) or -1
         end
     end
+    print(begRow, endRow, vim.inspect(rows_indent), vim.inspect(opts))
 
     return M.ROWS_INDENT_RETCODE.OK, rows_indent
 end
