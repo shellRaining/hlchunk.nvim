@@ -9,12 +9,26 @@ local constrctor = function(self, conf, meta)
             name = "",
             augroup_name = "",
             hl_base_name = "",
-            ns_id = api.nvim_create_namespace(""),
+            ns_id = -1,
             hl_name_list = {},
         } --[[@as MetaInfo]]
     self.conf = conf or (BaseConf())
 end
 
+---@class BaseMod
+---@field meta MetaInfo
+---@field conf BaseConf
+---@field init fun(self: BaseMod, meta: MetaInfo, conf: BaseConf)
+---@field enable fun(self: BaseMod)
+---@field disable fun(self: BaseMod)
+---@field render fun(self: BaseMod, range?: Scope)
+---@field clear fun(self: BaseMod, range?: Scope)
+---@field createUsercmd fun(self: BaseMod)
+---@field createAutocmd fun(self: BaseMod)
+---@field clearAutocmd fun(self: BaseMod)
+---@field setHl fun(self: BaseMod)
+---@field clearHl fun(self: BaseMod)
+---@field notify fun(self: BaseMod, msg: string, level?: string, opts?: table)
 ---@overload fun(conf: BaseConf, meta: MetaInfo): BaseMod
 local BaseMod = class(constrctor)
 
@@ -91,7 +105,6 @@ end
 
 function BaseMod:setHl()
     local hl_conf = self.conf.style
-    vim.notify(vim.inspect(hl_conf))
     self.meta.hl_name_list = {}
 
     -- such as style = "#abcabc"

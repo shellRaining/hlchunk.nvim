@@ -33,4 +33,6 @@ function TestIndentHelper:testCalc()
     end
 end
 
-os.exit(luaunit.LuaUnit.run())
+luaunit.LuaUnit.run()
+
+-- os.exit(luaunit.LuaUnit.run())

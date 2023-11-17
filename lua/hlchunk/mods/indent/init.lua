@@ -9,7 +9,10 @@ local api = vim.api
 local fn = vim.fn
 local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
 
----@type IndentMod
+---@class IndentMod : BaseMod
+---@field conf IndentConf
+---@field renderLine function
+---@overload fun(conf: table, meta: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, function(self, conf, meta)
     meta = meta
         or {
@@ -18,7 +21,7 @@ local IndentMod = class(BaseMod, function(self, conf, meta)
             hl_base_name = "HLIndent",
             ns_id = api.nvim_create_namespace("indent"),
         }
-    conf = conf or (IndentConf())
+    conf = IndentConf(conf)
     BaseMod.init(self, meta, conf)
 end)
 
