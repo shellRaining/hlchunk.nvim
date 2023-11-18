@@ -55,6 +55,12 @@ function indent_mod:render_line(index, indent)
             local style = "HLIndent" .. tostring((count - 1) % Indent_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1
+            if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= fn.indent(index) then
+                -- if the len of the line is 0, so we should render the indent by its context
+                if api.nvim_buf_get_lines(0, index - 1, index, false)[1] ~= "" then
+                    return
+                end
+            end
             api.nvim_buf_set_extmark(0, self.ns_id, index - 1, 0, row_opts)
         end
     end
