@@ -5,9 +5,9 @@ local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
 local IndentConf = require("hlchunk.mods.indent.IndentConf")
 local ft = require("hlchunk.utils.filetype")
 
-TestBaseMod = {}
+TestConf = {}
 
-function TestBaseMod:testBaseConf()
+function TestConf:testBaseConf()
     local conf
 
     -- test default conf
@@ -47,7 +47,7 @@ function TestBaseMod:testBaseConf()
     luaunit.assertEquals(conf.enable, default.enable)
 end
 
-function TestBaseMod:testIndentConf()
+function TestConf:testIndentConf()
     local conf
 
     -- test default conf

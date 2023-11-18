@@ -1,6 +1,10 @@
 local class = require("hlchunk.utils.class")
 local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
 
+---@class UserIndentConf : UserBaseConf
+---@field chars? string[]
+---@field use_treesitter? boolean
+
 ---@class IndentConf : BaseConf
 ---@field use_treesitter boolean
 ---@field chars table<string, string>

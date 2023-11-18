@@ -4,21 +4,21 @@ local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
 local api = vim.api
 
 local constrctor = function(self, conf, meta)
-    self.meta = meta
-        or {
-            name = "",
-            augroup_name = "",
-            hl_base_name = "",
-            ns_id = -1,
-            hl_name_list = {},
-        } --[[@as MetaInfo]]
-    self.conf = conf or (BaseConf())
+    local default_meta = {
+        name = "",
+        augroup_name = "",
+        hl_base_name = "",
+        ns_id = -1,
+        hl_name_list = {},
+    }
+    self.meta = vim.tbl_deep_extend("force", default_meta, meta or {})
+    self.conf = BaseConf(conf)
 end
 
 ---@class BaseMod
 ---@field meta MetaInfo
 ---@field conf BaseConf
----@field init fun(self: BaseMod, meta: MetaInfo, conf: BaseConf)
+---@field init fun(self: BaseMod, conf: BaseConf, meta: MetaInfo)
 ---@field enable fun(self: BaseMod)
 ---@field disable fun(self: BaseMod)
 ---@field render fun(self: BaseMod, range?: Scope)
@@ -29,14 +29,13 @@ end
 ---@field setHl fun(self: BaseMod)
 ---@field clearHl fun(self: BaseMod)
 ---@field notify fun(self: BaseMod, msg: string, level?: string, opts?: table)
----@overload fun(conf: BaseConf, meta: MetaInfo): BaseMod
+---@overload fun(conf?: UserBaseConf, meta?: MetaInfo): BaseMod
 local BaseMod = class(constrctor)
 
 function BaseMod:enable()
     local ok, info = pcall(function()
         self.conf.enable = true
         self:setHl()
-        vim.notify("enableing")
         self:render()
         self:createAutocmd()
         self:createUsercmd()

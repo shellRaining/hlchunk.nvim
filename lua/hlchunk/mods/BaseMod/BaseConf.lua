@@ -3,6 +3,13 @@ local ft = require("hlchunk.utils.filetype")
 
 ---@alias StyleType string | table<string, string> | table<string, table<string, string>>
 
+---@class UserBaseConf
+---@field enable? boolean
+---@field style? StyleType
+---@field exclude_filetypes? table<string, boolean>
+---@field notify? boolean
+---@field priority? number
+
 ---@class BaseConf
 ---@field enable boolean
 ---@field style StyleType

@@ -9,21 +9,25 @@ local api = vim.api
 local fn = vim.fn
 local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
 
+local constructor = function(self, conf, meta)
+    local default_meta = {
+        name = "indent",
+        augroup_name = "hlchunk_indent",
+        hl_base_name = "HLIndent",
+        ns_id = api.nvim_create_namespace("indent"),
+    }
+
+    BaseMod.init(self, conf, meta)
+    self.meta = vim.tbl_deep_extend("force", default_meta, meta or {})
+    self.conf = IndentConf(conf)
+end
+
 ---@class IndentMod : BaseMod
 ---@field conf IndentConf
+---@field render fun(self: IndentMod, range?: Scope)
 ---@field renderLine function
----@overload fun(conf: table, meta: MetaInfo): IndentMod
-local IndentMod = class(BaseMod, function(self, conf, meta)
-    meta = meta
-        or {
-            name = "indent",
-            augroup_name = "hlchunk_indent",
-            hl_base_name = "HLIndent",
-            ns_id = api.nvim_create_namespace("indent"),
-        }
-    conf = IndentConf(conf)
-    BaseMod.init(self, meta, conf)
-end)
+---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
+local IndentMod = class(BaseMod, constructor)
 
 function IndentMod:renderLine(index, blankLen)
     local row_opts = {
@@ -40,6 +44,12 @@ function IndentMod:renderLine(index, blankLen)
         local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % #self.meta.hl_name_list + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = offset + (i - 1) * sw
+        if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= fn.indent(index) then
+            -- if the len of the line is 0, so we should render the indent by its context
+            if api.nvim_buf_get_lines(0, index - 1, index, false)[1] ~= "" then
+                return
+            end
+        end
         api.nvim_buf_set_extmark(0, self.meta.ns_id, index - 1, 0, row_opts)
     end
 end
@@ -49,7 +59,7 @@ function IndentMod:render(range)
         return
     end
 
-    self:clear()
+    self:clear(range)
 
     local retcode, rows_indent = utils.get_rows_indent(self, nil, nil, {
         use_treesitter = self.conf.use_treesitter,
