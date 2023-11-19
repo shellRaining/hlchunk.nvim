@@ -4,6 +4,7 @@ local class = require("hlchunk.utils.class")
 
 local utils = require("hlchunk.utils.utils")
 local indentHelper = require("hlchunk.utils.indentHelper")
+local Scope = require("hlchunk.utils.Scope")
 
 local api = vim.api
 local fn = vim.fn
@@ -81,7 +82,23 @@ function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(info)
         if info.buf == api.nvim_get_current_buf() then
-            self:render()
+            -- get all changed wins
+            local changedWins = {}
+            for win, _ in pairs(vim.v.event) do
+                if win ~= "all" then
+                    -- table.insert(changedWins, tonumber(win) or 0)
+                    table.insert(changedWins, tonumber(win))
+                end
+            end
+
+            -- get them showed topline and botline, then make a scope to render
+            for _, winnr in ipairs(changedWins) do
+                local wininfo = fn.getwininfo(winnr) --[[@as table]]
+                local topline = wininfo[1].topline
+                local botline = wininfo[1].botline
+                local scope = Scope(info.buf, topline, botline)
+                self:render(scope)
+            end
         end
     end
 
