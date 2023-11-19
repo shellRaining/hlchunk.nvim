@@ -79,20 +79,24 @@ end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
-
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" }, {
-        group = self.meta.augroup_name,
-        pattern = "*",
-        callback = function()
+    local render_cb = function(info)
+        if info.buf == api.nvim_get_current_buf() then
             self:render()
-        end,
+        end
+    end
+
+    api.nvim_create_autocmd({ "WinScrolled" }, {
+        group = self.meta.augroup_name,
+        callback = render_cb,
+    })
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
+        group = self.meta.augroup_name,
+        callback = render_cb,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
         group = self.meta.augroup_name,
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
-        callback = function()
-            self:render()
-        end,
+        callback = render_cb,
     })
 end
 
