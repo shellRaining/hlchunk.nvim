@@ -1,7 +1,6 @@
 local Array = require("hlchunk.utils.array")
 local class = require("hlchunk.utils.class")
 local api = vim.api
-local fn = vim.fn
 
 local BaseMod = class(function(_)
     _.meta = {

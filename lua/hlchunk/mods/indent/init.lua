@@ -81,24 +81,33 @@ end
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(info)
-        if info.buf == api.nvim_get_current_buf() then
-            -- get all changed wins
-            local changedWins = {}
+        local ft = vim.filetype.match({ buf = info.buf })
+        if not ft or #ft == 0 then
+            return
+        end
+
+        -- get all changed wins
+        local changedWins = {}
+        if info.event == "WinScrolled" then
             for win, _ in pairs(vim.v.event) do
                 if win ~= "all" then
-                    -- table.insert(changedWins, tonumber(win) or 0)
                     table.insert(changedWins, tonumber(win))
                 end
             end
+        else
+            local cur_win = api.nvim_get_current_win()
+            changedWins = { cur_win }
+        end
 
-            -- get them showed topline and botline, then make a scope to render
-            for _, winnr in ipairs(changedWins) do
-                local wininfo = fn.getwininfo(winnr) --[[@as table]]
-                local topline = wininfo[1].topline
-                local botline = wininfo[1].botline
-                local scope = Scope(info.buf, topline, botline)
+        -- get them showed topline and botline, then make a scope to render
+        for _, winnr in ipairs(changedWins) do
+            local wininfo = fn.getwininfo(winnr) --[[@as table]]
+            local topline = wininfo[1].topline
+            local botline = wininfo[1].botline
+            local scope = Scope(info.buf, topline, botline)
+            api.nvim_win_call(winnr, function()
                 self:render(scope)
-            end
+            end)
         end
     end
 

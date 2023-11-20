@@ -13,7 +13,7 @@ local function class(base, init)
     c.__index = c
 
     local mt = {}
-    mt.__call = function(class_tbl, ...)
+    mt.__call = function(_, ...)
         local obj = {}
         setmetatable(obj, c)
         if init then
