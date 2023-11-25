@@ -30,7 +30,7 @@ end
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
 
-function IndentMod:renderLine(index, blankLen)
+function IndentMod:renderLine(bufnr, index, blankLen)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
@@ -45,13 +45,15 @@ function IndentMod:renderLine(index, blankLen)
         local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % #self.meta.hl_name_list + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = offset + (i - 1) * sw
+
+        -- when use treesitter, without this judge, when paste code will over render
         if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= fn.indent(index) then
             -- if the len of the line is 0, so we should render the indent by its context
-            if api.nvim_buf_get_lines(0, index - 1, index, false)[1] ~= "" then
+            if api.nvim_buf_get_lines(bufnr, index - 1, index, false)[1] ~= "" then
                 return
             end
         end
-        api.nvim_buf_set_extmark(0, self.meta.ns_id, index - 1, 0, row_opts)
+        api.nvim_buf_set_extmark(bufnr, self.meta.ns_id, index - 1, 0, row_opts)
     end
 end
 
@@ -74,7 +76,7 @@ function IndentMod:render(range)
     end
 
     for index, _ in pairs(rows_indent) do
-        self:renderLine(index, rows_indent[index])
+        self:renderLine(range.bufnr, index, rows_indent[index])
     end
 end
 
