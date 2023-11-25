@@ -58,10 +58,11 @@ function IndentMod:renderLine(bufnr, index, blankLen)
 end
 
 function IndentMod:render(range)
-    if (not self.conf.enable) or self.conf.exclude_filetypes[vim.bo.filetype] or fn.shiftwidth() == 0 then
+    if (not self.conf.enable) or self.conf.exclude_filetypes[vim.bo.ft] or fn.shiftwidth() == 0 then
         return
     end
 
+    range = range or Scope(0, fn.line("w0") --[[@as number]], fn.line("w$") --[[@as number]])
     self:clear(range)
 
     local retcode, rows_indent = utils.get_rows_indent(self, range, {
