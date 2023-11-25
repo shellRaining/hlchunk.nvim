@@ -62,7 +62,7 @@ function IndentMod:render(range)
 
     self:clear(range)
 
-    local retcode, rows_indent = utils.get_rows_indent(self, nil, nil, {
+    local retcode, rows_indent = utils.get_rows_indent(self, range, {
         use_treesitter = self.conf.use_treesitter,
         virt_indent = true,
     })
@@ -86,7 +86,7 @@ function IndentMod:createAutocmd()
             return
         end
 
-        -- get all changed wins
+        -- get all changed wins except all item
         local changedWins = {}
         if info.event == "WinScrolled" then
             for win, _ in pairs(vim.v.event) do
@@ -104,7 +104,7 @@ function IndentMod:createAutocmd()
             local wininfo = fn.getwininfo(winnr) --[[@as table]]
             local topline = wininfo[1].topline
             local botline = wininfo[1].botline
-            local scope = Scope(info.buf, topline, botline)
+            local scope = Scope(info.buf, topline - 1, botline - 1)
             api.nvim_win_call(winnr, function()
                 self:render(scope)
             end)

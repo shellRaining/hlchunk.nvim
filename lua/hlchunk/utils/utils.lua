@@ -1,4 +1,5 @@
 local ft = require("hlchunk.utils.ts_node_type")
+local Scope = require("hlchunk.utils.Scope")
 local fn = vim.fn
 local treesitter = vim.treesitter
 
@@ -202,14 +203,15 @@ M.ROWS_INDENT_RETCODE = {
 -- 6. this is shellRaining
 -- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
 ---@param mod BaseMod
----@param begRow? number
----@param endRow? number
+---@param range? Scope 0-index
 ---@param opts? {use_treesitter: boolean, virt_indent: boolean}
 ---@return ROWS_INDENT_RETCODE enum
 ---@return table<number, number>
-function M.get_rows_indent(mod, begRow, endRow, opts)
-    begRow = begRow or fn.line("w0")
-    endRow = endRow or fn.line("w$")
+function M.get_rows_indent(mod, range, opts)
+    range = range or Scope(0, fn.line("w0") - 1 --[[@as number]], fn.line("w$") - 1 --[[@as number]])
+    -- due to get_indent is 1-index, so we need to add 1
+    local begRow = range.start + 1
+    local endRow = range.finish + 1
     opts = opts or { use_treesitter = false, virt_indent = false }
 
     local rows_indent = {}
