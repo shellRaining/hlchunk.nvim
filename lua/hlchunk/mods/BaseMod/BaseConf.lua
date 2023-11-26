@@ -16,8 +16,8 @@ local ft = require("hlchunk.utils.filetype")
 ---@field exclude_filetypes table<string, boolean>
 ---@field notify boolean
 ---@field priority number
----@field init fun(self: BaseConf, conf: table)
----@overload fun(conf?: table): BaseConf
+---@field init fun(self: UserBaseConf, conf: table)
+---@overload fun(conf?: UserBaseConf): BaseConf
 local BaseConf = class(function(self, conf)
     local default_conf = {
         enable = false,
@@ -26,7 +26,7 @@ local BaseConf = class(function(self, conf)
         priority = 0,
         exclude_filetypes = ft.exclude_filetypes,
     }
-    conf = vim.tbl_deep_extend("force", default_conf, conf or {})
+    conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as BaseConf]]
     self.enable = conf.enable
     self.style = conf.style
     self.exclude_filetypes = conf.exclude_filetypes

@@ -8,18 +8,19 @@ local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
 ---@class IndentConf : BaseConf
 ---@field use_treesitter boolean
 ---@field chars table<string, string>
----@overload fun(conf?: table): IndentConf
+---@overload fun(conf?: UserIndentConf): IndentConf
 local IndentConf = class(BaseConf, function(self, conf)
     local default_conf = {
-        enable = false,
         style = { vim.api.nvim_get_hl(0, { name = "Whitespace" }) },
-        notify = false,
         priority = 10,
+        use_treesitter = false,
+        chars = { "│" },
     }
-    conf = vim.tbl_deep_extend("force", default_conf, conf or {})
+    conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as IndentConf]]
     BaseConf.init(self, conf)
-    self.use_treesitter = conf.use_treesitter or false
-    self.chars = conf.chars or { "│" }
+
+    self.use_treesitter = conf.use_treesitter
+    self.chars = conf.chars
 end)
 
 return IndentConf

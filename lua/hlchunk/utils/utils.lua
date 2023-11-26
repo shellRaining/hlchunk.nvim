@@ -88,7 +88,7 @@ M.CHUNK_RANGE_RET = {
 ---@param line? number the line number we want to get the chunk range, with 1-index
 ---@param opts? {use_treesitter: boolean}
 ---@return CHUNK_RANGE_RETCODE enum
----@return table<number, number>
+---@return Scope
 ---@diagnostic disable-next-line: unused-local
 function M.get_chunk_range(mod, line, opts)
     opts = opts or { use_treesitter = false }
@@ -133,7 +133,7 @@ function M.get_chunk_range(mod, line, opts)
             return M.CHUNK_RANGE_RET.NO_CHUNK, {}
         end
 
-        return M.CHUNK_RANGE_RET.OK, { beg_row, end_row }
+        return M.CHUNK_RANGE_RET.OK, Scope(0, beg_row, end_row)
     end
 end
 
