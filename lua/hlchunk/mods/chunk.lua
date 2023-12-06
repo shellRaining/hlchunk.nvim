@@ -25,6 +25,7 @@ local chunk_mod = BaseMod:new({
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,
         chars = {
+			left_arrow =  "─",
             horizontal_line = "─",
             vertical_line = "│",
             left_top = "╭",
@@ -102,7 +103,9 @@ function chunk_mod:render(opts)
     -- render beg_row
     if beg_blank_len > 0 then
         local virt_text_len = beg_blank_len - start_col
-        local beg_virt_text = self.options.chars.left_top .. self.options.chars.horizontal_line:rep(virt_text_len - 1)
+        local beg_virt_text = self.options.chars.left_top 
+			.. self.options.chars.horizontal_line:rep(virt_text_len - 2)
+			.. self.options.chars.left_arrow
 
         -- because the char is utf-8, so we need to get the utf-8 byte index
         if not utils.col_in_screen(start_col) then
