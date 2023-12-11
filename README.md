@@ -64,7 +64,7 @@ one picture to understand what these mods do
 
 ## Requirements
 
-neovim version `>= 0.7.0`
+neovim version `>= 0.9.0`
 
 ## Installation
 
