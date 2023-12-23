@@ -70,6 +70,10 @@ function BaseMod:clear(range)
     local start = range and range.start or 0
     local finish = range and range.finish or -1
 
+    if range.finish == api.nvim_buf_line_count(range.bufnr) - 1 then
+        finish = -1
+    end
+
     -- TODO: needed?
     if self.meta.ns_id ~= -1 then
         api.nvim_buf_clear_namespace(0, self.meta.ns_id, start, finish)

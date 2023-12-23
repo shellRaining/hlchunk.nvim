@@ -25,7 +25,7 @@ end
 
 ---@class IndentMod : BaseMod
 ---@field conf IndentConf
----@field render fun(self: IndentMod, range?: Scope)
+---@field render fun(self: IndentMod, range: Scope)
 ---@field renderLine function
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
@@ -62,7 +62,6 @@ function IndentMod:render(range)
         return
     end
 
-    range = range or Scope(0, fn.line("w0") --[[@as number]], fn.line("w$") --[[@as number]])
     self:clear(range)
 
     local retcode, rows_indent = utils.get_rows_indent(self, range, {
