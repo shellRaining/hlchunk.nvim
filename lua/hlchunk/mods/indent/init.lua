@@ -80,33 +80,49 @@ function IndentMod:render(range)
     end
 end
 
+-- TODO: ref
+local function isBlankFiletype(ft)
+    if ft == nil then
+        return true
+    end
+    return #ft == 0
+end
+
+-- TODO: ref
+local function getActiveWins(info)
+    -- get all changed wins except all item
+    local changedWins = {}
+    if info.event == "WinScrolled" then
+        for win, _ in pairs(vim.v.event) do
+            if win ~= "all" then
+                table.insert(changedWins, tonumber(win))
+            end
+        end
+    else
+        local cur_win = api.nvim_get_current_win()
+        changedWins = { cur_win }
+    end
+
+    return changedWins
+end
+
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(info)
         local ft = vim.filetype.match({ buf = info.buf })
-        if not ft or #ft == 0 then
+        if isBlankFiletype(ft) then
             return
         end
 
-        -- get all changed wins except all item
-        local changedWins = {}
-        if info.event == "WinScrolled" then
-            for win, _ in pairs(vim.v.event) do
-                if win ~= "all" then
-                    table.insert(changedWins, tonumber(win))
-                end
-            end
-        else
-            local cur_win = api.nvim_get_current_win()
-            changedWins = { cur_win }
-        end
+        local changedWins = getActiveWins(info)
 
         -- get them showed topline and botline, then make a scope to render
         for _, winnr in ipairs(changedWins) do
             local wininfo = fn.getwininfo(winnr) --[[@as table]]
             local topline = wininfo[1].topline
             local botline = wininfo[1].botline
-            local scope = Scope(info.buf, topline - 1, botline - 1)
+            local bufnr = api.nvim_win_get_buf(winnr)
+            local scope = Scope(bufnr, topline - 1, botline - 1)
             api.nvim_win_call(winnr, function()
                 self:render(scope)
             end)
