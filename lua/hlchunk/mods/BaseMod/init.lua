@@ -67,10 +67,10 @@ function BaseMod:render(range)
 end
 
 function BaseMod:clear(range)
-    local start = range and range.start or 0
-    local finish = range and range.finish or -1
+    local start = range.start
+    local finish = range.finish
 
-    if range.finish == api.nvim_buf_line_count(range.bufnr) - 1 then
+    if finish == api.nvim_buf_line_count(range.bufnr) - 1 then
         finish = -1
     end
 
