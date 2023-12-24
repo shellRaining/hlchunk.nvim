@@ -1,7 +1,9 @@
 local class = require("hlchunk.utils.class")
 local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
+local Scope = require("hlchunk.utils.Scope")
 
 local api = vim.api
+local fn = vim.fn
 
 local constrctor = function(self, conf, meta)
     local default_meta = {
@@ -59,14 +61,19 @@ function BaseMod:disable()
     end
 end
 
+function BaseMod:shouldRender()
+    return self.conf.enable and not self.conf.exclude_filetypes[vim.bo.ft] and fn.shiftwidth() ~= 0
+end
+
 function BaseMod:render(range)
-    if (not self.conf.enable) or self.conf.exclude_filetypes[vim.bo.ft] then
+    if not self:shouldRender() then
         return
     end
     self:clear(range)
 end
 
 function BaseMod:clear(range)
+    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     local start = range.start
     local finish = range.finish
 
@@ -74,7 +81,6 @@ function BaseMod:clear(range)
         finish = -1
     end
 
-    -- TODO: needed?
     if self.meta.ns_id ~= -1 then
         api.nvim_buf_clear_namespace(0, self.meta.ns_id, start, finish)
     end

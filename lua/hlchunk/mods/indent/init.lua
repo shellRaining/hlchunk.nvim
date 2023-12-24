@@ -58,7 +58,7 @@ function IndentMod:renderLine(bufnr, index, blankLen)
 end
 
 function IndentMod:render(range)
-    if (not self.conf.enable) or self.conf.exclude_filetypes[vim.bo.ft] or fn.shiftwidth() == 0 then
+    if not self:shouldRender() then
         return
     end
 
