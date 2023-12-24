@@ -65,6 +65,7 @@ M.exclude_filetypes = {
     sagarename = true,
     cmp_menu = true,
     ["null-ls-info"] = true,
+    oil = true,
 }
 
 return M
