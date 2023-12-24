@@ -94,13 +94,9 @@ function IndentMod:createAutocmd()
 
         -- get them showed topline and botline, then make a scope to render
         for _, winnr in ipairs(changedWins) do
-            local wininfo = fn.getwininfo(winnr) --[[@as table]]
-            local topline = wininfo[1].topline
-            local botline = wininfo[1].botline
-            local bufnr = api.nvim_win_get_buf(winnr)
-            local scope = Scope(bufnr, topline - 1, botline - 1)
+            local range = indentHelper.getWinRange(winnr)
             api.nvim_win_call(winnr, function()
-                self:render(scope)
+                self:render(range)
             end)
         end
     end

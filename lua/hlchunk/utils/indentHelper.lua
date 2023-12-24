@@ -1,4 +1,6 @@
 local api = vim.api
+local fn = vim.fn
+local Scope = require("hlchunk.utils.Scope")
 
 local indentHelper = {}
 
@@ -43,6 +45,16 @@ function indentHelper.isBlankFiletype(ft)
         return true
     end
     return #ft == 0
+end
+
+---@param winnr number
+---@return Scope range the range contains the window's topline and botline
+function indentHelper.getWinRange(winnr)
+    local wininfo = fn.getwininfo(winnr) --[[@as table]]
+    local topline = wininfo[1].topline
+    local botline = wininfo[1].botline
+    local bufnr = api.nvim_win_get_buf(winnr)
+    return Scope(bufnr, topline - 1, botline - 1)
 end
 
 return indentHelper
