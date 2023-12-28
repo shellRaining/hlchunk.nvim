@@ -22,7 +22,7 @@ end
 
 ---@param info table the event info, is param of autocmd callback function
 ---@return table changedWins a table contains the changed window number
-function indentHelper.getActiveWins(info)
+function indentHelper.get_active_wins(info)
     local changedWins = {}
     if info.event == "WinScrolled" then
         for win, _ in pairs(vim.v.event) do
@@ -40,7 +40,7 @@ end
 
 ---@param ft string filetype
 ---@return boolean
-function indentHelper.isBlankFiletype(ft)
+function indentHelper.is_blank_filetype(ft)
     if ft == nil then
         return true
     end
@@ -49,7 +49,7 @@ end
 
 ---@param winnr number
 ---@return Scope range the range contains the window's topline and botline
-function indentHelper.getWinRange(winnr)
+function indentHelper.get_win_range(winnr)
     local wininfo = fn.getwininfo(winnr) --[[@as table]]
     local topline = wininfo[1].topline
     local botline = wininfo[1].botline

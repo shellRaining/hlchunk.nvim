@@ -84,6 +84,44 @@ M.CHUNK_RANGE_RET = {
     NO_TS = 3,
 }
 
+local function get_chunk_range_by_context(line)
+    local base_flag = "nWz"
+    local cur_row_val = fn.getline(line)
+    local cur_col = fn.col(".") --[[@as number]]
+    local cur_char = string.sub(cur_row_val, cur_col, cur_col)
+
+    local beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or "")) --[[@as number]]
+    local end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or "")) --[[@as number]]
+
+    if beg_row <= 0 or end_row <= 0 or beg_row >= end_row then
+        return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
+    end
+
+    if is_comment(beg_row) or is_comment(end_row) then
+        return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
+    end
+
+    return M.CHUNK_RANGE_RET.OK, Scope(0, beg_row - 1, end_row - 1)
+end
+
+local function get_chunk_range_by_treesitter()
+    if not has_treesitter(0) then
+        return M.CHUNK_RANGE_RET.NO_TS, {}
+    end
+
+    local cursor_node = treesitter.get_node()
+    while cursor_node do
+        local node_type = cursor_node:type()
+        local node_start, _, node_end, _ = cursor_node:range()
+        if node_start ~= node_end and is_suit_type(node_type) then
+            return cursor_node:has_error() and M.CHUNK_RANGE_RET.CHUNK_ERR or M.CHUNK_RANGE_RET.OK,
+                Scope(0, node_start, node_end)
+        end
+        cursor_node = cursor_node:parent()
+    end
+    return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
+end
+
 ---@param mod BaseMod
 ---@param line? number the line number we want to get the chunk range, with 1-index
 ---@param opts? {use_treesitter: boolean}
@@ -94,46 +132,10 @@ function M.get_chunk_range(mod, line, opts)
     opts = opts or { use_treesitter = false }
     line = line or fn.line(".")
 
-    local beg_row, end_row
-
     if opts.use_treesitter then
-        if not has_treesitter(0) then
-            return M.CHUNK_RANGE_RET.NO_TS, {}
-        end
-
-        local cursor_node = treesitter.get_node()
-        while cursor_node do
-            local node_type = cursor_node:type()
-            local node_start, _, node_end, _ = cursor_node:range()
-            if node_start ~= node_end and is_suit_type(node_type) then
-                ---@diagnostic disable-next-line: undefined-field
-                return cursor_node:has_error() and M.CHUNK_RANGE_RET.CHUNK_ERR or M.CHUNK_RANGE_RET.OK,
-                    {
-                        node_start + 1,
-                        node_end + 1,
-                    }
-            end
-            cursor_node = cursor_node:parent()
-        end
-        return M.CHUNK_RANGE_RET.NO_CHUNK, {}
+        return get_chunk_range_by_treesitter()
     else
-        local base_flag = "nWz"
-        local cur_row_val = fn.getline(line)
-        local cur_col = fn.col(".")
-        local cur_char = string.sub(cur_row_val, cur_col, cur_col)
-
-        beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or ""))
-        end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or ""))
-
-        if beg_row <= 0 or end_row <= 0 or beg_row >= end_row then
-            return M.CHUNK_RANGE_RET.NO_CHUNK, {}
-        end
-
-        if is_comment(beg_row) or is_comment(end_row) then
-            return M.CHUNK_RANGE_RET.NO_CHUNK, {}
-        end
-
-        return M.CHUNK_RANGE_RET.OK, Scope(0, beg_row, end_row)
+        return get_chunk_range_by_context(line)
     end
 end
 
@@ -208,7 +210,7 @@ M.ROWS_INDENT_RETCODE = {
 ---@return ROWS_INDENT_RETCODE enum
 ---@return table<number, number>
 function M.get_rows_indent(mod, range, opts)
-    range = range or Scope(0, fn.line("w0") - 1 --[[@as number]], fn.line("w$") - 1 --[[@as number]])
+    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     -- due to get_indent is 1-index, so we need to add 1
     local begRow = range.start + 1
     local endRow = range.finish + 1

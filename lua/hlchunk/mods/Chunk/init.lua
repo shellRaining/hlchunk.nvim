@@ -42,7 +42,8 @@ function ChunkMod:render(range, opts)
     self:clear()
 
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
-    local beg_row, end_row = unpack(range)
+    local beg_row = range.start + 1
+    local end_row = range.finish + 1
     local beg_blank_len = fn.indent(beg_row) --[[@as number]]
     local end_blank_len = fn.indent(end_row) --[[@as number]]
     local shiftwidth = fn.shiftwidth() --[[@as number]]
@@ -114,11 +115,12 @@ function ChunkMod:createAutocmd()
 
     local render_cb = function(info)
         local ft = vim.filetype.match({ buf = info.buf })
+        -- TODO: need refactoro
         if not ft or #ft == 0 then
             return
         end
 
-        local ret_code, range = utils.get_chunk_range(self, nil, {
+        local ret_code, range = utils.get_chunk_range(self, fn.line("."), {
             use_treesitter = self.conf.use_treesitter,
         })
         if ret_code == CHUNK_RANGE_RET.OK then
@@ -178,7 +180,8 @@ function ChunkMod:extra()
         if retcode ~= CHUNK_RANGE_RET.OK then
             return
         end
-        local s_row, e_row = unpack(cur_chunk_range)
+        local s_row = cur_chunk_range.start + 1
+        local e_row = cur_chunk_range.finish + 1
         local ctrl_v = api.nvim_replace_termcodes("<C-v>", true, true, true)
         local cur_mode = vim.fn.mode()
         if cur_mode == "v" or cur_mode == "V" or cur_mode == ctrl_v then
