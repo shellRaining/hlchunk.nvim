@@ -18,6 +18,7 @@ local ft = require("hlchunk.utils.filetype")
 ---@field priority number
 ---@field init fun(self: UserBaseConf, conf: table)
 ---@overload fun(conf?: UserBaseConf): BaseConf
+---@overload fun(conf?: BaseConf): BaseConf
 local BaseConf = class(function(self, conf)
     local default_conf = {
         enable = false,

@@ -1,7 +1,6 @@
 local BaseMod = require("hlchunk.mods.BaseMod")
 local IndentConf = require("hlchunk.mods.indent.IndentConf")
 local class = require("hlchunk.utils.class")
-
 local utils = require("hlchunk.utils.utils")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.Scope")
@@ -48,7 +47,7 @@ function IndentMod:renderLine(bufnr, index, blankLen)
 
         -- when use treesitter, without this judge, when paste code will over render
         if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= fn.indent(index) then
-            -- if the len of the line is 0, so we should render the indent by its context
+            -- if the len of the line is 0, and have leftcol, we should draw it indent by context
             if api.nvim_buf_get_lines(bufnr, index - 1, index, false)[1] ~= "" then
                 return
             end
@@ -62,7 +61,6 @@ function IndentMod:render(range)
         return
     end
 
-    ---@diagnostic disable-next-line: param-type-mismatch
     range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     self:clear(range)
 
@@ -86,15 +84,15 @@ function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(info)
         local ft = vim.filetype.match({ buf = info.buf })
-        if indentHelper.isBlankFiletype(ft) then
+        if indentHelper.is_blank_filetype(ft) then
             return
         end
 
-        local changedWins = indentHelper.getActiveWins(info)
+        local changedWins = indentHelper.get_active_wins(info)
 
         -- get them showed topline and botline, then make a scope to render
         for _, winnr in ipairs(changedWins) do
-            local range = indentHelper.getWinRange(winnr)
+            local range = indentHelper.get_win_range(winnr)
             api.nvim_win_call(winnr, function()
                 self:render(range)
             end)

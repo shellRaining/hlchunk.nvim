@@ -5,6 +5,9 @@ local Scope = require("hlchunk.utils.Scope")
 local api = vim.api
 local fn = vim.fn
 
+---@param self BaseMod
+---@param conf BaseConf
+---@param meta MetaInfo
 local constrctor = function(self, conf, meta)
     local default_meta = {
         name = "",
@@ -18,19 +21,20 @@ local constrctor = function(self, conf, meta)
 end
 
 ---@class BaseMod
----@field meta MetaInfo
----@field conf BaseConf
----@field init fun(self: BaseMod, conf: BaseConf, meta: MetaInfo)
----@field enable fun(self: BaseMod)
----@field disable fun(self: BaseMod)
----@field render fun(self: BaseMod, range?: Scope)
----@field clear fun(self: BaseMod, range?: Scope)
----@field createUsercmd fun(self: BaseMod)
----@field createAutocmd fun(self: BaseMod)
----@field clearAutocmd fun(self: BaseMod)
----@field setHl fun(self: BaseMod)
----@field clearHl fun(self: BaseMod)
----@field notify fun(self: BaseMod, msg: string, level?: string, opts?: table)
+---@field meta MetaInfo include info just used in mod inside, user can't access it
+---@field conf BaseConf user config
+---@field init fun(self: BaseMod, conf: BaseConf, meta: MetaInfo) not used for init mod, but as super keyword when inherit
+---@field enable fun(self: BaseMod) enable the mod, the main entry of the mod
+---@field disable fun(self: BaseMod) disable the mod
+---@field protected shouldRender fun(self: BaseMod): boolean just a tool function
+---@field protected render fun(self: BaseMod, range?: Scope)
+---@field protected clear fun(self: BaseMod, range?: Scope)
+---@field protected createUsercmd fun(self: BaseMod)
+---@field protected createAutocmd fun(self: BaseMod)
+---@field protected clearAutocmd fun(self: BaseMod)
+---@field protected setHl fun(self: BaseMod)
+---@field protected clearHl fun(self: BaseMod)
+---@field protected notify fun(self: BaseMod, msg: string, level?: string, opts?: table)
 ---@overload fun(conf?: UserBaseConf, meta?: MetaInfo): BaseMod
 local BaseMod = class(constrctor)
 
