@@ -23,7 +23,7 @@ end
 
 ---@class ChunkMod : BaseMod
 ---@field conf ChunkConf
----@field render fun(self: ChunkMod, range?: Scope, opts?: {error: boolean})
+---@field render fun(self: ChunkMod, range: Scope, opts?: {error: boolean})
 ---@overload fun(conf?: UserChunkConf, meta?: MetaInfo): ChunkMod
 local ChunkMod = class(BaseMod, constructor)
 
@@ -34,11 +34,10 @@ function ChunkMod:enable()
 end
 
 function ChunkMod:render(range, opts)
-    if not self.conf.enable or self.conf.exclude_filetypes[vim.bo.ft] then
+    if not self:shouldRender() then
         return
     end
     opts = opts or { error = false }
-
     self:clear()
 
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
@@ -136,20 +135,6 @@ function ChunkMod:createAutocmd()
     api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.meta.augroup_name,
         callback = render_cb,
-        -- callback = function()
-        --     local cur_win_info = fn.winsaveview()
-        --     local old_win_info = ChunkMod.old_win_info
-        --
-        --     if cur_win_info.leftcol ~= old_win_info.leftcol then
-        --         ChunkMod:render({ lazy = false })
-        --     elseif cur_win_info.lnum ~= old_win_info.lnum then
-        --         ChunkMod:render({ lazy = true })
-        --     else
-        --         ChunkMod:render({ lazy = false })
-        --     end
-        --
-        --     ChunkMod.old_win_info = cur_win_info
-        -- end,
     })
     api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.meta.augroup_name,
