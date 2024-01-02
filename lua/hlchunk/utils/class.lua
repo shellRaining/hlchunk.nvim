@@ -13,6 +13,9 @@ local function createClass(base, user_ctor)
     return c
 end
 
+---@generic T
+---@param user_ctor T
+---@return fun(...): T
 local function baseClass(user_ctor)
     local c = createClass(nil, user_ctor)
     local mt = {}
