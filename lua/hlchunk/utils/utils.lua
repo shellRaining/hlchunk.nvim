@@ -239,11 +239,4 @@ function M.get_rows_indent(mod, range, opts)
     return M.ROWS_INDENT_RETCODE.OK, rows_indent
 end
 
----@param col number the column number
----@return boolean
-function M.col_in_screen(col)
-    local leftcol = vim.fn.winsaveview().leftcol
-    return col >= leftcol
-end
-
 return M

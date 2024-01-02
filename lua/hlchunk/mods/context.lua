@@ -58,6 +58,7 @@ function context_mod:render()
         local space_tab = (" "):rep(shiftwidth)
         local line_val = fn.getline(i):gsub("\t", space_tab)
         if #fn.getline(i) <= start_col or line_val:sub(start_col + 1, start_col + 1):match("%s") then
+            -- TODO: delete this code
             if utils.col_in_screen(start_col) then
                 api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
             end

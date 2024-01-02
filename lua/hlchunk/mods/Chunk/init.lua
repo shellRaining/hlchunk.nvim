@@ -1,5 +1,6 @@
 local BaseMod = require("hlchunk.mods.BaseMod")
 local ChunkConf = require("hlchunk.mods.Chunk.ChunkConf")
+local chunkHelper = require("hlchunk.utils.chunkHelper")
 
 local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")
@@ -47,8 +48,7 @@ function ChunkMod:render(range, opts)
     local end_blank_len = fn.indent(end_row) --[[@as number]]
     local shiftwidth = fn.shiftwidth() --[[@as number]]
     local start_col = math.max(math.min(beg_blank_len, end_blank_len) - shiftwidth, 0)
-    local offset = fn.winsaveview().leftcol
-    local get_width = api.nvim_strwidth
+    local leftcol = fn.winsaveview().leftcol
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
@@ -59,19 +59,9 @@ function ChunkMod:render(range, opts)
     if beg_blank_len > 0 then
         local virt_text_len = beg_blank_len - start_col
         local beg_virt_text = self.conf.chars.left_top .. self.conf.chars.horizontal_line:rep(virt_text_len - 1)
-
-        -- because the char is utf-8, so we need to get the utf-8 byte index
-        if not utils.col_in_screen(start_col) then
-            local byte_idx = math.min(offset - start_col, virt_text_len)
-            if byte_idx > get_width(beg_virt_text) then
-                byte_idx = get_width(beg_virt_text)
-            end
-            local utfBeg = vim.str_byteindex(beg_virt_text, byte_idx)
-            beg_virt_text = beg_virt_text:sub(utfBeg + 1)
-        end
-
-        row_opts.virt_text = { { beg_virt_text, text_hl } }
-        row_opts.virt_text_win_col = math.max(start_col - offset, 0)
+        local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, leftcol)
+        row_opts.virt_text = { { virt_text, text_hl } }
+        row_opts.virt_text_win_col = virt_text_win_col
         api.nvim_buf_set_extmark(0, self.meta.ns_id, beg_row - 1, 0, row_opts)
     end
 
@@ -79,30 +69,23 @@ function ChunkMod:render(range, opts)
     if end_blank_len > 0 then
         local virt_text_len = end_blank_len - start_col
         local end_virt_text = self.conf.chars.left_bottom
-            .. self.conf.chars.horizontal_line:rep(end_blank_len - start_col - 2)
+            .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
             .. self.conf.chars.right_arrow
-
-        if not utils.col_in_screen(start_col) then
-            local byte_idx = math.min(offset - start_col, virt_text_len)
-            if byte_idx > get_width(end_virt_text) then
-                byte_idx = get_width(end_virt_text)
-            end
-            local utfBeg = vim.str_byteindex(end_virt_text, byte_idx)
-            end_virt_text = end_virt_text:sub(utfBeg + 1)
-        end
-        row_opts.virt_text = { { end_virt_text, text_hl } }
-        row_opts.virt_text_win_col = math.max(start_col - offset, 0)
+        local virt_text, virt_text_win_col = chunkHelper.calc(end_virt_text, start_col, leftcol)
+        row_opts.virt_text = { { virt_text, text_hl } }
+        row_opts.virt_text_win_col = virt_text_win_col
         api.nvim_buf_set_extmark(0, self.meta.ns_id, end_row - 1, 0, row_opts)
     end
 
     -- render middle section
     for i = beg_row + 1, end_row - 1 do
         row_opts.virt_text = { { self.conf.chars.vertical_line, text_hl } }
-        row_opts.virt_text_win_col = start_col - offset
+        row_opts.virt_text_win_col = start_col - leftcol
         local space_tab = (" "):rep(shiftwidth)
         local line_val = fn.getline(i):gsub("\t", space_tab)
+        -- this judgement is for the line has shadow middle section
         if #line_val <= start_col or fn.indent(i) > start_col then
-            if utils.col_in_screen(start_col) then
+            if row_opts.virt_text_win_col >= 0 then
                 api.nvim_buf_set_extmark(0, self.meta.ns_id, i - 1, 0, row_opts)
             end
         end

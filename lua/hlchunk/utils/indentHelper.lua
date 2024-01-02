@@ -7,7 +7,7 @@ local indentHelper = {}
 ---@param blank string|number a string that contains only spaces
 ---@param leftcol number the shadowed cols number
 ---@param sw number shiftwidth
----@return number rendered, number offset, number shadowed return the render char number and the start index of the
+---@return number render_num, number offset, number shadowed_num return the render char number and the start index of the
 -- first render char, the last is shadowed char number
 function indentHelper.calc(blank, leftcol, sw)
     local blankLen = type(blank) == "string" and #blank or blank --[[@as number]]
