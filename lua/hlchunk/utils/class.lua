@@ -13,6 +13,7 @@ local function createClass(base, user_ctor)
     return c
 end
 
+-- TODO: how to add type define for baseClass
 ---@generic T
 ---@param user_ctor T
 ---@return fun(...): T

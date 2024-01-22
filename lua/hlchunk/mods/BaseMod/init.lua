@@ -76,17 +76,18 @@ function BaseMod:render(range)
     self:clear(range)
 end
 
+---@param range Scope the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
-    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
+    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") --[[@as number]])
     local start = range.start
-    local finish = range.finish
+    local finish = range.finish + 1
 
-    if finish == api.nvim_buf_line_count(range.bufnr) - 1 then
+    if finish == api.nvim_buf_line_count(range.bufnr) then
         finish = -1
     end
 
     if self.meta.ns_id ~= -1 then
-        api.nvim_buf_clear_namespace(0, self.meta.ns_id, start, finish)
+        api.nvim_buf_clear_namespace(range.bufnr, self.meta.ns_id, start, finish)
     end
 end
 

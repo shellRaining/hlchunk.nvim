@@ -5,36 +5,6 @@ local treesitter = vim.treesitter
 
 -- these are helper function for utils
 
----@param bufnr number check the bufnr has treesitter parser
-local function has_treesitter(bufnr)
-    local ok = pcall(require, "nvim-treesitter")
-    if not ok then
-        return false
-    end
-
-    local has_lang, lang = pcall(treesitter.language.get_lang, vim.bo[bufnr].filetype)
-    if not has_lang then
-        return false
-    end
-
-    local has, parser = pcall(treesitter.get_parser, bufnr, lang)
-    if not has or not parser then
-        return false
-    end
-    return true
-end
-
----@param line? number
-local function is_comment(line)
-    line = line or fn.line(".")
-
-    local str = fn.getline(line)
-    str:trim()
-    return str:match("^%-%-[^\r\n]*$") ~= nil
-        or string.match(str, "^%s*/%*.-%*/%s*$") ~= nil
-        or string.match(str, "^%s*//.*$") ~= nil
-end
-
 -- get the virtual indent of the given line
 ---@param rows_indent table<number, number>
 ---@param line number
@@ -97,17 +67,18 @@ local function get_chunk_range_by_context(line)
         return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
     end
 
-    if is_comment(beg_row) or is_comment(end_row) then
-        return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
-    end
+    -- TODO: fix this is_comment
+    -- if is_comment(beg_row) or is_comment(end_row) then
+    --     return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
+    -- end
 
     return M.CHUNK_RANGE_RET.OK, Scope(0, beg_row - 1, end_row - 1)
 end
 
 local function get_chunk_range_by_treesitter()
-    if not has_treesitter(0) then
-        return M.CHUNK_RANGE_RET.NO_TS, {}
-    end
+    -- if not has_treesitter(0) then
+    --     return M.CHUNK_RANGE_RET.NO_TS, {}
+    -- end
 
     local cursor_node = treesitter.get_node()
     while cursor_node do
@@ -137,51 +108,6 @@ function M.get_chunk_range(mod, line, opts)
     else
         return get_chunk_range_by_context(line)
     end
-end
-
----@param mod BaseMod
----@param line? number the line number we want to get the indent range
----@param opts? {use_treesitter: boolean}
----@return table<number, number> | nil not include end point
-function M.get_indent_range(mod, line, opts)
-    -- TODO: fix bugs of this function, and ref the return value
-    line = line or fn.line(".")
-    opts = opts or { use_treesitter = false }
-
-    local _, rows_indent_list = M.get_rows_indent(mod, nil, nil, {
-        use_treesitter = opts.use_treesitter,
-        virt_indent = true,
-    })
-    if not rows_indent_list or rows_indent_list[line] < 0 then
-        return nil
-    end
-
-    local shiftwidth = fn.shiftwidth()
-    if rows_indent_list[line + 1] and rows_indent_list[line + 1] == rows_indent_list[line] + shiftwidth then
-        line = line + 1
-    elseif rows_indent_list[line - 1] and rows_indent_list[line - 1] == rows_indent_list[line] + shiftwidth then
-        line = line - 1
-    end
-
-    if rows_indent_list[line] <= 0 then
-        return nil
-    end
-
-    local up = line
-    local down = line
-    local wbegin = fn.line("w0")
-    local wend = fn.line("w$")
-
-    while up >= wbegin and rows_indent_list[up] >= rows_indent_list[line] do
-        up = up - 1
-    end
-    while down <= wend and rows_indent_list[down] >= rows_indent_list[line] do
-        down = down + 1
-    end
-    up = math.max(up, wbegin)
-    down = math.min(down, wend)
-
-    return { up + 1, down - 1 }
 end
 
 ---@enum ROWS_INDENT_RETCODE
