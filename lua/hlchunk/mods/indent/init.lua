@@ -62,7 +62,7 @@ function IndentMod:render(range)
     end
 
     range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
-    self:clear(range)
+    self:clear()
 
     local retcode, rows_indent = utils.get_rows_indent(self, range, {
         use_treesitter = self.conf.use_treesitter,
@@ -93,6 +93,9 @@ function IndentMod:createAutocmd()
         -- get them showed topline and botline, then make a scope to render
         for _, winnr in ipairs(changedWins) do
             local range = indentHelper.get_win_range(winnr)
+            local ahead_lines = self.conf.ahead_lines
+            range.start = math.max(0, range.start - ahead_lines)
+            range.finish = math.min(api.nvim_buf_line_count(range.bufnr) - 1, range.finish + ahead_lines)
             api.nvim_win_call(winnr, function()
                 self:render(range)
             end)
