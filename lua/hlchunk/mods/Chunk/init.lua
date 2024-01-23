@@ -137,7 +137,7 @@ function ChunkMod:createAutocmd()
             local ok, status = pcall(fn.getfsize, fn.expand("%"))
             if ok and status >= self.conf.max_file_size then
                 self:notify("File is too large, chunk.nvim will not be loaded")
-                ChunkMod:disable()
+                self:disable()
             end
         end,
     })
