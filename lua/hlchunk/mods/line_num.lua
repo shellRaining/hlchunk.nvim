@@ -19,11 +19,16 @@ local line_num_mod = BaseMod:new({
         style = "#806d9c",
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,
+        choke_at_linecount = -1,
     },
 })
 
 function line_num_mod:render()
-    if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then
+    if
+        not self.options.enable
+        or self.options.exclude_filetypes[vim.bo.ft]
+        or BaseMod.check_choke(self, vim.api.nvim_buf_line_count(0))
+    then
         return
     end
 

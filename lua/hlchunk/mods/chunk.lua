@@ -38,6 +38,7 @@ local chunk_mod = BaseMod:new({
         textobject = "",
         max_file_size = 1024 * 1024,
         error_sign = true,
+        choke_at_linecount = -1,
     },
 })
 
@@ -49,7 +50,11 @@ end
 
 -- set new virtual text to the right place
 function chunk_mod:render(opts)
-    if not self.options.enable or self.options.exclude_filetypes[vim.bo.ft] then
+    if
+        not self.options.enable
+        or self.options.exclude_filetypes[vim.bo.ft]
+        or BaseMod.check_choke(self, vim.api.nvim_buf_line_count(0))
+    then
         return
     end
 

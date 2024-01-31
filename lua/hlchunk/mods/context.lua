@@ -23,11 +23,16 @@ local context_mod = BaseMod:new({
             "#806d9c",
         },
         exclude_filetypes = ft.exclude_filetypes,
+        choke_at_linecount = -1,
     },
 })
 
 function context_mod:render()
-    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] then
+    if
+        not self.options.enable
+        or self.options.exclude_filetypes[vim.bo.filetype]
+        or BaseMod.check_choke(self, vim.api.nvim_buf_line_count(0))
+    then
         return
     end
 
