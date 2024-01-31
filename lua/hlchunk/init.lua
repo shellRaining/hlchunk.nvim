@@ -48,6 +48,13 @@ local function set_usercmds(mods_status)
             end
         end
     end, {})
+    api.nvim_create_user_command("RedrawHL", function()
+        for mod_name, enabled in pairs(mods_status) do
+            if enabled then
+                require("hlchunk.mods")[mod_name]:render()
+            end
+        end
+    end, {})
 end
 
 ---@param params PlugConfig
