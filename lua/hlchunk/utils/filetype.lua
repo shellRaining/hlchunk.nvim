@@ -66,6 +66,7 @@ M.exclude_filetypes = {
     cmp_menu = true,
     ["null-ls-info"] = true,
     oil = true,
+    glowpreview = true,
 }
 
 return M
