@@ -26,6 +26,7 @@ local indent_mod = BaseMod:new({
             fn.synIDattr(fn.synIDtrans(fn.hlID("Whitespace")), "fg", "gui"),
         },
         exclude_filetypes = ft.exclude_filetypes,
+        choke_at_linecount = -1,
     },
 })
 
@@ -67,7 +68,12 @@ function indent_mod:render_line(index, indent)
 end
 
 function indent_mod:render()
-    if (not self.options.enable) or self.options.exclude_filetypes[vim.bo.filetype] or fn.shiftwidth() == 0 then
+    if
+        not self.options.enable
+        or self.options.exclude_filetypes[vim.bo.filetype]
+        or fn.shiftwidth() == 0
+        or BaseMod.check_choke(self, vim.api.nvim_buf_line_count(0))
+    then
         return
     end
 

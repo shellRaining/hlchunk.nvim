@@ -8,6 +8,7 @@ local fn = vim.fn
 ---@field exclude_filetypes table<string, boolean>
 ---@field support_filetypes table<string>
 ---@field notify boolean
+---@field choke_at_linecount number
 
 ---@class RuntimeVar
 ---@field old_win_info table<number, number>
@@ -36,6 +37,7 @@ local BaseMod = {
         exclude_filetypes = {},
         support_filetypes = {},
         notify = false,
+        choke_at_linecount = -1,
     },
     ns_id = -1,
     old_win_info = fn.winsaveview(),
@@ -181,6 +183,13 @@ function BaseMod:set_hl()
     end
 end
 
+function BaseMod:check_choke(line_count)
+    if self.options.choke_at_linecount ~= -1 and line_count >= self.options.choke_at_linecount then
+        return true
+    else
+        return false
+    end
+end
 -- set options for mod, if the mod dont have default config, it will notify you
 ---@param options BaseModOpts
 function BaseMod:set_options(options)
