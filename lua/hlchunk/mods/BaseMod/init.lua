@@ -163,10 +163,20 @@ function BaseMod:clearHl()
     -- TODO:
 end
 
-function BaseMod:notify(...)
-    if self.conf.notify then
-        vim.notify(...)
+---@param msg string
+---@param level number?
+---@param opts {once: boolean}?
+function BaseMod:notify(msg, level, opts)
+    level = level or vim.log.levels.INFO
+    opts = opts or { once = false }
+    if self.conf == nil or self.conf.notify == false then
+        return
+    end
+
+    if opts.once then
+        vim.notify_once(msg, level, opts)
+    else
+        vim.notify(msg, level, opts)
     end
 end
-
 return BaseMod

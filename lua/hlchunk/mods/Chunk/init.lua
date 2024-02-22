@@ -1,7 +1,6 @@
 local BaseMod = require("hlchunk.mods.BaseMod")
 local ChunkConf = require("hlchunk.mods.Chunk.ChunkConf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
-local Scope = require("hlchunk.utils.Scope")
 
 local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")
@@ -11,7 +10,6 @@ local fn = vim.fn
 local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
 
 ---@class ChunkMetaInfo : MetaInfo
----@field pre_range Scope
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -19,7 +17,6 @@ local constructor = function(self, conf, meta)
         augroup_name = "hlchunk_chunk",
         hl_base_name = "HLChunk",
         ns_id = api.nvim_create_namespace("chunk"),
-        pre_range = Scope(0, 0, 0),
     }
 
     BaseMod.init(self, conf, meta)
@@ -45,8 +42,7 @@ function ChunkMod:render(range, opts)
         return
     end
     opts = opts or { error = false }
-    self:clear(self.meta.pre_range)
-    self.meta.pre_range = range
+    self:clear()
 
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
     local beg_row = range.start + 1
