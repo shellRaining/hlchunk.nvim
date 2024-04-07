@@ -93,8 +93,9 @@ end
 function indent_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    local events = self.options.in_performance and { "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" } or
-    { "CursorHold", "CursorHoldI" }
+    local events = self.options.in_performance and { "CursorHold", "CursorHoldI" } or
+    { "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" }
+
 
     api.nvim_create_autocmd(events, {
         group = self.augroup_name,
