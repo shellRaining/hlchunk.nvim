@@ -178,7 +178,7 @@ function chunk_mod:enable_mod_autocmd()
         end,
     })
 
-    if not self.options.in_performance then
+    if self.options.in_performance then
         return
     end
 
