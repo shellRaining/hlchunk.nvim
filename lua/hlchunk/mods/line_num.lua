@@ -48,7 +48,10 @@ end
 function line_num_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    local events = self.options.in_performance
+        and { "CursorHold", "CursorHoldI" } or { "CursorMoved", "CursorMovedI" }
+
+    api.nvim_create_autocmd(events, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()

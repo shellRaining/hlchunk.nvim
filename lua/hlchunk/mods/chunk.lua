@@ -156,7 +156,10 @@ end
 function chunk_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
+    local events = self.options.in_performance
+        and { "CursorHold", "CursorHoldI" } or { "CursorMoved", "CursorMovedI" }
+
+    api.nvim_create_autocmd(events, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,
         callback = function()
@@ -174,6 +177,11 @@ function chunk_mod:enable_mod_autocmd()
             chunk_mod.old_win_info = cur_win_info
         end,
     })
+
+    if not self.options.in_performance then
+        return
+    end
+
     api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.augroup_name,
         pattern = self.options.support_filetypes,

@@ -68,7 +68,10 @@ end
 function context_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    local events = self.options.in_performance
+        and { "CursorHold", "CursorHoldI" } or { "CursorMoved", "CursorMovedI" }
+
+    api.nvim_create_autocmd(events, {
         group = self.augroup_name,
         pattern = "*",
         callback = function()
@@ -81,6 +84,11 @@ function context_mod:enable_mod_autocmd()
             end
         end,
     })
+
+    if not self.options.in_performance then
+        return
+    end
+
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = self.augroup_name,
         pattern = "*",

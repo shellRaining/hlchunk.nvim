@@ -115,6 +115,8 @@ EOF
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,
         use_treesitter = true,
+        -- 如果本插件让你的Nim变慢了，设置这个为true
+        in_performance = false,
         chars = {
             horizontal_line = "─",
             vertical_line = "│",
@@ -134,6 +136,8 @@ EOF
     indent = {
         enable = true,
         use_treesitter = false,
+        -- 如果本插件让你的Nim变慢了，设置这个为true
+        in_performance = false,
         chars = {
             "│",
         },
@@ -145,11 +149,15 @@ EOF
     line_num = {
         enable = true,
         use_treesitter = false,
+        -- 如果本插件让你的Nim变慢了，设置这个为true
+        in_performance = false,
         style = "#806d9c",
     },
 
     blank = {
         enable = true,
+        -- 如果本插件让你的Nim变慢了，设置这个为true
+        in_performance = false,
         chars = {
             "․",
         },

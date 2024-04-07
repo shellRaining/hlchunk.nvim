@@ -111,6 +111,8 @@ The script comes with the following defaults:
         enable = true,
         notify = true,
         use_treesitter = true,
+        -- if hlchunk make your neovim slowly, set this option to true and try again
+        in_performance = false,
         -- details about support_filetypes and exclude_filetypes in https://github.com/shellRaining/hlchunk.nvim/blob/main/lua/hlchunk/utils/filetype.lua
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,
@@ -133,6 +135,8 @@ The script comes with the following defaults:
     indent = {
         enable = true,
         use_treesitter = false,
+        -- if hlchunk make your neovim slowly, set this option to true and try again
+        in_performance = false,
         chars = {
             "│",
         },
@@ -144,11 +148,15 @@ The script comes with the following defaults:
     line_num = {
         enable = true,
         use_treesitter = false,
+        -- if hlchunk make your neovim slowly, set this option to true and try again
+        in_performance = false,
         style = "#806d9c",
     },
 
     blank = {
         enable = true,
+        -- if hlchunk make your neovim slowly, set this option to true and try again
+        in_performance = false,
         chars = {
             "․",
         },

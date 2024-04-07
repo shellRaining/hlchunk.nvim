@@ -85,7 +85,10 @@ end
 function blank_mod:enable_mod_autocmd()
     BaseMod.enable_mod_autocmd(self)
 
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" }, {
+    local events = self.options.in_performance and { "TextChanged", "TextChangedI", "BufWinEnter", "WinScrolled" } or
+        { "CursorHold", "CursorHoldI" }
+
+    api.nvim_create_autocmd(events, {
         group = self.augroup_name,
         pattern = "*",
         callback = function()

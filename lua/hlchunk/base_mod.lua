@@ -8,6 +8,7 @@ local fn = vim.fn
 ---@field exclude_filetypes table<string, boolean>
 ---@field support_filetypes table<string>
 ---@field notify boolean
+---@field in_performance boolean
 
 ---@class RuntimeVar
 ---@field old_win_info table<number, number>
@@ -36,6 +37,7 @@ local BaseMod = {
         exclude_filetypes = {},
         support_filetypes = {},
         notify = false,
+        in_performance = false,
     },
     ns_id = -1,
     old_win_info = fn.winsaveview(),
