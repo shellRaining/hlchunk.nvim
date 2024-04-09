@@ -75,6 +75,12 @@ function context_mod:enable_mod_autocmd()
         group = self.augroup_name,
         pattern = "*",
         callback = function()
+            -- force render in any case
+            if self.options.in_performance then
+                context_mod:render()
+                return
+            end
+
             local cur_win_info = fn.winsaveview()
             local old_win_info = context_mod.old_win_info
 
