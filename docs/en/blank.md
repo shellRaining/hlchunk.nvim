@@ -7,8 +7,9 @@ blank have four configurable items
 1. enable
 2. notify
 3. chars
-4. style
-5. exclude_filetype
+4. tab_chars
+5. style
+6. exclude_filetype
 
 `enable` is used to control whether enable hl_blank, if set it to false, its usercmd and autocmd will not set, so it will not work
 
@@ -26,6 +27,8 @@ chars = {
     "⁙",
 },
 ```
+
+`tab_chars` is used to configure what char to render the `<Tab>`, it is a table likes the `chars` table.
 
 `style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different blank (indent)
 
