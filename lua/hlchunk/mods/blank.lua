@@ -46,7 +46,7 @@ function blank_mod:render_line(index, indent)
         local char = line_val:sub(shiftwidth * i - 1, shiftwidth * i - 1)
         if char == "\t" then
             text = text .. ("t") .. (" "):rep(shiftwidth - 1)
-        else
+        elseif char ~= "" then
             text = text .. "." .. (" "):rep(shiftwidth - 1)
         end
     end
