@@ -7,8 +7,9 @@ blank mod 有四个配置项
 1. enable
 2. notify
 3. chars
-4. style
-5. exclude_filetype
+4. tab_chars
+5. style
+6. exclude_filetype
 
 `enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
 
@@ -26,6 +27,8 @@ chars = {
     "⁙",
 },
 ```
+
+`tab_chars` 是一个 lua 表，其中的字符用来指示如何渲染 `<Tab>` 字符，它和`chars`类似。
 
 `style` 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 blank
 

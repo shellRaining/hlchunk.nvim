@@ -21,6 +21,7 @@ local blank_mod = BaseMod:new({
         chars = {
             "․",
         },
+        tab_chars = {},
         style = {
             api.nvim_get_hl(0, { name = "Whitespace" }),
         },
@@ -38,8 +39,16 @@ function blank_mod:render_line(index, indent)
     local render_char_num = math.floor(indent / shiftwidth)
     local win_info = fn.winsaveview()
     local text = ""
-    for _ = 1, render_char_num do
-        text = text .. "." .. (" "):rep(shiftwidth - 1)
+
+    local space_tab = ("\t"):rep(vim.o.tabstop)
+    local line_val = fn.getline(index):gsub("\t", space_tab)
+    for i = 1, render_char_num do
+        local char = line_val:sub(shiftwidth * i - 1, shiftwidth * i - 1)
+        if char == "\t" then
+            text = text .. ("t") .. (" "):rep(shiftwidth - 1)
+        else
+            text = text .. "." .. (" "):rep(shiftwidth - 1)
+        end
     end
     text = text:sub(win_info.leftcol + 1)
 
@@ -50,7 +59,14 @@ function blank_mod:render_line(index, indent)
             count = count + 1
             local Blank_chars_num = Array:from(self.options.chars):size()
             local Blank_style_num = Array:from(self.options.style):size()
-            local char = self.options.chars[(count - 1) % Blank_chars_num + 1]:rep(shiftwidth)
+
+            local char
+            if self.options.tab_chars and c:match("t") then
+                char = self.options.tab_chars[(count - 1) % Blank_chars_num + 1]:rep(shiftwidth)
+            else
+                char = self.options.chars[(count - 1) % Blank_chars_num + 1]:rep(shiftwidth)
+            end
+
             local style = "HLBlank" .. tostring((count - 1) % Blank_style_num + 1)
             row_opts.virt_text = { { char, style } }
             row_opts.virt_text_win_col = i - 1
