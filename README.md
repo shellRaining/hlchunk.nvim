@@ -144,6 +144,7 @@ The script comes with the following defaults:
     line_num = {
         enable = true,
         use_treesitter = false,
+        priority = 10,
         style = "#806d9c",
     },
 

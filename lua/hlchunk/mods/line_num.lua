@@ -7,6 +7,7 @@ local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
 
 ---@class LineNumOpts: BaseModOpts
 ---@field use_treesitter boolean
+---@field priority number
 
 ---@class LineNumMod: BaseMod
 ---@field options LineNumOpts
@@ -16,6 +17,7 @@ local line_num_mod = BaseMod:new({
         enable = true,
         notify = true,
         use_treesitter = false,
+        priority = 10,
         style = "#806d9c",
         support_filetypes = ft.support_filetypes,
         exclude_filetypes = ft.exclude_filetypes,
@@ -41,6 +43,7 @@ function line_num_mod:render()
     for i = beg_row, end_row do
         local row_opts = {}
         row_opts.number_hl_group = "HLLine_num1"
+        row_opts.priority = self.options.priority
         api.nvim_buf_set_extmark(0, self.ns_id, i - 1, 0, row_opts)
     end
 end
