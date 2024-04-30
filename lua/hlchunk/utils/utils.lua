@@ -75,10 +75,24 @@ local function get_chunk_range_by_context(line)
     return M.CHUNK_RANGE_RET.OK, Scope(0, beg_row - 1, end_row - 1)
 end
 
+---@param bufnr number check the bufnr has treesitter parser
+local function has_treesitter(bufnr)
+    local has_lang, lang = pcall(treesitter.language.get_lang, vim.bo[bufnr].filetype)
+    if not has_lang then
+        return false
+    end
+
+    local has, parser = pcall(treesitter.get_parser, bufnr, lang)
+    if not has or not parser then
+        return false
+    end
+    return true
+end
+
 local function get_chunk_range_by_treesitter()
-    -- if not has_treesitter(0) then
-    --     return M.CHUNK_RANGE_RET.NO_TS, {}
-    -- end
+    if not has_treesitter(0) then
+        return M.CHUNK_RANGE_RET.NO_TS, Scope(0, -1, -1)
+    end
 
     local cursor_node = treesitter.get_node()
     while cursor_node do
