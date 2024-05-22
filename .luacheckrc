@@ -8,7 +8,12 @@ ignore = {
     "212/mod",
     "111/_",
     "122/vim",
+    "112",
+    "111",
+    "631",
 }
+
+exclude_files = { ".ci/**/*"}
 
 -- Global objects defined by the C code
 read_globals = {
