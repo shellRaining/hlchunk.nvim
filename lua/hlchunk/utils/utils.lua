@@ -94,7 +94,7 @@ local function get_chunk_range_by_treesitter()
         return M.CHUNK_RANGE_RET.NO_TS, Scope(0, -1, -1)
     end
 
-    local cursor_node = treesitter.get_node()
+    local cursor_node = treesitter.get_node({ ignore_injections = false })
     while cursor_node do
         local node_type = cursor_node:type()
         local node_start, _, node_end, _ = cursor_node:range()
