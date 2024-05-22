@@ -7,6 +7,10 @@
 <b>English</b> | <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
 </p>
 
+## notice!!!
+
+There have been many recent changes. If you encounter any bugs, please feel free to raise an issue. I will improve the code clarity and documentation in the future.
+
 ## What can this plugin do
 
 similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim), this plugin can highlight the indent line, and highlight the code chunk according to the current cursor position.

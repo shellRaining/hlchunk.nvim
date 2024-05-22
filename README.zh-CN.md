@@ -7,6 +7,10 @@
 <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.md">English</a> | <b>简体中文</b>
 </p>
 
+## 注意！！！
+
+最近代码发生了很多变动。如果您遇到任何 bug，请随时提出 issue。我将在未来改进代码清晰度和文档。
+
 ## 这个插件可以做什么
 
 和 [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim) 类似,这个插件可以用来高亮缩进线,并且还可以根据当前光标所处的位置,高亮所在代码块.
