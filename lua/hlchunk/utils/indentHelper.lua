@@ -1,6 +1,6 @@
 local api = vim.api
 local fn = vim.fn
-local Scope = require("hlchunk.utils.Scope")
+local Scope = require("hlchunk.utils.scope")
 
 local indentHelper = {}
 

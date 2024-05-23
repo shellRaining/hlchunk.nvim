@@ -1,5 +1,5 @@
-local BaseMod = require("hlchunk.mods.BaseMod")
-local LineNumConf = require("hlchunk.mods.Line_Num.LineNumConf")
+local BaseMod = require("hlchunk.mods.base_mod")
+local LineNumConf = require("hlchunk.mods.line_num.line_num_conf")
 
 local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")

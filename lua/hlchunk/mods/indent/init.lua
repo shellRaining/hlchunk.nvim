@@ -1,9 +1,9 @@
-local BaseMod = require("hlchunk.mods.BaseMod")
-local IndentConf = require("hlchunk.mods.Indent.IndentConf")
+local BaseMod = require("hlchunk.mods.base_mod")
+local IndentConf = require("hlchunk.mods.indent.indent_conf")
 local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")
 local indentHelper = require("hlchunk.utils.indentHelper")
-local Scope = require("hlchunk.utils.Scope")
+local Scope = require("hlchunk.utils.scope")
 
 local api = vim.api
 local fn = vim.fn

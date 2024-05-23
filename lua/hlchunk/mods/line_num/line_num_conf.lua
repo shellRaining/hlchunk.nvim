@@ -1,5 +1,5 @@
 local class = require("hlchunk.utils.class")
-local BaseConf = require("hlchunk.mods.BaseMod.BaseConf")
+local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 
 ---@class UserLineNumConf : UserBaseConf
 ---@field use_treesitter? boolean

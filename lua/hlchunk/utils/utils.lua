@@ -1,5 +1,5 @@
 local ft = require("hlchunk.utils.ts_node_type")
-local Scope = require("hlchunk.utils.Scope")
+local Scope = require("hlchunk.utils.scope")
 local fn = vim.fn
 local treesitter = vim.treesitter
 

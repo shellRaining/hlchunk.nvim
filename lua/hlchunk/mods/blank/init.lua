@@ -1,5 +1,5 @@
-local IndentMod = require("hlchunk.mods.Indent")
-local BlankConf = require("hlchunk.mods.Blank.BlankConf")
+local IndentMod = require("hlchunk.mods.indent")
+local BlankConf = require("hlchunk.mods.blank.blank_conf")
 local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
 

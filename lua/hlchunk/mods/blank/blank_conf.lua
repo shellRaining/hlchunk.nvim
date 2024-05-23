@@ -1,5 +1,5 @@
 local class = require("hlchunk.utils.class")
-local IndentConf = require("hlchunk.mods.Indent.IndentConf")
+local IndentConf = require("hlchunk.mods.indent.indent_conf")
 
 ---@class UserBlankConf : UserIndentConf
 

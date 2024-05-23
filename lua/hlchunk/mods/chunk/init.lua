@@ -1,5 +1,5 @@
-local BaseMod = require("hlchunk.mods.BaseMod")
-local ChunkConf = require("hlchunk.mods.Chunk.ChunkConf")
+local BaseMod = require("hlchunk.mods.base_mod")
+local ChunkConf = require("hlchunk.mods.chunk.chunk_conf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
 
 local class = require("hlchunk.utils.class")
