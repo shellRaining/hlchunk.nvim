@@ -4,7 +4,7 @@
 <h1 align='center'>hlchunk.nvim</h1>
 
 <p align='center'>
-<a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.md">English</a> | <b>简体中文</b>
+<a href="./README.md">English</a> | <b>简体中文</b>
 </p>
 
 ## 注意！！！
@@ -13,23 +13,16 @@
 
 ## 这个插件可以做什么
 
-和 [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim) 类似,这个插件可以用来高亮缩进线,并且还可以根据当前光标所处的位置,高亮所在代码块.
-
-## 这个插件优势在哪里
-
-1. 更具有拓展型
-2. 更快的渲染速度 (每千次渲染花费 0.04 秒, 行高 50 行情况下)
-3. 维护更积极 (作者是个带学生, 有大把的时间来维护这个插件, 笑)
+和 [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) 类似，这个插件可以用来高亮缩进线,并且还可以根据当前光标所处的位置，高亮所在代码块.
 
 ## 简要概述
 
-这个插件由五个部分组成，未来会添加更多的功能（笑）
+这个插件由四个部分组成
 
 1. chunk
-2. indent
-3. line_num
-4. blank
-5. context (处于实验阶段)
+1. indent
+1. line_num
+1. blank
 
 一张图搞懂这些功能分别是做什么的
 
@@ -37,7 +30,7 @@
 
 ## 详细展示
 
-<b><font color='red'>注意：可以点击图片获取配置信息～</font></b>
+**注意：可以点击图片获取配置信息～**
 
 ### chunk
 
@@ -68,149 +61,55 @@
 
 ## 需求
 
-neovim 版本 `>= 0.7.0`
+neovim 版本 `>= 0.9.0`
 
-## 安装
-
-### Packer
-
-```lua
-use { "shellRaining/hlchunk.nvim" }
-
-```
-
-### Plug
-
-```vimscript
-call plug#begin()
-Plug 'shellRaining/hlchunk.nvim'
-call plug#end()
-
-lua << EOF
-require("hlchunk").setup({})
-EOF
-```
-
-### Lazy
+## 安装（使用 lazy.nvim）
 
 ```lua
 {
   "shellRaining/hlchunk.nvim",
-  event = { "UIEnter" },
+  event = { "BufReadPre", "BufNewFile" },
   config = function()
     require("hlchunk").setup({})
   end
 },
 ```
 
-## 设置
+## 配置
 
-插件默认带有以下的配置
-
-<details>
-<summary>戳我获取更多信息</summary>
+由于这个插件是由多个小部分组成，他们会有一些共同的配置项，如下所示：
 
 ```lua
-{
-    chunk = {
-        enable = true,
-        notify = true, -- 在某些情况下弹出提示（比如连续两次使用 disableHLChunk 命令）
-        -- 有关 support_filetypes 和 exclude_filetypes 更多信息请见 https://github.com/shellRaining/hlchunk.nvim/blob/main/lua/hlchunk/utils/filetype.lua
-        support_filetypes = ft.support_filetypes,
-        exclude_filetypes = ft.exclude_filetypes,
-        use_treesitter = true,
-        chars = {
-            horizontal_line = "─",
-            vertical_line = "│",
-            left_top = "╭",
-            left_bottom = "╰",
-            right_arrow = ">",
-        },
-        style = {
-            { fg = "#806d9c" },
-            { fg = "#c21f30" }, -- 这个高亮是用来标志错误的代码块
-        },
-        textobject = "",
-        max_file_size = 1024 * 1024,
-        error_sign = true,
-    },
-
-    indent = {
-        enable = true,
-        use_treesitter = false,
-        chars = {
-            "│",
-        },
-        style = {
-            { fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui") }
-        },
-    },
-
-    line_num = {
-        enable = true,
-        use_treesitter = false,
-        style = "#806d9c",
-    },
-
-    blank = {
-        enable = true,
-        chars = {
-            "․",
-        },
-        style = {
-            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
-        },
-    },
+local default_conf = {
+    enable = false,
+    style = {},
+    notify = false,
+    priority = 0,
+    exclude_filetypes = {
+        aerial = true,
+        dashboard = true,
+        -- some other filetypes
+    }
 }
 ```
 
-</details>
+1. enable: 用来控制某个 mod 是否启用
+1. style：用来控制 mod 的样式，不同的 mod 会有不同的样式配置方式，具体可以看各自的文档
+1. notify：用来控制某个 mod 是否显示提示信息（通过 notify 函数）
+1. priority：用来控制某个 mod 的渲染优先级，优先级越高，显示的优先级越高，默认情况下 `chunk` > `indent` >  `blank` > `line_num`
+1. exclude_filetypes：用来控制某个 mod 在某些文件类型下不启用
 
-<hr>
+各个 mod 特定的配置方式可以查看各自的文档，链接如下：
 
-配置文件像下面这样：
-
-```lua
-require('hlchunk').setup({
-    indent = {
-        chars = { "│", "¦", "┆", "┊", }, -- 更多的字符可以在 https://unicodeplus.com/ 这个网站上找到
-
-
-        style = {
-            "#8B00FF",
-        },
-    },
-    blank = {
-        enable = false,
-    }
-})
-```
-
-<hr>
+- [chunk](./docs/zh_CN/chunk.md)
+- [indent](./docs/zh_CN/indent.md)
+- [line_num](./docs/zh_CN/line_num.md)
+- [blank](./docs/zh_CN/blank.md)
 
 ## command
 
-<details>
-<summary>戳我获取更多信息</summary>
+有时候（比如性能原因），你可能想要手动关闭某个 mod，可以遵循下面的规则：输入 `DisableHLxxxx`，其中把 `xxxx` 替换为你想要关闭的 mod 名称，比如关闭 `chunk`，你可以输入 `DisableHLchunk`。
 
-这个插件还提供了一些命令用来打开和关闭插件
+同理开启某个 mod，输入 `EnableHLxxxx`。
 
-- EnableHL
-- DisableHL
-
-下面这两个命令用来控制 `hl_chunk` 的状态
-
-- DisableHLChunk
-- EnableHLChunk
-
-下面这两个命令用来控制 `hl_indent` 的状态
-
-- DisableHLIndent
-- EnableHLIndent
-
-下面这两个命令用来控制 `hl_blank` 的状态
-
-- DisableHLBlank
-- EnableHLBlank
-
-</details>
+不过对于在 `enable` 为 `false` 的 mod，插件本身不会为其创建一个 user command（因为没有必要）

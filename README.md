@@ -4,7 +4,7 @@
 <h1 align='center'>hlchunk.nvim</h1>
 
 <p align='center'>
-<b>English</b> | <a href="https://github.com/shellRaining/hlchunk.nvim/blob/main/README.zh-CN.md">简体中文</a>
+<b>English</b> | <a href="./README.zh-CN.md">简体中文</a>
 </p>
 
 ## notice!!!
@@ -13,31 +13,24 @@ There have been many recent changes. If you encounter any bugs, please feel free
 
 ## What can this plugin do
 
-similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim), this plugin can highlight the indent line, and highlight the code chunk according to the current cursor position.
-
-## What is the advantage of this plugin
-
-1. more extensible
-2. faster rendering speed (0.04 seconds per thousand renderings, with the window have 50 lines)
-3. more active maintenance (the author is a student with a lot of time to maintain this plugin, haha)
+Similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim), this plugin can highlight the indent line, and highlight the code chunk according to the current cursor position.
 
 ## Brief introduction
 
-this plugin now have five parts (future will add more... `^v^`)
+This plugin now have four parts
 
 1. chunk
-2. indent
-3. line_num
-4. blank
-5. context (experimental)
+1. indent
+1. line_num
+1. blank
 
-one picture to understand what these mods do
+One picture to understand what these mods do
 
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2305/01_intro.png'>
 
 ## more details about each mod
 
-<b><font color='red'> NOTE: you can click the picture to get more information about how to configure like this </font></b>
+<b> NOTICE: you can click the picture to get more information about how to configure like this </b>
 
 ### chunk
 
@@ -70,32 +63,12 @@ one picture to understand what these mods do
 
 neovim version `>= 0.9.0`
 
-## Installation
-
-### Packer
-
-```lua
-use { "shellRaining/hlchunk.nvim" }
-```
-
-### Plug
-
-```vimscript
-call plug#begin()
-Plug 'shellRaining/hlchunk.nvim'
-call plug#end()
-
-lua << EOF
-require("hlchunk").setup({})
-EOF
-```
-
-### Lazy
+## Installation (with lazy.nvim)
 
 ```lua
 {
   "shellRaining/hlchunk.nvim",
-  event = { "UIEnter" },
+  event = { "BufReadPre", "BufNewFile" },
   config = function()
     require("hlchunk").setup({})
   end
@@ -104,118 +77,39 @@ EOF
 
 ## Setup
 
-The script comes with the following defaults:
-
-<details>
-<summary>Click this Dropdown to see defaults setttings.</summary>
+This plugin is composed of multiple mods, so they have some common configuration items as follows:
 
 ```lua
-{
-    chunk = {
-        enable = true,
-        notify = true,
-        use_treesitter = true,
-        -- details about support_filetypes and exclude_filetypes in https://github.com/shellRaining/hlchunk.nvim/blob/main/lua/hlchunk/utils/filetype.lua
-        support_filetypes = ft.support_filetypes,
-        exclude_filetypes = ft.exclude_filetypes,
-        chars = {
-            horizontal_line = "─",
-            vertical_line = "│",
-            left_top = "╭",
-            left_bottom = "╰",
-            right_arrow = ">",
-        },
-        style = {
-            { fg = "#806d9c" },
-            { fg = "#c21f30" }, -- this fg is used to highlight wrong chunk
-        },
-        textobject = "",
-        max_file_size = 1024 * 1024,
-        error_sign = true,
-    },
-
-    indent = {
-        enable = true,
-        use_treesitter = false,
-        chars = {
-            "│",
-        },
-        style = {
-            { fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui") }
-        },
-    },
-
-    line_num = {
-        enable = true,
-        use_treesitter = false,
-        style = "#806d9c",
-    },
-
-    blank = {
-        enable = true,
-        chars = {
-            "․",
-        },
-        style = {
-            vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
-        },
-    },
+local default_conf = {
+    enable = false,
+    style = {},
+    notify = false,
+    priority = 0,
+    exclude_filetypes = {
+        aerial = true,
+        dashboard = true,
+        -- some other filetypes
+    }
 }
 ```
 
-<hr>
+1. enable: control whether a certain mod is enabled
+1. style: used to control the style of the mod, different mods will have different style configuration methods, you can check their respective documentation for details
+1. notify: used to control whether a certain mod displays notification messages (through the notify function)
+1. priority: used to control the rendering priority of a certain mod, the higher the priority, the higher the priority of display, by default `chunk` > `indent` > `blank` > `line_num`
+1. exclude_filetypes: used to control that a certain mod is not enabled for certain file types
 
-</details>
+The specific configuration methods for each mod can be found in their respective documentation, the links are as follows:
 
-<hr>
-
-setup example:
-
-```lua
-require('hlchunk').setup({
-    indent = {
-        chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
-
-        style = {
-            "#8B00FF",
-        },
-    },
-    blank = {
-        enable = false,
-    }
-})
-```
+- [chunk](./docs/en/chunk.md)
+- [indent](./docs/en/indent.md)
+- [line_num](./docs/en/line_num.md)
+- [blank](./docs/en/blank.md)
 
 ## command
 
-<details>
-<summary>Click this Dropdown to see Available Commands</summary>
+Sometimes (e.g., for performance reasons), you may want to manually disable a certain mod, you can follow the rules below: enter `DisableHLxxxx`, replacing `xxxx` with the name of the mod you want to disable, for example, to disable `chunk`, you can enter `DisableHLchunk`.
 
-this plugin provides some commands to switch plugin status, which are listed below
+Similarly, to enable a mod, enter `EnableHLxxxx`.
 
-- EnableHL
-- DisableHL
-
-the two commands are used to switch the whole plugin status, when use `DisableHL`, include `hl_chunk` and `hl_indent` will be disable
-
-- DisableHLChunk
-- EnableHLChunk
-
-the two will control `hl_chunk`
-
-- DisableHLIndent
-- EnableHLIndent
-
-the two will control `hl_indent`
-
-- DisableHLLineNum
-- EnableHLLineNum
-
-the two will control `hl_line_num`
-
-- DisableHLBlank
-- EnableHLBlank
-
-the two will control `hl_blank`
-
-</details>
+However, for mods with `enable` set to `false`, the plugin itself will not create a user command (because there is no need).

@@ -1,43 +1,65 @@
-# 如何设置 hl_indent
+# indent
+
+## indent 用来做什么
+
+我们写代码有时候会遇到嵌套很多层等情况，而为了确定某些代码是否在同一层级，我们需要缩进线来帮助定位。
 
 ## 配置项
 
-indent mod 有五个配置项
-
-1. enable
-2. notify
-3. use_treesitter
-4. chars
-5. style
-6. exclude_filetype
-
-`enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
-
-`notify` 是用来控制是否在某些情况下通知用户，比如禁用 indent mod 两次
-
-`use_treesitter` 是一个布尔类型，如果设置为 false，将不会采用基于 treesitter 的渲染
-
-`chars` 是一个 lua 表，其中的字符用来指示如何渲染 indent line，这个表中包含五个部分
+该 mod 的默认配置如下：
 
 ```lua
-chars = {
-    "│",
-    "¦",
-    "┆",
-    "┊",
-},
-```
-
-`style` 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 indent line
-
-`exclude_filetype` 是 support_filetype 的反面，用来控制在哪些文件类型不渲染 indent line，默认的 exclude_filetypes 可以在 [default config](../../lua/hlchunk/utils/filetype.lua) 中找到
-
-```lua
-exclude_filetype = {
-    aerial = true,
-    NvimTree = true,
+local default_conf = {
+    priority = 10,
+    style = { vim.api.nvim_get_hl(0, { name = "Whitespace" }) },
+    use_treesitter = false,
+    chars = { "│" },
+    ahead_lines = 5,
 }
 ```
+
+独有的配置为 `use_treesitter`，`chars`，`ahead_lines`
+
+- `use_treesitter` 是用来控制是否使用 treesitter 来判断 indent 的层数，默认为 false（因为性能问题）。如果你对缩进的精确要求很高，你可以尝试设置为 true，详情见这个 [issue](https://github.com/shellRaining/hlchunk.nvim/issues/77#issuecomment-1817530409)
+
+- `chars` 是一个表，其中的字符用来指示用什么字符来渲染 indent line，你可以尝试设置为下面这样：
+
+  ```lua
+  chars = {
+      "│",
+      "¦",
+      "┆",
+      "┊",
+  },
+  ```
+
+实际渲染的时候，第一个层级会采用第一个字符，第二个层级会采用第二个字符，以此类推，如果层级超过了你设置的字符数，那么会循环使用这些字符。
+
+- `ahead_lines` 是一个数字，用来控制缩进线超前查看和渲染范围，默认为 5
+
+和 chunk 一样，我们需要额外注意 style 这个通用配置：
+
+- 这里的 `style` 是一个 RGB 字符串或者一个表。如果是字符串，那么所有的缩进线将会采用这一种颜色来渲染，如果是表，可以有这两种写法：
+
+  ```lua
+  style = {
+    "#FF0000",
+    "#FF7F00",
+    "..."
+  },
+  ```
+
+  或者
+
+  ```lua
+  style = {
+    { bg = "#FF0000", fg = "#FFFFFF" },
+    { bg = "#FF7F00", fg = "FF7F00" },
+    -- ...
+  },
+  ```
+
+  如果你设置了背景颜色，那么缩进线将会采用背景颜色来渲染。
 
 ## example
 
