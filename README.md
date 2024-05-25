@@ -106,6 +106,32 @@ The specific configuration methods for each mod can be found in their respective
 - [line_num](./docs/en/line_num.md)
 - [blank](./docs/en/blank.md)
 
+You can config the whole plugin by using setup function:
+
+```lua
+require('hlchunk').setup({
+    chunk = {
+        enable = true
+        -- ...
+    },
+    indent = {
+        enable = true
+        -- ...
+    }
+})
+```
+
+Require the specific mod alone also work
+
+```lua
+local indent = require('hlchunk.mods.indent')
+indent({
+    style = {
+        -- ...
+    }
+}):enable() -- don't forget call enable method
+```
+
 ## command
 
 Sometimes (e.g., for performance reasons), you may want to manually disable a certain mod, you can follow the rules below: enter `DisableHLxxxx`, replacing `xxxx` with the name of the mod you want to disable, for example, to disable `chunk`, you can enter `DisableHLchunk`.

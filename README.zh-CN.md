@@ -106,6 +106,32 @@ local default_conf = {
 - [line_num](./docs/zh_CN/line_num.md)
 - [blank](./docs/zh_CN/blank.md)
 
+你可以通过一个总的 setup 函数来进行配置：
+
+```lua
+require('hlchunk').setup({
+    chunk = {
+        enable = true
+        -- ...
+    },
+    indent = {
+        enable = true
+        -- ...
+    }
+})
+```
+
+也可以通过引入单独的 mod 来启动：
+
+```lua
+local indent = require('hlchunk.mods.indent')
+indent({
+    style = {
+        -- ...
+    }
+}):enable() -- 不要忘记加上 enable 来明确的表示启动
+```
+
 ## command
 
 有时候（比如性能原因），你可能想要手动关闭某个 mod，可以遵循下面的规则：输入 `DisableHLxxxx`，其中把 `xxxx` 替换为你想要关闭的 mod 名称，比如关闭 `chunk`，你可以输入 `DisableHLchunk`。
