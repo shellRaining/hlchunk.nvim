@@ -11,6 +11,7 @@ The default configuration of this mod is:
 ```lua
 local default_conf = {
     style = "#806d9c",
+    priority = 10,
     use_treesitter = false,
 }
 ```

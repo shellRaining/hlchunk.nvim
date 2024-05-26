@@ -48,6 +48,7 @@ function LineNumMod:render()
     local end_row = cur_chunk_range.finish
     local row_opts = {
         number_hl_group = self.meta.hl_name_list[1],
+        priority = self.conf.priority,
     }
     for i = beg_row, end_row do
         api.nvim_buf_set_extmark(0, self.meta.ns_id, i, 0, row_opts)

@@ -10,6 +10,7 @@ local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 local LineNumConf = class(BaseConf, function(self, conf)
     local default_conf = {
         style = "#806d9c",
+        priority = 10,
         use_treesitter = false,
     }
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as LineNumConf]]
