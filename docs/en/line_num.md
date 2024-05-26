@@ -1,33 +1,27 @@
-# how to configure hl_line_num
+# line_num
 
-## Configurable items
+## line_num is used for what
 
-line_num have three configurable items
+Actually, it has the same function as chunk, but some people may not like chunk and prefer the form of highlighting line numbers. That's why this mod exists.
 
-1. enable
-2. notify
-3. style
-4. support_filetypes
+## config
 
-`enable` is used to control whether enable hl_line_num, if set it to false, its usercmd and autocmd will not set, so it will not work
-
-`notify` same as chunk mod
-
-`style` is a RGB string, it will set the color of font color of line number
-
-`support_filetypes` is a table, you can set like this
+The default configuration of this mod is:
 
 ```lua
-support_filetypes = {
-    "*.lua",
-    "*.js",
+local default_conf = {
+    style = "#806d9c",
+    use_treesitter = false,
 }
-
 ```
+
+The unique configuration item is use_treesitter, which works the same as the same item in chunk. See details in [chunk](./chunk.md).
+
+Just like chunk, we need to pay extra attention to the common configuration "style": it only accepts a string representing a hexadecimal color to indicate the color of line numbers.
 
 ## example
 
-below is the default style of indent line
+Here is the default line_num style:
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/25_hlchunk3.png">
 
@@ -37,4 +31,4 @@ line_num = {
 },
 ```
 
-future will add more intresting style... if you have good idea, show it at issue please 😊
+More interesting styles will be added in the future... If you have good ideas, welcome to suggest! 😊

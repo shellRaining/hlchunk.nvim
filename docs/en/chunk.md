@@ -2,72 +2,64 @@
 
 ## what can chunk do
 
-it is used to highlight the code block where the cursor is located.
+This mod can be used to indicate the current cursor's chunk (such as function_declaration, if_statement, etc.). It also provides textobject to quickly operate on this chunk.
 
 ## Configurable items
 
-chunk have four configurable items
-
-1. enable
-2. notify
-3. use_treesitter
-4. exclude_filetypes
-5. support_filetypes
-6. chars
-7. style
-8. max_file_size
-9. error_sign
-
-`enable` is used to control whether the mod is started, the default is true.
-
-If set to false, the usercmd and autocmd it carries will not be generated, and the mod will be closed at this time
-
-`notify` is used to control whether to pop up a prompt in some cases (such as using the disableHLChunk command twice in a row), the default is true
-
-`use_treesitter` is used to control whether to use treesitter to highlight the code block, the default is true
-
-If set to false, vim's match will be used to highlight the code block, otherwise treesitter will be used to determine the current code block
-
-`exclude_filetypes` is a lua table type, example as follows, the default exclude_filetypes can be found in the [default config](../../lua/hlchunk/utils/filetype.lua)
+The default configuration of this mod is as follows:
 
 ```lua
-exclude_filetypes = {
-    aerial = true,
-    dashboard = true,
+local default_conf = {
+    priority = 15,
+    style = {
+        { fg = "#806d9c" },
+        { fg = "#c21f30" },
+    },
+    use_treesitter = true,
+    chars = {
+        horizontal_line = "─",
+        vertical_line = "│",
+        left_top = "╭",
+        left_bottom = "╰",
+        right_arrow = ">",
+    },
+    textobject = "",
+    max_file_size = 1024 * 1024,
+    error_sign = true,
 }
 ```
 
-`support_filetypes` is a lua table type, example as follows
+The unique configuration options are `use_treesitter`, `chars`, `textobject`, `max_file_size`, and `error_sign`.
 
-```lua
-support_filetypes = {
-    "*.lua",
-    "*.js",
-}
-```
+- `use_treesitter` is used to control whether to use treesitter to highlight code blocks. The default is true.
+  If this field is set to true, it finds the matching node type by searching the tree nodes from bottom to top to obtain the corresponding chunk range. If set to false, it will use Vim's `searchpair` to find the nearest braces to infer the position (which is why it cannot be used normally in scripting languages like Python).
 
-`chars` is also a lua table, the characters in it are used to indicate how to render the chunk line, which contains five parts
+- `chars` is a table, where the characters in it are used to render the chunk. This table contains five parts:
 
-- horizontal_line
-- vertical_line
-- left_top
-- left_bottom
-- right_arrow
+  - horizontal_line
+  - vertical_line
+  - left_top
+  - left_bottom
+  - right_arrow
 
-`style` can be many types, as follow
+- `textobject` is a string, which is empty by default. It is used to specify which string to use to represent the textobject. For example, I use `ic`, which stands for `inner chunk`, and you can modify it to other convenient characters.
 
-1. string, like `style = "#806d9c"`
-2. table, like `style = {"#806d9c", "#c21f30"}`
-3. table, like
+- `max_file_size` is a number, with a default of `1MB`. When the size of the opened file exceeds this value, the mod will be automatically turned off.
 
-```lua
-style = {
-   { fg = "#806d9c", bg = "#c21f30" },
-   { fg = "#806d9c", bg = "#c21f30" },
-}
-```
+- `error_sign` is a boolean value, which is true by default. If you use treesitter to highlight code blocks, when there is an error in the code block, it will set the color of the chunk to maple red (or another color of your choice). To enable this option, the style should have two colors, and the default style is:
 
-4. table with function like
+  ```lua
+  style = {
+      "#806d9c", -- Violet
+      "#c21f30", -- maple red
+  },
+  ```
+
+For the general configurations (mentioned in the [README](../../README.md)), only a few need special attention:
+
+- `style` is a string or a Lua table. If it is a string, it must be a hexadecimal RGB string. If it is a table, it accepts one or two strings representing hexadecimal colors. If table only contain one item, only one color will be used to render the chunk. If there are two, the first color will be used to render the normal chunk, and the second color will be used to render the erroneous chunk.
+
+In addition, you can use the following configuration to dynamically switch the color of the chunk, which is to solve this [issue](https://github.com/shellRaining/hlchunk.nvim/issues/46):
 
 ```lua
 local cb = function()
@@ -77,30 +69,17 @@ local cb = function()
         return "#00ffff"
     end
 end
-style = {
-    { fg = cb },
-    { fg = "#f35336" },
-},
-```
-
-`max_file_size` is a number, the default is 1024\*1024(1MB), which is used to control the maximum file size that can be highlighted
-
-`error_sign` is a boolean, the default is true, if you use treesitter to highlight the chunk, when this is a wrong chunk, it will set the chunk color to maple red (or what other you want), to enable this option, style should have two color, the default style is
-
-```lua
-style = {
-    "#806d9c",
-    "#c21f30",
+chunk = {
+    style = {
+        { fg = cb },
+        { fg = "#f35336" },
+    },
 },
 ```
 
 ## example
 
-below is the default style of chunk line
-
-<img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk1.png">
-
-its configuration is
+The following is the default chunk style, Its configuration is:
 
 ```lua
 chunk = {
@@ -115,7 +94,7 @@ chunk = {
 },
 ```
 
-<a id="chunk_example1">you can also set like this gif</a>
+<a id='chunk_gif'>You can use the following configuration to make your style look like the one demonstrated in the GIF below</a>
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlchunk8.gif">
 

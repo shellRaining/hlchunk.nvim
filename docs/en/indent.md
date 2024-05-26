@@ -1,47 +1,69 @@
-# how to configure indent mod
+# indent
 
-## Configurable items
+## what indent is used for
 
-chunk have five configurable items
+When writing code, we may encounter nested levels and other situations. Indent lines help to determine whether certain codes are at the same level.
 
-1. enable
-2. notify
-3. use_treesitter
-4. chars
-5. style
-6. exclude_filetype
+## config
 
-`enable` is used to control whether enable hl_indent, if set it to false, its usercmd and autocmd will not set, so it will not work
-
-`notify` is used to control whether notify when some situation(like disable indent mod double time)
-
-`use_treesitter` is a boolean value, if set it to true, this mod will judge indent by using treesitter
-
-`chars` is used to configure what char to render the indent line, it is a table contains many char, like this
+The default configuration of this mod is as follows:
 
 ```lua
-chars = {
-    "│",
-    "¦",
-    "┆",
-    "┊",
-},
-```
-
-`style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different indent line
-
-`exclude_filetype` is opposite of support_filetypes, it is a lua table like this, the default exclude_filetypes can be found in the [default config](../../lua/hlchunk/utils/filetype.lua)
-
-```lua
-exclude_filetype = {
-    aerial = true,
-    NvimTree = true,
+local default_conf = {
+    priority = 10,
+    style = { vim.api.nvim_get_hl(0, { name = "Whitespace" }) },
+    use_treesitter = false,
+    chars = { "│" },
+    ahead_lines = 5,
 }
 ```
 
+The unique configurations are `use_treesitter`, `chars`, `ahead_lines`
+
+- `use_treesitter` is used to control whether to use treesitter to determine the indent level, which is disabled by default for performance reasons. If you have high requirements for indentation accuracy, you can try setting it to true, see this [issue](https://github.com/shellRaining/hlchunk.nvim/issues/77#issuecomment-1817530409)
+
+- `chars` is a table, whose characters are used to render the indent lines, you can try setting it as:
+
+  ```lua
+  chars = {
+      "│",
+      "¦",
+      "┆",
+      "┊",
+  },
+  ```
+
+When rendering, the first level will use the first character, the second level will use the second character, and so on. If the level exceeds the number of characters you set, these characters will be used cyclically.
+
+- `ahead_lines` is a number used to control the preview and rendering range of indent lines ahead, which defaults to 5
+
+Like chunk, we also need to pay extra attention to the common configuration style:
+
+- Here, style is a RGB string or a table. If it is a string, all indent lines will be rendered in this color. If it is a table, it can be written in two ways:
+
+```lua
+style = {
+  "#FF0000",
+  "#FF7F00",
+  "..."
+},
+```
+
+or
+
+```lua
+style = {
+  { bg = "#FF0000", fg = "#FFFFFF" }, 
+  { bg = "#FF7F00", fg = "FF7F00" },
+  -- ...
+},
+```
+
+If you set the bg field, the indent lines will render background color for chars
+
 ## example
 
-below is the default style of indent line
+Here is an example of the default indent style:
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk1.png">
 
@@ -56,7 +78,7 @@ indent = {
 }
 ```
 
-you can also set it like rainbow 🌈
+You can also set the indent lines to be like a rainbow 🌈
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2302/23_hlchunk2.png">
 
@@ -77,7 +99,7 @@ indent = {
 }
 ```
 
-it also can configure use multiple chars
+You can also set multiple character types
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/01_hlchunk5.png">
 
@@ -95,11 +117,11 @@ indent = {
 }
 ```
 
-if you like bold line, you can set background color
+If you prefer a bolder display effect, you can set the rendering background color
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/13_hlindent_bg.png">
 
-````lua
+```lua
 indent = {
     enable = true,
     use_treesitter = false,

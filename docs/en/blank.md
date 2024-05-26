@@ -1,20 +1,21 @@
-# how to configure blank mod
+# blank
 
-## Configurable items
+## what blank be used for
 
-blank have four configurable items
+Our code indentation generally consists of spaces or tabs. Therefore, we can customize the blank spaces, such as adding special characters to indicate a space, or adding background colors to achieve rainbow effects. Essentially, this mod inherits from indent and only rewrites the render method.
 
-1. enable
-2. notify
-3. chars
-4. style
-5. exclude_filetype
+## config
 
-`enable` is used to control whether enable hl_blank, if set it to false, its usercmd and autocmd will not set, so it will not work
+Since it inherits from indent, their configurations are almost similar and universal. The default configuration of the blank mod is as follows:
 
-`notify` same as chunk mod
+```lua
+local default_conf = {
+    priority = 9,
+    chars = { "․" },
+}
+```
 
-`chars` is used to configure what char to render the blank, it is a table contains many char, like this
+`chars` is a Lua table whose characters are used to indicate how to render blank characters. You can set it like this to use the characters cyclically (although this setting does not look very good):
 
 ```lua
 chars = {
@@ -27,20 +28,11 @@ chars = {
 },
 ```
 
-`style` is a RGB string or RGB string list, if it is a table, it will choice different color to render different blank (indent)
-
-`exclude_filetype` is opposite of support_filetypes, it is a lua table like this, same as chunk mod
-
-```lua
-exclude_filetype = {
-    aerial = true,
-    NvimTree = true,
-}
-```
+`style` inherits from indent, so the color is actually the same as indent and the configuration method is the same. See indent for [details](./indent.md).
 
 ## example
 
-below is the default style of blank
+Here is the default blank style:
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/12_hlblank_default.png">
 
@@ -55,7 +47,24 @@ blank = {
 },
 ```
 
-you can also set it like rainbow
+You can also set the spaces to be like a rainbow 🌈
+
+![screenshot](https://github.com/shellRaining/hlchunk.nvim/assets/55068959/8c9cb644-cf1e-4fc9-adb8-33e12a4c7401)
+
+```lua
+blank = {
+    enable = true,
+    chars = {
+        " ",
+    },
+    style = {
+        { bg = "#434437" },
+        { bg = "#2f4440" },
+        { bg = "#433054" },
+        { bg = "#284251" },
+    },
+},
+```
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/07_hlchunk7.png">
 
@@ -72,7 +81,7 @@ indent = {
 }
 ```
 
-it also can configure use multiple chars
+You can also set multiple character types.
 
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 
@@ -93,7 +102,7 @@ indent = {
 }
 ```
 
-at last, it can set background color
+Finally, it can also set background colors.
 
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
 

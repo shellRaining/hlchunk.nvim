@@ -1,29 +1,23 @@
-# 如何设置 line_num mod
+# line_num
+
+## line_num 用来做什么
+
+其实他和 chunk 的功能相同，只是可能有些人不喜欢 chunk，偏好高亮行号的形式，因此有了这个 mod
 
 ## 配置项
 
-line_num 有三个配置项
-
-1. enable
-2. notify
-2. style
-3. support_filetypes
-
-`enable` 是用来控制该 mod 是否启动的，如果设置为 false，其所携带的 usercmd 和 autocmd 均不会产生，此时该 mod 关闭
-
-`notify` 是用来控制是否在某些情况下通知用户，比如禁用 line_num mod 两次
-
-`style` 是一个 RGB 字符串或者一个表，如果是表，他将会使用不同颜色来渲染 chunk line
-
-`support_filetypes` 是一个 lua table 类型，例子如下
+该 mod 的默认配置如下：
 
 ```lua
-support_filetypes = {
-    "*.lua",
-    "*.js",
+local default_conf = {
+    style = "#806d9c",
+    use_treesitter = false,
 }
-
 ```
+
+独有的配置项为 `use_treesitter`，用法和 chunk 的该项一样，详情见 [chunk](./chunk.md)
+
+和 chunk 一样，我们需要额外注意 style 这个通用配置：他只接收一个字符串，表示十六进制颜色，来表示行号的颜色
 
 ## example
 
