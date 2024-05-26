@@ -24,7 +24,7 @@ local ChunkConf = class(BaseConf, function(self, conf)
         },
         use_treesitter = true,
         chars = {
-			left_arrow = "─",
+            left_arrow = "─",
             horizontal_line = "─",
             vertical_line = "│",
             left_top = "╭",

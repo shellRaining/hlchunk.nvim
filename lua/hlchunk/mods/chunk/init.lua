@@ -62,8 +62,8 @@ function ChunkMod:render(range, opts)
     if beg_blank_len > 0 then
         local virt_text_len = beg_blank_len - start_col
         local beg_virt_text = self.conf.chars.left_top
-			.. self.conf.chars.horizontal_line:rep(virt_text_len - 1)
-			.. self.conf.chars.left_arrow
+            .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
+            .. self.conf.chars.left_arrow
         local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, leftcol)
         row_opts.virt_text = { { virt_text, text_hl } }
         row_opts.virt_text_win_col = virt_text_win_col
