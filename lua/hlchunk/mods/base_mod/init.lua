@@ -55,7 +55,6 @@ function BaseMod:disable()
     local ok, info = pcall(function()
         self.conf.enable = false
         for _, bufnr in pairs(api.nvim_list_bufs()) do
-            -- TODO: need change BaseMod:clear function
             api.nvim_buf_clear_namespace(bufnr, self.meta.ns_id, 0, -1)
         end
         self:clearAutocmd()
@@ -92,12 +91,15 @@ function BaseMod:clear(range)
 end
 
 function BaseMod:createUsercmd()
-    -- TODO: update the name case
     api.nvim_create_user_command("EnableHL" .. self.meta.name, function()
-        self:enable()
+        if not self.conf.enable then
+            self:enable()
+        end
     end, {})
     api.nvim_create_user_command("DisableHL" .. self.meta.name, function()
-        self:disable()
+        if self.conf.enable then
+            self:disable()
+        end
     end, {})
 end
 
@@ -123,7 +125,7 @@ function BaseMod:setHl()
 
     -- such as style = "#abcabc"
     if type(hl_conf) == "string" then
-        api.nvim_set_hl(0, self.meta.hl_base_name .. "1", { fg = hl_conf })
+        api.nvim_set_hl(0, self.meta.hl_base_name .. "1", { guifg = hl_conf })
         self.meta.hl_name_list = { self.meta.hl_base_name .. "1" }
         return
     end
