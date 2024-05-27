@@ -44,13 +44,13 @@ end
 ---@field private progress number number that represents the current progress of the timer
 ---@field public start fun(self: LoopTask):nil function that starts the timer
 ---@field public stop fun(self: LoopTask):nil function that stops the timer
----@overload fun(fn: function, strategy: string, ...: any):LoopTask
-local LoopTask = class(function(self, fn, strategy, ...)
+---@overload fun(fn: function, strategy: string, duration: number, ...: any):LoopTask
+local LoopTask = class(function(self, fn, strategy, duration, ...)
     self.data = transpose({ ... })
     self.timer = nil
     self.fn = fn
     self.strategy = strategy
-    self.time_intervals = createStrategy(strategy, 200, #self.data)
+    self.time_intervals = createStrategy(strategy, duration, #self.data)
     self.progress = 1
 end)
 function LoopTask:start()

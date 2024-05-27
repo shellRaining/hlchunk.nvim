@@ -120,7 +120,7 @@ function ChunkMod:render(range, opts)
         row_opts.virt_text = { { vt, text_hl } }
         row_opts.virt_text_win_col = vt_win_col
         api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
-    end, "linear", virt_text_list, row_list, virt_text_win_col_list)
+    end, "linear",self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
     self.meta.task:start()
 end
 
@@ -151,7 +151,7 @@ function ChunkMod:createAutocmd()
             self:notify("[hlchunk.chunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
         end
     end
-    local debounce_render = debounce(render_cb, 500)
+    local debounce_render = debounce(render_cb, self.conf.delay)
 
     api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.meta.augroup_name,
