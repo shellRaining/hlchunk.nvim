@@ -38,7 +38,7 @@ function indentHelper.get_active_wins(info)
     return changedWins
 end
 
----@param ft string filetype
+---@param ft string | nil filetype
 ---@return boolean
 function indentHelper.is_blank_filetype(ft)
     if ft == nil then

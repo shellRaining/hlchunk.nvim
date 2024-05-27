@@ -36,7 +36,7 @@ local function createStrategy(name, total_time, step_num)
 end
 
 ---@class LoopTask
----@field private timer uv_timer_t uv_timer_t object from the LuaJIT runtime
+---@field private timer uv_timer_t | nil uv_timer_t object from the LuaJIT runtime
 ---@field private fn function function that will be executed when the timer fires
 ---@field private data table table that contains any data that needs to be passed to the function
 ---@field private strategy string string that determines how the function is executed when the timer fires
@@ -68,9 +68,17 @@ function LoopTask:start()
             return
         else
             self.timer = setTimeout(f, self.time_intervals[self.progress])
+            if not self.timer then
+                self:stop()
+                return
+            end
         end
     end
     self.timer = setTimeout(f, self.time_intervals[self.progress])
+    if not self.timer then
+        self:stop()
+        return
+    end
 end
 function LoopTask:stop()
     if self.timer then

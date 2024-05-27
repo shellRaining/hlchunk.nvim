@@ -4,6 +4,7 @@ local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
+local debounce = require("hlchunk.utils.debounce").debounce
 
 local api = vim.api
 local fn = vim.fn
@@ -29,14 +30,12 @@ end
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
 
-function IndentMod:renderLine(bufnr, index, blankLen)
+function IndentMod:renderLine(bufnr, index, blankLen, leftcol, sw)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
         priority = self.conf.priority,
     }
-    local leftcol = fn.winsaveview().leftcol --[[@as number]]
-    local sw = fn.shiftwidth() --[[@as number]]
     local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
 
     for i = 1, render_char_num do
@@ -75,19 +74,23 @@ function IndentMod:render(range)
         return
     end
 
+    local leftcol = fn.winsaveview().leftcol
+    local sw = fn.shiftwidth()
     for index, _ in pairs(rows_indent) do
-        self:renderLine(range.bufnr, index, rows_indent[index])
+        self:renderLine(range.bufnr, index, rows_indent[index], leftcol, sw)
     end
 end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
+    local debounce_render = debounce(function(range)
+        self:render(range)
+    end, 100)
     local render_cb = function(info)
         local ft = vim.filetype.match({ buf = info.buf })
         if indentHelper.is_blank_filetype(ft) then
             return
         end
-
         local changedWins = indentHelper.get_active_wins(info)
 
         -- get them showed topline and botline, then make a scope to render
@@ -97,7 +100,7 @@ function IndentMod:createAutocmd()
             range.start = math.max(0, range.start - ahead_lines)
             range.finish = math.min(api.nvim_buf_line_count(range.bufnr) - 1, range.finish + ahead_lines)
             api.nvim_win_call(winnr, function()
-                self:render(range)
+                debounce_render(range)
             end)
         end
     end
