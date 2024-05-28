@@ -8,7 +8,7 @@ end
 
 ---@class Pos
 ---@field bufnr number
----@field row number 1-index API-indexing
+---@field row number 0-index API-indexing
 ---@field col number 0-index API-indexing
 ---@overload fun(bufnr: number, start: number, finish: number): Scope
 local Pos = class(constructor)

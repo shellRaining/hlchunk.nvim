@@ -50,17 +50,17 @@ M.CHUNK_RANGE_RET = {
     NO_TS = 3,
 }
 
-local function get_chunk_range_by_context(line)
+---@param pos Pos 0-index (row, col)
+local function get_chunk_range_by_context(pos)
     local base_flag = "nWz"
-    local cur_row_val = fn.getline(line)
-    local cur_col = fn.col(".") --[[@as number]]
-    local cur_char = string.sub(cur_row_val, cur_col, cur_col)
+    local cur_row_val = vim.api.nvim_buf_get_lines(pos.bufnr, pos.row, pos.row + 1, false)[1]
+    local cur_char = string.sub(cur_row_val, pos.col, pos.col)
 
     local beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or "")) --[[@as number]]
     local end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or "")) --[[@as number]]
 
     if beg_row <= 0 or end_row <= 0 or beg_row >= end_row then
-        return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
+        return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
     end
 
     -- TODO: fix this is_comment
@@ -68,7 +68,7 @@ local function get_chunk_range_by_context(line)
     --     return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
     -- end
 
-    return M.CHUNK_RANGE_RET.OK, Scope(0, beg_row - 1, end_row - 1)
+    return M.CHUNK_RANGE_RET.OK, Scope(pos.bufnr, beg_row - 1, end_row - 1)
 end
 
 ---@param bufnr number check the bufnr has treesitter parser
@@ -85,22 +85,27 @@ local function has_treesitter(bufnr)
     return true
 end
 
-local function get_chunk_range_by_treesitter()
-    if not has_treesitter(0) then
-        return M.CHUNK_RANGE_RET.NO_TS, Scope(0, -1, -1)
+---@param pos Pos 0-index for row, 0-index for col, API-indexing
+local function get_chunk_range_by_treesitter(pos)
+    if not has_treesitter(pos.bufnr) then
+        return M.CHUNK_RANGE_RET.NO_TS, Scope(pos.bufnr, -1, -1)
     end
 
-    local cursor_node = treesitter.get_node({ ignore_injections = false })
+    local cursor_node = treesitter.get_node({
+        ignore_injections = false,
+        bufnr = pos.bufnr,
+        pos = { pos.row, pos.col },
+    })
     while cursor_node do
         local node_type = cursor_node:type()
         local node_start, _, node_end, _ = cursor_node:range()
         if node_start ~= node_end and is_suit_type(node_type) then
             return cursor_node:has_error() and M.CHUNK_RANGE_RET.CHUNK_ERR or M.CHUNK_RANGE_RET.OK,
-                Scope(0, node_start, node_end)
+                Scope(pos.bufnr, node_start, node_end)
         end
         cursor_node = cursor_node:parent()
     end
-    return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
+    return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
 end
 
 ---@param opts? {pos: Pos, use_treesitter: boolean}
@@ -108,12 +113,11 @@ end
 ---@return Scope
 function M.get_chunk_range(opts)
     opts = opts or { use_treesitter = false }
-    local row = opts.pos.row
 
     if opts.use_treesitter then
-        return get_chunk_range_by_treesitter()
+        return get_chunk_range_by_treesitter(opts.pos)
     else
-        return get_chunk_range_by_context(row)
+        return get_chunk_range_by_context(opts.pos)
     end
 end
 
