@@ -57,7 +57,7 @@ function LineNumMod:createAutocmd()
                 pos = { bufnr = bufnr, row = pos[1] - 1, col = pos[2] },
                 use_treesitter = self.conf.use_treesitter,
             })
-            self:clear({ bufnr = bufnr, start = 0, finish = -2 })
+            self:clear({ bufnr = bufnr, start = 0, finish = api.nvim_buf_line_count(bufnr) })
             if retcode ~= CHUNK_RANGE_RET.OK then
                 return
             end

@@ -1,16 +1,16 @@
-local class = require("hlchunk.utils.class")
-
-local constructor = function(self, bufnr, start, finish)
-    self.bufnr = bufnr
-    self.start = start
-    self.finish = finish
-end
-
 ---@class Scope
 ---@field bufnr number
 ---@field start number
 ---@field finish number
 ---@overload fun(bufnr: number, start: number, finish: number): Scope
-local Scope = class(constructor)
+---0-indexing, include start and finish
+-- local Scope = class(constructor)
+function Scope(bufnr, start, finish)
+    return {
+        bufnr = bufnr,
+        start = start,
+        finish = finish,
+    }
+end
 
 return Scope

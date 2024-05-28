@@ -3,6 +3,8 @@ local ChunkConf = require("hlchunk.mods.chunk.chunk_conf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
 local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.debounce").debounce
+local Pos = require("hlchunk.utils.position")
+local Scope = require("hlchunk.utils.scope")
 
 local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")
@@ -10,6 +12,8 @@ local utils = require("hlchunk.utils.utils")
 local api = vim.api
 local fn = vim.fn
 local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
+local rangeFromTo = chunkHelper.rangeFromTo
+local utf8Split = chunkHelper.utf8Split
 
 ---@class ChunkMetaInfo : MetaInfo
 
@@ -40,26 +44,11 @@ function ChunkMod:enable()
     self:extra()
 end
 
-local function utf8_split(inputstr)
-    local list = {}
-    for uchar in string.gmatch(inputstr, "[^\128-\191][\128-\191]*") do
-        table.insert(list, uchar)
+function ChunkMod:stopRender()
+    if self.meta.task then
+        self.meta.task:stop()
+        self.meta.task = nil
     end
-    return list
-end
----@param i number
----@param j number
----@return table
-local function rangeFromTo(i, j)
-    local t = {}
-    local step = 1
-    if i > j then
-        step = -1
-    end
-    for x = i, j, step do
-        table.insert(t, x)
-    end
-    return t
 end
 
 function ChunkMod:render(range, opts)
@@ -67,10 +56,7 @@ function ChunkMod:render(range, opts)
         return
     end
     opts = opts or { error = false }
-    if self.meta.task then
-        self.meta.task:stop()
-        self.meta.task = nil
-    end
+    self:stopRender()
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
     local beg_row = range.start + 1
     local end_row = range.finish + 1
@@ -93,13 +79,13 @@ function ChunkMod:render(range, opts)
         local virt_text_len = beg_blank_len - start_col
         local beg_virt_text = self.conf.chars.left_top .. self.conf.chars.horizontal_line:rep(virt_text_len - 1)
         local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, leftcol)
-        local char_list = fn.reverse(utf8_split(virt_text))
+        local char_list = fn.reverse(utf8Split(virt_text))
         vim.list_extend(virt_text_list, char_list)
         vim.list_extend(row_list, vim.fn["repeat"]({ beg_row - 1 }, virt_text_len))
-        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + virt_text_len - 1, virt_text_win_col))
+        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + virt_text_len - 1, virt_text_win_col, -1))
     end
     local mid = self.conf.chars.vertical_line:rep(end_row - beg_row - 1)
-    vim.list_extend(virt_text_list, utf8_split(mid))
+    vim.list_extend(virt_text_list, utf8Split(mid))
     vim.list_extend(row_list, rangeFromTo(beg_row, end_row - 2)) -- beg_row and end_row are 1-based, so -2
     vim.list_extend(virt_text_win_col_list, vim.fn["repeat"]({ start_col - leftcol }, end_row - beg_row - 1))
     if end_blank_len > 0 then
@@ -108,11 +94,14 @@ function ChunkMod:render(range, opts)
             .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
             .. self.conf.chars.right_arrow
         local virt_text, virt_text_win_col = chunkHelper.calc(end_virt_text, start_col, leftcol)
-        local char_list = utf8_split(virt_text)
+        local char_list = utf8Split(virt_text)
         vim.list_extend(virt_text_list, char_list)
         vim.list_extend(row_list, vim.fn["repeat"]({ end_row - 1 }, virt_text_len))
         vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col, virt_text_win_col + virt_text_len - 1))
     end
+    -- vim.notify(vim.inspect(virt_text_list))
+    -- vim.notify(vim.inspect(row_list))
+    -- vim.notify(vim.inspect(virt_text_win_col_list))
 
     self.meta.task = LoopTask(function(vt, row, vt_win_col)
         row_opts.virt_text = { { vt, text_hl } }
@@ -135,18 +124,13 @@ function ChunkMod:createAutocmd()
         local pos = api.nvim_win_get_cursor(winnr)
 
         local ret_code, range = utils.get_chunk_range({
-            pos = { bufnr = bufnr, row = pos[1] - 1, col = pos[2] },
+            pos = Pos(bufnr, pos[1] - 1, pos[2]),
             use_treesitter = self.conf.use_treesitter,
         })
 
-        self:clear({ bufnr = bufnr, start = 0, finish = -2 })
+        self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
         if ret_code == CHUNK_RANGE_RET.OK then
             self:render(range, { error = false })
-        elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then
-            if self.meta.task then
-                self.meta.task:stop()
-                self.meta.task = nil
-            end
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = true })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then

@@ -23,9 +23,9 @@ local function get_virt_indent(rows_indent, line)
 end
 
 local function is_suit_type(node_type)
-    local suit_types = ft[vim.bo.ft]
-    if suit_types then
-        return suit_types[node_type] and true or false
+    local is_spec_ft = ft[vim.bo.ft]
+    if is_spec_ft then
+        return is_spec_ft[node_type] and true or false
     end
 
     for _, rgx in ipairs(ft.default) do
