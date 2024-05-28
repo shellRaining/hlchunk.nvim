@@ -14,6 +14,7 @@ local fn = vim.fn
 local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
 local rangeFromTo = chunkHelper.rangeFromTo
 local utf8Split = chunkHelper.utf8Split
+local shallowCmp = chunkHelper.shallowCmp
 
 ---@class ChunkMetaInfo : MetaInfo
 
@@ -24,6 +25,10 @@ local constructor = function(self, conf, meta)
         hl_base_name = "HLChunk",
         ns_id = api.nvim_create_namespace("chunk"),
         task = nil,
+        pre_virt_text_list = {},
+        pre_row_list = {},
+        pre_virt_text_win_col_list = {},
+        pre_is_error = false,
     }
 
     BaseMod.init(self, conf, meta)
@@ -51,6 +56,13 @@ function ChunkMod:stopRender()
     end
 end
 
+function ChunkMod:updatePreState(virt_text_list, row_list, virt_text_win_col_list, is_error)
+    self.meta.pre_virt_text_list = virt_text_list
+    self.meta.pre_row_list = row_list
+    self.meta.pre_virt_text_win_col_list = virt_text_win_col_list
+    self.meta.pre_is_error = is_error
+end
+
 function ChunkMod:render(range, opts)
     if not self:shouldRender() or range == nil then
         return
@@ -65,11 +77,6 @@ function ChunkMod:render(range, opts)
     local shiftwidth = fn.shiftwidth() --[[@as number]]
     local start_col = math.max(math.min(beg_blank_len, end_blank_len) - shiftwidth, 0)
     local leftcol = fn.winsaveview().leftcol
-    local row_opts = {
-        virt_text_pos = "overlay",
-        hl_mode = "combine",
-        priority = 100,
-    }
 
     local virt_text_list = {}
     local row_list = {}
@@ -102,6 +109,23 @@ function ChunkMod:render(range, opts)
         vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col, virt_text_win_col + virt_text_len - 1))
     end
 
+    if
+        shallowCmp(virt_text_list, self.meta.pre_virt_text_list)
+        and shallowCmp(row_list, self.meta.pre_row_list)
+        and shallowCmp(virt_text_win_col_list, self.meta.pre_virt_text_win_col_list)
+        and self.meta.pre_is_error == opts.error
+    then
+        return
+    end
+
+    self:updatePreState(virt_text_list, row_list, virt_text_win_col_list, opts.error)
+    self:clear(Scope(range.bufnr, 0, api.nvim_buf_line_count(range.bufnr)))
+
+    local row_opts = {
+        virt_text_pos = "overlay",
+        hl_mode = "combine",
+        priority = 100,
+    }
     self.meta.task = LoopTask(function(vt, row, vt_win_col)
         row_opts.virt_text = { { vt, text_hl } }
         row_opts.virt_text_win_col = vt_win_col
@@ -127,9 +151,11 @@ function ChunkMod:createAutocmd()
             use_treesitter = self.conf.use_treesitter,
         })
 
-        self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
         if ret_code == CHUNK_RANGE_RET.OK then
             self:render(range, { error = false })
+        elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then
+            self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
+            self:updatePreState({}, {}, {}, false)
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = true })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then

@@ -61,4 +61,24 @@ describe("indentHelper", function()
             assert.same(res, testCase.res)
         end
     end)
+
+    it("shallowCmp happy path", function()
+        local inputList = {
+            { t1 = { 1, 2, 3 }, t2 = { 1, 2, 3 }, res = true },
+            { t1 = { 1, 2, 3 }, t2 = { 1, 2, 4 }, res = false },
+            { t1 = { 1, 2, 3 }, t2 = { 1, 2 }, res = false },
+            { t1 = { "a", "b", "c" }, t2 = { "a", "b", "c" }, res = true },
+            { t1 = { "a", "b", "c" }, t2 = { "a", "b", "d" }, res = false },
+            { t1 = { "a", "b", "c" }, t2 = { "a", "b" }, res = false },
+            { t1 = { "你好", "你好" }, t2 = { "你好", "你好" }, res = true },
+            { t1 = { "你好", "你好" }, t2 = { "你好", "你好1" }, res = false },
+            { t1 = { true, false }, t2 = { 1, false }, res = false },
+            { t1 = { { 1, 2 }, 3 }, t2 = { { 1, 2 }, 3 }, res = false },
+        }
+
+        for _, testCase in ipairs(inputList) do
+            local res = chunkHelper.shallowCmp(testCase.t1, testCase.t2)
+            assert.equals(res, testCase.res)
+        end
+    end)
 end)

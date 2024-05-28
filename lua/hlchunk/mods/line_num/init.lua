@@ -29,7 +29,7 @@ end
 ---@overload fun(conf?: UserLineNumConf, meta?: MetaInfo): LineNumMod
 local LineNumMod = class(BaseMod, constructor)
 
-function LineNumMod:render(range, opts)
+function LineNumMod:render(range)
     if not self:shouldRender() then
         return
     end

@@ -66,7 +66,7 @@ function IndentMod:render(range)
     local retcode, rows_indent = utils.get_rows_indent({
         use_treesitter = self.conf.use_treesitter,
         virt_indent = true,
-        range = range
+        range = range,
     })
     if retcode == ROWS_INDENT_RETCODE.NO_TS then
         if self.conf.notify then

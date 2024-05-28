@@ -5,7 +5,7 @@
 ---@overload fun(bufnr: number, start: number, finish: number): Scope
 ---0-indexing, include start and finish
 -- local Scope = class(constructor)
-function Scope(bufnr, start, finish)
+local function Scope(bufnr, start, finish)
     return {
         bufnr = bufnr,
         start = start,

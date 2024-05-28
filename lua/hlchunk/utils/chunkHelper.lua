@@ -33,16 +33,13 @@ function chunkHelper.rangeFromTo(i, j, step)
     return t
 end
 
-function chunkHelper.get_virt_text_list(virt_text_list, chars)
-    if beg_blank_len > 0 then
-        local virt_text_len = beg_blank_len - start_col
-        local beg_virt_text = self.conf.chars.left_top .. self.conf.chars.horizontal_line:rep(virt_text_len - 1)
-        local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, leftcol)
-        local char_list = fn.reverse(utf8_split(virt_text))
-        vim.list_extend(virt_text_list, char_list)
-        vim.list_extend(row_list, vim.fn["repeat"]({ beg_row - 1 }, virt_text_len))
-        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + virt_text_len - 1, virt_text_win_col))
+function chunkHelper.shallowCmp(t1, t2)
+    for k, v in pairs(t1) do
+        if t2[k] ~= v then
+            return false
+        end
     end
+    return true
 end
 
 return chunkHelper
