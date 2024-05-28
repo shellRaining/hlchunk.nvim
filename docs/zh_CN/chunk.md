@@ -26,10 +26,13 @@ local default_conf = {
     textobject = "",
     max_file_size = 1024 * 1024,
     error_sign = true,
+    -- 动画相关
+    duration = 200,
+    delay = 500,
 }
 ```
 
-独有的配置项为 `use_treesitter`，`chars`，`textobject`，`max_file_size`，`error_sign`
+独有的配置项为 `use_treesitter`，`chars`，`textobject`，`max_file_size`，`error_sign`，`duration`，`delay`
 
 - `use_treesitter` 是用来控制是否使用 treesitter 来高亮代码块，默认为 true。
   如果该项被设置为 true，他是通过自底向上的查找树的节点，直至找到匹配的节点类型，以此获取相应的 chunk 范围的。而如果设置为 false，将使用 vim 的 `searchpair` 来查找最近的相邻大括号来推断位置（也因此导致 Python 等脚本语言无法正常使用该 mod）
@@ -54,6 +57,10 @@ local default_conf = {
       "#c21f30", -- 枫叶红色
   },
   ```
+
+- `duration` 用来控制动画的持续时间，以毫秒为单位，默认 200 ms
+
+- `delay` 从移动光标到动画开始间隔的时间，以毫秒为单位，默认 500 ms，设置为 0 可以取消动画效果
 
 对于通用的配置（在 [README](../../README.zh-CN.md) 中有提到），仅有部分需要特别注意：
 

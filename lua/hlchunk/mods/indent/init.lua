@@ -86,7 +86,7 @@ function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local debounce_render = debounce(function(range)
         self:render(range)
-    end, 100)
+    end, 50)
     local render_cb = function(info)
         local ft = vim.filetype.match({ buf = info.buf })
         if indentHelper.is_blank_filetype(ft) then

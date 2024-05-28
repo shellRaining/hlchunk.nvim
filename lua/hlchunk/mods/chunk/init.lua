@@ -126,17 +126,28 @@ function ChunkMod:render(range, opts)
         hl_mode = "combine",
         priority = 100,
     }
-    self.meta.task = LoopTask(function(vt, row, vt_win_col)
-        row_opts.virt_text = { { vt, text_hl } }
-        row_opts.virt_text_win_col = vt_win_col
-        api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
-    end, "linear", self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
-    self.meta.task:start()
+    if self.conf.delay == 0 then
+        for i, vt in ipairs(virt_text_list) do
+            row_opts.virt_text = { { vt, text_hl } }
+            row_opts.virt_text_win_col = virt_text_win_col_list[i]
+            api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row_list[i], 0, row_opts)
+        end
+    else
+        self.meta.task = LoopTask(function(vt, row, vt_win_col)
+            row_opts.virt_text = { { vt, text_hl } }
+            row_opts.virt_text_win_col = vt_win_col
+            api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
+        end, "linear", self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
+        self.meta.task:start()
+    end
 end
 
 function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(event)
+        if not api.nvim_buf_is_valid(event.buf) then
+            return
+        end
         local ft = vim.filetype.match({ buf = event.buf })
         if not ft or #ft == 0 then
             return
