@@ -81,11 +81,13 @@ function ChunkMod:render(range, opts)
         local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, leftcol)
         local char_list = fn.reverse(utf8Split(virt_text))
         vim.list_extend(virt_text_list, char_list)
-        vim.list_extend(row_list, vim.fn["repeat"]({ beg_row - 1 }, virt_text_len))
-        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + virt_text_len - 1, virt_text_win_col, -1))
+        vim.list_extend(row_list, vim.fn["repeat"]({ beg_row - 1 }, #char_list))
+        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + #char_list - 1, virt_text_win_col, -1))
     end
-    local mid = self.conf.chars.vertical_line:rep(end_row - beg_row - 1)
-    vim.list_extend(virt_text_list, utf8Split(mid))
+    local mid_char_nums = end_row - beg_row - 1
+    local mid = self.conf.chars.vertical_line:rep(mid_char_nums)
+    local chars = (start_col - leftcol < 0) and vim.fn["repeat"]({ "" }, mid_char_nums) or utf8Split(mid)
+    vim.list_extend(virt_text_list, chars)
     vim.list_extend(row_list, rangeFromTo(beg_row, end_row - 2)) -- beg_row and end_row are 1-based, so -2
     vim.list_extend(virt_text_win_col_list, vim.fn["repeat"]({ start_col - leftcol }, end_row - beg_row - 1))
     if end_blank_len > 0 then
@@ -99,9 +101,6 @@ function ChunkMod:render(range, opts)
         vim.list_extend(row_list, vim.fn["repeat"]({ end_row - 1 }, virt_text_len))
         vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col, virt_text_win_col + virt_text_len - 1))
     end
-    -- vim.notify(vim.inspect(virt_text_list))
-    -- vim.notify(vim.inspect(row_list))
-    -- vim.notify(vim.inspect(virt_text_win_col_list))
 
     self.meta.task = LoopTask(function(vt, row, vt_win_col)
         row_opts.virt_text = { { vt, text_hl } }
