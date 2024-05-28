@@ -137,16 +137,15 @@ M.ROWS_INDENT_RETCODE = {
 -- 5.
 -- 6. this is shellRaining
 -- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
----@param range? Scope 0-index
----@param opts? {use_treesitter: boolean, virt_indent: boolean}
+---@param opts? {use_treesitter: boolean, virt_indent: boolean, range: Scope}
 ---@return ROWS_INDENT_RETCODE enum
 ---@return table<number, number>
-function M.get_rows_indent(range, opts)
-    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
+function M.get_rows_indent(opts)
+    opts = opts or { use_treesitter = false, virt_indent = false }
+    local range = opts.range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     -- due to get_indent is 1-index, so we need to add 1
     local begRow = range.start + 1
     local endRow = range.finish + 1
-    opts = opts or { use_treesitter = false, virt_indent = false }
 
     local rows_indent = {}
     local get_indent = fn.indent
