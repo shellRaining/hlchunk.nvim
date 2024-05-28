@@ -75,6 +75,7 @@ function BaseMod:render(range)
     self:clear(range)
 end
 
+-- TODO: API-indexing
 ---@param range Scope the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
     range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") --[[@as number]])

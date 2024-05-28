@@ -71,8 +71,6 @@ function ChunkMod:render(range, opts)
         self.meta.task:stop()
         self.meta.task = nil
     end
-    self:clear({ start = 0, finish = fn.line("$") - 1, bufnr = range.bufnr })
-
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
     local beg_row = range.start + 1
     local end_row = range.finish + 1
@@ -120,7 +118,7 @@ function ChunkMod:render(range, opts)
         row_opts.virt_text = { { vt, text_hl } }
         row_opts.virt_text_win_col = vt_win_col
         api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
-    end, "linear",self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
+    end, "linear", self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
     self.meta.task:start()
 end
 
@@ -128,16 +126,19 @@ function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(info)
         local ft = vim.filetype.match({ buf = info.buf })
-        -- TODO: need refactor
         if not ft or #ft == 0 then
             return
         end
 
-        local ret_code, range = utils.get_chunk_range(self, fn.line("."), {
+        local winnr = api.nvim_get_current_win()
+        local pos = api.nvim_win_get_position(winnr)
+
+        local ret_code, range = utils.get_chunk_range({
+            pos = { bufnr = 0, row = pos[1], col = pos[2] },
             use_treesitter = self.conf.use_treesitter,
         })
 
-        self:clear({ start = 0, finish = fn.line("$") - 1, bufnr = range.bufnr })
+        self:clear()
         if ret_code == CHUNK_RANGE_RET.OK then
             self:render(range, { error = false })
         elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then
@@ -148,7 +149,7 @@ function ChunkMod:createAutocmd()
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = true })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then
-            self:notify("[hlchunk.chunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
+            self:notify("[hlchunk.chunk]: no parser for " .. ft, nil, { once = true })
         end
     end
     local debounce_render = debounce(render_cb, self.conf.delay)
@@ -159,7 +160,7 @@ function ChunkMod:createAutocmd()
     })
     api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.meta.augroup_name,
-        callback = render_cb,
+        callback = debounce_render,
     })
     api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {
         group = self.meta.augroup_name,
@@ -180,7 +181,9 @@ function ChunkMod:extra()
         return
     end
     vim.keymap.set({ "x", "o" }, textobject, function()
-        local retcode, cur_chunk_range = utils.get_chunk_range(self, nil, {
+        local pos = api.nvim_win_get_cursor(0)
+        local retcode, cur_chunk_range = utils.get_chunk_range({
+            pos = { bufnr = 0, row = pos[1], col = pos[2] },
             use_treesitter = self.conf.use_treesitter,
         })
         if retcode ~= CHUNK_RANGE_RET.OK then

@@ -37,7 +37,8 @@ function LineNumMod:render()
 
     self:clear()
 
-    local retcode, cur_chunk_range = utils.get_chunk_range(self, nil, {
+    local retcode, cur_chunk_range = utils.get_chunk_range({
+        pos = { bufnr = 0, row = 0, col = 0 },
         use_treesitter = self.conf.use_treesitter,
     })
     if retcode ~= CHUNK_RANGE_RET.OK then

@@ -37,10 +37,6 @@ local function is_suit_type(node_type)
 end
 
 -- this is utils module for hlchunk every mod
--- every method in this module should pass arguments as follow
--- 1. mod: BaseMod, for utils function to get mod options
--- 2. normal arguments
--- 3. opts: for utils function to get options specific for this function
 -- every method in this module should return as follow
 -- 1. return ret code, a enum value
 -- 2. return ret value, a table or other something
@@ -107,20 +103,17 @@ local function get_chunk_range_by_treesitter()
     return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
 end
 
----@param mod BaseMod
----@param line? number the line number we want to get the chunk range, with 1-index
----@param opts? {use_treesitter: boolean}
+---@param opts? {pos: Pos, use_treesitter: boolean}
 ---@return CHUNK_RANGE_RETCODE enum
 ---@return Scope
----@diagnostic disable-next-line: unused-local
-function M.get_chunk_range(mod, line, opts)
+function M.get_chunk_range(opts)
     opts = opts or { use_treesitter = false }
-    line = line or fn.line(".")
+    local row = opts.pos.row
 
     if opts.use_treesitter then
         return get_chunk_range_by_treesitter()
     else
-        return get_chunk_range_by_context(line)
+        return get_chunk_range_by_context(row)
     end
 end
 
@@ -144,12 +137,11 @@ M.ROWS_INDENT_RETCODE = {
 -- 5.
 -- 6. this is shellRaining
 -- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
----@param mod BaseMod
 ---@param range? Scope 0-index
 ---@param opts? {use_treesitter: boolean, virt_indent: boolean}
 ---@return ROWS_INDENT_RETCODE enum
 ---@return table<number, number>
-function M.get_rows_indent(mod, range, opts)
+function M.get_rows_indent(range, opts)
     range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     -- due to get_indent is 1-index, so we need to add 1
     local begRow = range.start + 1

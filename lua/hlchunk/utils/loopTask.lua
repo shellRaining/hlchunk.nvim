@@ -63,7 +63,9 @@ function LoopTask:start()
         self.fn(unpack(self.data[self.progress]))
         self.progress = self.progress + 1
         if self.progress > #self.time_intervals then
-            self.timer:stop()
+            if self.timer then
+                self.timer:stop() -- TODO: why self.timer could be nil
+            end
             self.timer = nil
             return
         else
