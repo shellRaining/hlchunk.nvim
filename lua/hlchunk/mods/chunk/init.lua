@@ -124,21 +124,22 @@ end
 
 function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
-    local render_cb = function(info)
-        local ft = vim.filetype.match({ buf = info.buf })
+    local render_cb = function(event)
+        local ft = vim.filetype.match({ buf = event.buf })
         if not ft or #ft == 0 then
             return
         end
 
+        local bufnr = event.buf
         local winnr = api.nvim_get_current_win()
-        local pos = api.nvim_win_get_position(winnr)
+        local pos = api.nvim_win_get_cursor(winnr)
 
         local ret_code, range = utils.get_chunk_range({
-            pos = { bufnr = 0, row = pos[1], col = pos[2] },
+            pos = { bufnr = bufnr, row = pos[1] - 1, col = pos[2] },
             use_treesitter = self.conf.use_treesitter,
         })
 
-        self:clear()
+        self:clear({ bufnr = bufnr, start = 0, finish = -2 })
         if ret_code == CHUNK_RANGE_RET.OK then
             self:render(range, { error = false })
         elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then

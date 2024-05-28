@@ -92,12 +92,19 @@ function BaseMod:clear(range)
 end
 
 function BaseMod:createUsercmd()
-    api.nvim_create_user_command("EnableHL" .. self.meta.name, function()
+    local function underscore_to_camel_case(input)
+        local result = input:gsub("(%l)(%w*)_(%w+)", function(first, middle, last)
+            return first:upper() .. middle .. last:sub(1, 1):upper() .. last:sub(2)
+        end)
+        result = result:gsub("^%l", string.upper)
+        return result
+    end
+    api.nvim_create_user_command("EnableHL" .. underscore_to_camel_case(self.meta.name), function()
         if not self.conf.enable then
             self:enable()
         end
     end, {})
-    api.nvim_create_user_command("DisableHL" .. self.meta.name, function()
+    api.nvim_create_user_command("DisableHL" .. underscore_to_camel_case(self.meta.name), function()
         if self.conf.enable then
             self:disable()
         end
@@ -126,7 +133,7 @@ function BaseMod:setHl()
 
     -- such as style = "#abcabc"
     if type(hl_conf) == "string" then
-        api.nvim_set_hl(0, self.meta.hl_base_name .. "1", { guifg = hl_conf })
+        api.nvim_set_hl(0, self.meta.hl_base_name .. "1", { fg = hl_conf })
         self.meta.hl_name_list = { self.meta.hl_base_name .. "1" }
         return
     end
