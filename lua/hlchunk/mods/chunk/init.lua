@@ -107,7 +107,7 @@ function ChunkMod:render(range, opts)
         vim.list_extend(row_list, vim.fn["repeat"]({ end_row - 1 }, virt_text_len))
         vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col, virt_text_win_col + virt_text_len - 1))
     end
-
+    -- luacheck: ignore old_progress NOTE: this is luacheck bug
     local old_progress = 1
     if
         shallowCmp(virt_text_list, self.meta.pre_virt_text_list)
@@ -140,7 +140,7 @@ function ChunkMod:render(range, opts)
         self.meta.task = LoopTask(function(vt, row, vt_win_col)
             row_opts.virt_text = { { vt, text_hl } }
             row_opts.virt_text_win_col = vt_win_col
-            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) ~= 0 then
+            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
                 api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
             end
         end, "linear", self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
@@ -211,7 +211,7 @@ function ChunkMod:extra()
     vim.keymap.set({ "x", "o" }, textobject, function()
         local pos = api.nvim_win_get_cursor(0)
         local retcode, cur_chunk_range = utils.get_chunk_range({
-            pos = { bufnr = 0, row = pos[1], col = pos[2] },
+            pos = { bufnr = 0, row = pos[1] - 1, col = pos[2] },
             use_treesitter = self.conf.use_treesitter,
         })
         if retcode ~= CHUNK_RANGE_RET.OK then

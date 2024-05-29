@@ -50,8 +50,8 @@ end
 ---@param winnr number
 ---@return Scope range the range contains the window's topline and botline
 function indentHelper.get_win_range(winnr)
-    local topline = fn.line('w0', winnr)
-    local botline = fn.line('w$', winnr)
+    local topline = fn.line("w0", winnr)
+    local botline = fn.line("w$", winnr)
     local bufnr = api.nvim_win_get_buf(winnr)
     return Scope(bufnr, topline - 1, botline - 1)
 end
