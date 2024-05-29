@@ -164,7 +164,9 @@ function M.get_rows_indent(opts)
     end
 
     for i = endRow, begRow, -1 do
-        rows_indent[i] = get_indent(i)
+        rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
+            return get_indent(i)
+        end)
         -- if use treesitter, no need to care virt_indent option, becasue it has handled by treesitter
         if (not opts.use_treesitter) and rows_indent[i] == 0 and #fn.getline(i) == 0 then
             rows_indent[i] = opts.virt_indent and get_virt_indent(rows_indent, i) or -1

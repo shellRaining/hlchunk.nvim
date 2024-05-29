@@ -41,7 +41,7 @@ end
 ---@field private data table table that contains any data that needs to be passed to the function
 ---@field private strategy string string that determines how the function is executed when the timer fires
 ---@field private time_intervals table<number> table of numbers that represent the time intervals
----@field private progress number number that represents the current progress of the timer
+---@field progress number number that represents the current progress of the timer
 ---@field public start fun(self: LoopTask):nil function that starts the timer
 ---@field public stop fun(self: LoopTask):nil function that stops the timer
 ---@overload fun(fn: function, strategy: string, duration: number, ...: any):LoopTask
@@ -54,7 +54,7 @@ local LoopTask = class(function(self, fn, strategy, duration, ...)
     self.progress = 1
 end)
 function LoopTask:start()
-    if self.timer then
+    if self.timer or #self.data == 0 then
         return
     end
 
