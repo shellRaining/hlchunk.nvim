@@ -68,7 +68,6 @@ function ChunkMod:render(range, opts)
         return
     end
     opts = opts or { error = false }
-    self:stopRender()
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
     local beg_row = range.start + 1
     local end_row = range.finish + 1
@@ -109,15 +108,20 @@ function ChunkMod:render(range, opts)
         vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col, virt_text_win_col + virt_text_len - 1))
     end
 
+    local old_progress = 1
     if
         shallowCmp(virt_text_list, self.meta.pre_virt_text_list)
         and shallowCmp(row_list, self.meta.pre_row_list)
         and shallowCmp(virt_text_win_col_list, self.meta.pre_virt_text_win_col_list)
         and self.meta.pre_is_error == opts.error
     then
+        if self.meta.task and self.meta.task.progress <= #self.meta.pre_row_list then
+            old_progress = self.meta.task.progress
+        end
         return
     end
 
+    self:stopRender()
     self:updatePreState(virt_text_list, row_list, virt_text_win_col_list, opts.error)
     self:clear(Scope(range.bufnr, 0, api.nvim_buf_line_count(range.bufnr)))
 
@@ -136,8 +140,11 @@ function ChunkMod:render(range, opts)
         self.meta.task = LoopTask(function(vt, row, vt_win_col)
             row_opts.virt_text = { { vt, text_hl } }
             row_opts.virt_text_win_col = vt_win_col
-            api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
+            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) ~= 0 then
+                api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
+            end
         end, "linear", self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
+        self.meta.task.progress = old_progress
         self.meta.task:start()
     end
 end
