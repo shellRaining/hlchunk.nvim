@@ -61,7 +61,7 @@ function IndentMod:render(range)
     end
 
     range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
-    self:clear()
+    self:clear(range)
 
     local retcode, rows_indent = utils.get_rows_indent({
         use_treesitter = self.conf.use_treesitter,
@@ -76,7 +76,9 @@ function IndentMod:render(range)
     end
 
     local leftcol = fn.winsaveview().leftcol
-    local sw = fn.shiftwidth()
+    local sw = api.nvim_buf_call(range.bufnr, function()
+        return fn.shiftwidth()
+    end)
     for index, _ in pairs(rows_indent) do
         self:renderLine(range.bufnr, index, rows_indent[index], leftcol, sw)
     end
@@ -87,12 +89,15 @@ function IndentMod:createAutocmd()
     local debounce_render = debounce(function(range)
         self:render(range)
     end, 50)
-    local render_cb = function(info)
-        local ft = vim.filetype.match({ buf = info.buf })
+    local render_cb = function(event)
+        if not api.nvim_buf_is_valid(event.buf) then
+            return
+        end
+        local ft = vim.filetype.match({ buf = event.buf })
         if indentHelper.is_blank_filetype(ft) then
             return
         end
-        local changedWins = indentHelper.get_active_wins(info)
+        local changedWins = indentHelper.get_active_wins(event)
 
         -- get them showed topline and botline, then make a scope to render
         for _, winnr in ipairs(changedWins) do
@@ -100,9 +105,11 @@ function IndentMod:createAutocmd()
             local ahead_lines = self.conf.ahead_lines
             range.start = math.max(0, range.start - ahead_lines)
             range.finish = math.min(api.nvim_buf_line_count(range.bufnr) - 1, range.finish + ahead_lines)
-            api.nvim_win_call(winnr, function()
-                debounce_render(range)
-            end)
+            if range.bufnr == event.buf then
+                api.nvim_win_call(winnr, function()
+                    debounce_render(range)
+                end)
+            end
         end
     end
 
