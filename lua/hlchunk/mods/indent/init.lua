@@ -68,7 +68,7 @@ function IndentMod:render(range)
         virt_indent = true,
         range = range,
     })
-    if retcode == ROWS_INDENT_RETCODE.NO_TS then
+    if retcode == ROWS_INDENT_RETCODE.NO_TS and self.conf.use_treesitter then
         if self.conf.notify then
             self:notify("[hlchunk.indent]: no parser for " .. vim.bo.filetype, nil, { once = true })
         end
