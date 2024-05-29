@@ -74,6 +74,9 @@ describe("indentHelper", function()
             { t1 = { "你好", "你好" }, t2 = { "你好", "你好1" }, res = false },
             { t1 = { true, false }, t2 = { 1, false }, res = false },
             { t1 = { { 1, 2 }, 3 }, t2 = { { 1, 2 }, 3 }, res = false },
+            { t1 = {}, t2 = { 1 }, res = false },
+            { t1 = { 1 }, t2 = {}, res = false },
+            { t1 = {}, t2 = {}, res = true },
         }
 
         for _, testCase in ipairs(inputList) do

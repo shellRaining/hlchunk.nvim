@@ -34,12 +34,17 @@ function chunkHelper.rangeFromTo(i, j, step)
 end
 
 function chunkHelper.shallowCmp(t1, t2)
-    for k, v in pairs(t1) do
-        if t2[k] ~= v then
-            return false
+    if #t1 ~= #t2 then
+        return false
+    end
+    local flag = true
+    for i, v in ipairs(t1) do
+        if t2[i] ~= v then
+            flag = false
+            break
         end
     end
-    return true
+    return flag
 end
 
 return chunkHelper

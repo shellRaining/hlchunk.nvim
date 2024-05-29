@@ -54,7 +54,7 @@ local LoopTask = class(function(self, fn, strategy, duration, ...)
     self.progress = 1
 end)
 function LoopTask:start()
-    if self.timer then
+    if self.timer or #self.data == 0 then
         return
     end
 
