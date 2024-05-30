@@ -127,6 +127,43 @@ M.ROWS_INDENT_RETCODE = {
     NO_TS = 1,
 }
 
+function M.get_rows_indent_by_context(range)
+    local begRow = range.start + 1
+    local endRow = range.finish + 1
+
+    local rows_indent = {}
+
+    for i = endRow, begRow, -1 do
+        rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
+            return fn.indent(i)
+        end)
+        if rows_indent[i] == 0 and #fn.getline(i) == 0 then
+            rows_indent[i] = get_virt_indent(rows_indent, i) or -1
+        end
+    end
+
+    return M.ROWS_INDENT_RETCODE.OK, rows_indent
+end
+
+function M.get_rows_indent_by_treesitter(range)
+    local begRow = range.start + 1
+    local endRow = range.finish + 1
+
+    local rows_indent = {}
+    local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
+    if not ts_indent_status then
+        return M.ROWS_INDENT_RETCODE.NO_TS, {}
+    end
+
+    for i = endRow, begRow, -1 do
+        rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
+            return ts_indent.get_indent(i)
+        end)
+    end
+
+    return M.ROWS_INDENT_RETCODE.OK, rows_indent
+end
+
 -- when virt_indent is false, there are three cases:
 -- 1. the row has nothing, we set the value to -1
 -- 2. the row has char however not have indent, we set the indent to 0
@@ -141,39 +178,18 @@ M.ROWS_INDENT_RETCODE = {
 -- 5.
 -- 6. this is shellRaining
 -- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
----@param opts? {use_treesitter: boolean, virt_indent: boolean, range: Scope}
+---@param range Scope
+---@param opts? {use_treesitter: boolean, virt_indent: boolean}
 ---@return ROWS_INDENT_RETCODE enum
 ---@return table<number, number>
-function M.get_rows_indent(opts)
+function M.get_rows_indent(range, opts)
     opts = opts or { use_treesitter = false, virt_indent = false }
-    local range = opts.range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
-    -- due to get_indent is 1-index, so we need to add 1
-    local begRow = range.start + 1
-    local endRow = range.finish + 1
 
-    local rows_indent = {}
-    local get_indent = fn.indent
     if opts.use_treesitter then
-        local ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
-        if not ts_indent_status then
-            return M.ROWS_INDENT_RETCODE.NO_TS, {}
-        end
-        get_indent = function(row)
-            return ts_indent.get_indent(row) or 0
-        end
+        return M.get_rows_indent_by_treesitter(range)
+    else
+        return M.get_rows_indent_by_context(range)
     end
-
-    for i = endRow, begRow, -1 do
-        rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
-            return get_indent(i)
-        end)
-        -- if use treesitter, no need to care virt_indent option, becasue it has handled by treesitter
-        if (not opts.use_treesitter) and rows_indent[i] == 0 and #fn.getline(i) == 0 then
-            rows_indent[i] = opts.virt_indent and get_virt_indent(rows_indent, i) or -1
-        end
-    end
-
-    return M.ROWS_INDENT_RETCODE.OK, rows_indent
 end
 
 return M

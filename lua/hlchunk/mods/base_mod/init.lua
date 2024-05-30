@@ -67,7 +67,12 @@ end
 function BaseMod:shouldRender(bufnr)
     if api.nvim_buf_is_valid(bufnr) then
         local ft = vim.filetype.match({ buf = bufnr })
-        return self.conf.enable and ft ~= nil and not self.conf.exclude_filetypes[ft] and fn.shiftwidth() ~= 0
+        local shiftwidth = api.nvim_buf_call(bufnr, function()
+            return fn.shiftwidth()
+        end)
+        if ft then
+            return self.conf.enable and not self.conf.exclude_filetypes[ft] and shiftwidth ~= 0
+        end
     end
     return false
 end
@@ -82,7 +87,6 @@ end
 -- TODO: API-indexing
 ---@param range Scope the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
-    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") --[[@as number]])
     local start = range.start
     local finish = range.finish + 1
 

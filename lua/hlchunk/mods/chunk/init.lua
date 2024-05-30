@@ -17,6 +17,11 @@ local utf8Split = chunkHelper.utf8Split
 local shallowCmp = chunkHelper.shallowCmp
 
 ---@class ChunkMetaInfo : MetaInfo
+---@field task LoopTask | nil
+---@field pre_virt_text_list string[]
+---@field pre_row_list number[]
+---@field pre_virt_text_win_col_list number[]
+---@field pre_is_error boolean
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -64,7 +69,6 @@ function ChunkMod:updatePreState(virt_text_list, row_list, virt_text_win_col_lis
 end
 
 function ChunkMod:render(range, opts)
-    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     opts = opts or { error = false }
     if not self:shouldRender(range.bufnr) then
         return

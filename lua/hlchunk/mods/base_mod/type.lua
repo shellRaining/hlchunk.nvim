@@ -4,8 +4,3 @@
 ---@field hl_base_name string
 ---@field ns_id number
 ---@field hl_name_list string[]
----@field task LoopTask | nil
----@field pre_virt_text_list string[]
----@field pre_row_list number[]
----@field pre_virt_text_win_col_list number[]
----@field pre_is_error boolean
