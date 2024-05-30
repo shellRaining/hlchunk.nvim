@@ -1,12 +1,12 @@
 local M = {}
-local uv = vim.loop
+local new_timer = vim.uv.new_timer
 
 ---@param fn function The function to be called after the delay
 ---@param delay number The delay in milliseconds
 ---@vararg any The arguments to be passed to the function
 ---@return uv_timer_t | nil
 function M.setTimeout(fn, delay, ...)
-    local timer = uv.new_timer()
+    local timer = new_timer() --[[@as uv_timer_t | nil]]
     if not timer then
         return nil
     end
@@ -24,7 +24,7 @@ end
 ---@vararg any The arguments to be passed to the function
 ---@return uv_timer_t | nil
 function M.setInterval(fn, interval, ...)
-    local timer = uv.new_timer()
+    local timer = new_timer() --[[@as uv_timer_t | nil]]
     if not timer then
         return nil
     end

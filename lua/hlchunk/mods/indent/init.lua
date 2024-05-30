@@ -11,8 +11,6 @@ local fn = vim.fn
 local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
 
 ---@class IndentMetaInfo : MetaInfo
----@field shiftwidth number
----@field leftcol number
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -90,7 +88,7 @@ function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(event)
         local bufnr = event.buf
-        if not api.nvim_buf_is_valid(bufnr) and not self:shouldRender(bufnr) then
+        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
         end
         local wins = fn.win_findbuf(bufnr) or {}
@@ -107,19 +105,30 @@ function IndentMod:createAutocmd()
         end
     end
     local debounce_render_cb = debounce(render_cb, 50)
+    local debounce_render_cb_with_pre_hook = function(event)
+        local bufnr = event.buf
+        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
+            return
+        end
+        debounce_render_cb(event)
+    end
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb,
+        callback = debounce_render_cb_with_pre_hook,
     })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb,
+        callback = debounce_render_cb_with_pre_hook,
+    })
+    api.nvim_create_autocmd({ "BufWinEnter" }, {
+        group = self.meta.augroup_name,
+        callback = debounce_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
         group = self.meta.augroup_name,
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
-        callback = debounce_render_cb,
+        callback = debounce_render_cb_with_pre_hook,
     })
 end
 

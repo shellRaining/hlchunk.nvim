@@ -2,6 +2,7 @@ local IndentMod = require("hlchunk.mods.indent")
 local BlankConf = require("hlchunk.mods.blank.blank_conf")
 local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
+local utils = require("hlchunk.utils.utils")
 
 local api = vim.api
 local fn = vim.fn
@@ -60,7 +61,7 @@ function BlankMod:renderLine(bufnr, index, blankLen)
         row_opts.virt_text_win_col = offset + (i - 1) * sw
 
         -- when use treesitter, without this judge, when paste code will over render
-        if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= fn.indent(index) then
+        if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= utils.get_indent(bufnr, index - 1) then
             -- if the len of the line is 0, and have leftcol, we should draw it indent by context
             if api.nvim_buf_get_lines(bufnr, index - 1, index, false)[1] ~= "" then
                 return

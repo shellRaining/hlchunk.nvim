@@ -42,6 +42,20 @@ end
 -- 2. return ret value, a table or other something
 local M = {}
 
+---@param bufnr number check the bufnr has treesitter parser
+local function has_treesitter(bufnr)
+    local has_lang, lang = pcall(treesitter.language.get_lang, vim.bo[bufnr].filetype)
+    if not has_lang then
+        return false
+    end
+
+    local has, parser = pcall(treesitter.get_parser, bufnr, lang)
+    if not has or not parser then
+        return false
+    end
+    return true
+end
+
 ---@enum CHUNK_RANGE_RETCODE
 M.CHUNK_RANGE_RET = {
     OK = 0,
@@ -69,20 +83,6 @@ local function get_chunk_range_by_context(pos)
     -- end
 
     return M.CHUNK_RANGE_RET.OK, Scope(pos.bufnr, beg_row - 1, end_row - 1)
-end
-
----@param bufnr number check the bufnr has treesitter parser
-local function has_treesitter(bufnr)
-    local has_lang, lang = pcall(treesitter.language.get_lang, vim.bo[bufnr].filetype)
-    if not has_lang then
-        return false
-    end
-
-    local has, parser = pcall(treesitter.get_parser, bufnr, lang)
-    if not has or not parser then
-        return false
-    end
-    return true
 end
 
 ---@param pos Pos 0-index for row, 0-index for col, API-indexing
@@ -134,9 +134,7 @@ function M.get_rows_indent_by_context(range)
     local rows_indent = {}
 
     for i = endRow, begRow, -1 do
-        rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
-            return fn.indent(i)
-        end)
+        rows_indent[i] = M.get_indent(range.bufnr, i - 1)
         if rows_indent[i] == 0 and #fn.getline(i) == 0 then
             rows_indent[i] = get_virt_indent(rows_indent, i) or -1
         end
@@ -190,6 +188,14 @@ function M.get_rows_indent(range, opts)
     else
         return M.get_rows_indent_by_context(range)
     end
+end
+
+---@param bufnr number
+---@param row number 0-index
+function M.get_indent(bufnr, row)
+    return vim.api.nvim_buf_call(bufnr, function()
+        return fn.indent(row + 1)
+    end)
 end
 
 return M
