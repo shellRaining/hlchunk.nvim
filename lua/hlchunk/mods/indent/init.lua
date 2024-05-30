@@ -56,11 +56,10 @@ function IndentMod:renderLine(bufnr, index, blankLen, leftcol, sw)
 end
 
 function IndentMod:render(range)
-    if not self:shouldRender() then
+    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
+    if not self:shouldRender(range.bufnr) then
         return
     end
-
-    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") - 1)
     self:clear(range)
 
     local retcode, rows_indent = utils.get_rows_indent({
@@ -86,9 +85,6 @@ end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
-    local debounce_render = debounce(function(range)
-        self:render(range)
-    end, 50)
     local render_cb = function(event)
         if not api.nvim_buf_is_valid(event.buf) then
             return
@@ -97,29 +93,42 @@ function IndentMod:createAutocmd()
         if indentHelper.is_blank_filetype(ft) then
             return
         end
-        local changedWins = indentHelper.get_active_wins(event)
+        -- local changedWins = indentHelper.get_active_wins(event)
+        local wins = api.nvim_list_wins()
 
         -- get them showed topline and botline, then make a scope to render
-        for _, winnr in ipairs(changedWins) do
-            local range = indentHelper.get_win_range(winnr)
-            local ahead_lines = self.conf.ahead_lines
-            range.start = math.max(0, range.start - ahead_lines)
-            range.finish = math.min(api.nvim_buf_line_count(range.bufnr) - 1, range.finish + ahead_lines)
-            if range.bufnr == event.buf then
+        for _, winnr in ipairs(wins) do
+            if winnr == event.buf then
+                local range = indentHelper.get_win_range(winnr)
+                local ahead_lines = self.conf.ahead_lines
+                range.start = math.max(0, range.start - ahead_lines)
+                range.finish = math.min(api.nvim_buf_line_count(range.bufnr) - 1, range.finish + ahead_lines)
                 api.nvim_win_call(winnr, function()
-                    debounce_render(range)
+                    self:render(range)
                 end)
             end
         end
     end
+    local debounce_render_cb = debounce(render_cb, 50)
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = self.meta.augroup_name,
-        callback = render_cb,
+        callback = debounce_render_cb,
+        -- callback = function(event)
+        --     -- vim.print(api.nvim_get_current_win())
+        --     if not api.nvim_buf_is_valid(event.buf) then
+        --         return
+        --     end
+        --     local ft = vim.filetype.match({ buf = event.buf })
+        --     if indentHelper.is_blank_filetype(ft) then
+        --         return
+        --     end
+        --     vim.notify(tostring(api.nvim_get_current_win()))
+        -- end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
         group = self.meta.augroup_name,
-        callback = render_cb,
+        callback = debounce_render_cb,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
         group = self.meta.augroup_name,

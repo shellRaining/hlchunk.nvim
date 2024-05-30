@@ -26,9 +26,9 @@ end
 ---@field init fun(self: BaseMod, conf: BaseConf, meta: MetaInfo) not used for init mod, but as super keyword when inherit
 ---@field enable fun(self: BaseMod) enable the mod, the main entry of the mod
 ---@field disable fun(self: BaseMod) disable the mod
----@field protected shouldRender fun(self: BaseMod): boolean just a tool function
----@field protected render fun(self: BaseMod, range?: Scope)
----@field protected clear fun(self: BaseMod, range?: Scope)
+---@field protected shouldRender fun(self: BaseMod, bufnr: number): boolean just a tool function
+---@field protected render fun(self: BaseMod, range: Scope)
+---@field protected clear fun(self: BaseMod, range: Scope)
 ---@field protected createUsercmd fun(self: BaseMod)
 ---@field protected createAutocmd fun(self: BaseMod)
 ---@field protected clearAutocmd fun(self: BaseMod)
@@ -42,7 +42,7 @@ function BaseMod:enable()
     local ok, info = pcall(function()
         self.conf.enable = true
         self:setHl()
-        self:render()
+        self:render(Scope(0, fn.line("w0") - 1, fn.line("w$") - 1))
         self:createAutocmd()
         self:createUsercmd()
     end)
@@ -64,12 +64,16 @@ function BaseMod:disable()
     end
 end
 
-function BaseMod:shouldRender()
-    return self.conf.enable and not self.conf.exclude_filetypes[vim.bo.ft] and fn.shiftwidth() ~= 0
+function BaseMod:shouldRender(bufnr)
+    if api.nvim_buf_is_valid(bufnr) then
+        local ft = vim.filetype.match({ buf = bufnr })
+        return self.conf.enable and ft ~= nil and not self.conf.exclude_filetypes[ft] and fn.shiftwidth() ~= 0
+    end
+    return false
 end
 
 function BaseMod:render(range)
-    if not self:shouldRender() then
+    if range and not self:shouldRender(range.bufnr) then
         return
     end
     self:clear(range)

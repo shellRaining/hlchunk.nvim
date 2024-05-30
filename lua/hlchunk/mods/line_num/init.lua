@@ -30,7 +30,7 @@ end
 local LineNumMod = class(BaseMod, constructor)
 
 function LineNumMod:render(range)
-    if not self:shouldRender() then
+    if not self:shouldRender(range.bufnr) then
         return
     end
 
