@@ -77,11 +77,6 @@ local function get_chunk_range_by_context(pos)
         return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
     end
 
-    -- TODO: fix this is_comment
-    -- if is_comment(beg_row) or is_comment(end_row) then
-    --     return M.CHUNK_RANGE_RET.NO_CHUNK, Scope(0, -1, -1)
-    -- end
-
     return M.CHUNK_RANGE_RET.OK, Scope(pos.bufnr, beg_row - 1, end_row - 1)
 end
 
@@ -96,6 +91,13 @@ local function get_chunk_range_by_treesitter(pos)
         bufnr = pos.bufnr,
         pos = { pos.row, pos.col },
     })
+    -- when cursor_node is comment content (source), we should find by tree
+    if cursor_node and cursor_node:type() == "source" then
+        cursor_node = treesitter.get_node({
+            bufnr = pos.bufnr,
+            pos = { pos.row, pos.col },
+        })
+    end
     while cursor_node do
         local node_type = cursor_node:type()
         local node_start, _, node_end, _ = cursor_node:range()
