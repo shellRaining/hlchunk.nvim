@@ -177,7 +177,11 @@ function ChunkMod:createAutocmd()
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = true })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then
-            self:notify("[hlchunk.chunk]: no parser for " .. vim.filetype.match({ event.buf }), nil, { once = true })
+            self:notify(
+                "[hlchunk.chunk]: no parser for " .. vim.filetype.match({ buf = event.buf }),
+                nil,
+                { once = true }
+            )
         end
     end
     local debounce_render_cb = debounce(render_cb, self.conf.delay)
