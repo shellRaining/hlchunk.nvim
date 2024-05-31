@@ -22,6 +22,8 @@ local IndentConf = class(BaseConf, function(self, conf)
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as IndentConf]]
     BaseConf.init(self, conf)
 
+    self.style = conf.style
+    self.priority = conf.priority
     self.use_treesitter = conf.use_treesitter
     self.chars = conf.chars
     self.ahead_lines = conf.ahead_lines

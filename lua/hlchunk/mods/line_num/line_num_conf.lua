@@ -15,9 +15,8 @@ local LineNumConf = class(BaseConf, function(self, conf)
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as LineNumConf]]
     BaseConf.init(self, conf)
 
-    for key, value in pairs(conf) do
-        self[key] = value
-    end
+    self.style = conf.style
+    self.use_treesitter = conf.use_treesitter
 end)
 
 return LineNumConf

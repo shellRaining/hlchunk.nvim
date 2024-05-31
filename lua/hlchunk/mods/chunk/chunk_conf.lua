@@ -41,9 +41,14 @@ local ChunkConf = class(BaseConf, function(self, conf)
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as ChunkConf]]
     BaseConf.init(self, conf)
 
-    for key, value in pairs(conf) do
-        self[key] = value
-    end
+    self.priority = conf.priority
+    self.use_treesitter = conf.use_treesitter
+    self.chars = conf.chars
+    self.textobject = conf.textobject
+    self.max_file_size = conf.max_file_size
+    self.error_sign = conf.error_sign
+    self.duration = conf.duration
+    self.delay = conf.delay
 end)
 
 return ChunkConf
