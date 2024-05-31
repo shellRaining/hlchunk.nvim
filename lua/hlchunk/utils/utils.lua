@@ -157,7 +157,15 @@ function M.get_rows_indent_by_treesitter(range)
 
     for i = endRow, begRow, -1 do
         rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
-            return ts_indent.get_indent(i)
+            local indent = ts_indent.get_indent(i)
+            if indent == -1 then
+                indent = fn.indent(i)
+                if indent == 0 and #fn.getline(i) == 0 then
+                    indent = get_virt_indent(rows_indent, i) or -1
+                end
+            end
+            ---@diagnostic disable-next-line: redundant-return-value
+            return indent
         end)
     end
 
