@@ -4,7 +4,7 @@ local class = require("hlchunk.utils.class")
 local utils = require("hlchunk.utils.utils")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
-local debounce = require("hlchunk.utils.debounce").debounce
+local throttle = require("hlchunk.utils.debounce").throttle
 
 local api = vim.api
 local fn = vim.fn
@@ -104,31 +104,31 @@ function IndentMod:createAutocmd()
             end)
         end
     end
-    local debounce_render_cb = debounce(render_cb, 50)
-    local debounce_render_cb_with_pre_hook = function(event)
+    local throttle_render_cb = throttle(render_cb, self.conf.delay)
+    local throttle_render_cb_with_pre_hook = function(event)
         local bufnr = event.buf
         if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
         end
-        debounce_render_cb(event)
+        throttle_render_cb(event)
     end
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb_with_pre_hook,
+        callback = throttle_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb_with_pre_hook,
+        callback = throttle_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "BufWinEnter" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb_with_pre_hook,
+        callback = throttle_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
         group = self.meta.augroup_name,
         pattern = "list,listchars,shiftwidth,tabstop,expandtab",
-        callback = debounce_render_cb_with_pre_hook,
+        callback = throttle_render_cb_with_pre_hook,
     })
 end
 
