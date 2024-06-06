@@ -79,5 +79,4 @@ function M.throttle(fn, interval)
     end
 end
 
-
 return M

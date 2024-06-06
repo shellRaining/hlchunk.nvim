@@ -84,15 +84,26 @@ function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_
         vim.list_extend(row_list, vim.fn["repeat"]({ range.start }, #char_list))
         vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + #char_list - 1, virt_text_win_col, -1))
     end
+
     local mid_char_nums = range.finish - range.start - 1
-    local mid = self.conf.chars.vertical_line:rep(mid_char_nums)
-    local chars = (start_col - self.meta.leftcol < 0) and vim.fn["repeat"]({ "" }, mid_char_nums) or utf8Split(mid)
-    vim.list_extend(virt_text_list, chars)
     vim.list_extend(row_list, rangeFromTo((range.start + 1), (range.finish - 1)))
-    vim.list_extend(
-        virt_text_win_col_list,
-        vim.fn["repeat"]({ start_col - self.meta.leftcol }, range.finish - range.start - 1)
-    )
+    vim.list_extend(virt_text_win_col_list, vim.fn["repeat"]({ start_col - self.meta.leftcol }, mid_char_nums))
+    local mid = self.conf.chars.vertical_line:rep(mid_char_nums)
+    local chars
+    if start_col - self.meta.leftcol < 0 then
+        chars = vim.fn["repeat"]({ "" }, mid_char_nums)
+    else
+        chars = utf8Split(mid)
+        -- when use click `<<` or `>>` to indent, we should make sure the line would not encounter the indent char
+        for i = 1, mid_char_nums do
+            local char = Pos.get_char_at_pos(Pos(range.bufnr, range.start + i, start_col))
+            if not char:match("%s") and #char ~= 0 then
+                chars[i] = ""
+            end
+        end
+    end
+    vim.list_extend(virt_text_list, chars)
+
     if end_blank_len > 0 then
         local virt_text_len = end_blank_len - start_col
         local end_virt_text = self.conf.chars.left_bottom

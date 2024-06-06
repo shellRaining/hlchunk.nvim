@@ -100,7 +100,6 @@ function chunkHelper.get_chunk_range(opts)
     end
 end
 
-
 function chunkHelper.calc(str, col, leftcol)
     local len = vim.api.nvim_strwidth(str)
     if col < leftcol then
