@@ -13,7 +13,6 @@ local function createClass(base, user_ctor)
     return c
 end
 
--- TODO: how to add type define for baseClass
 ---@generic T
 ---@param user_ctor T
 ---@return fun(...): T
@@ -49,6 +48,7 @@ local function derivedClass(base, user_ctor)
     return c
 end
 
+---@return any
 local function class(base, init)
     if not init and type(base) == "function" then
         local user_ctor = base

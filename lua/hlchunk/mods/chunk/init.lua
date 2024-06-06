@@ -1,15 +1,27 @@
 local BaseMod = require("hlchunk.mods.base_mod")
 local ChunkConf = require("hlchunk.mods.chunk.chunk_conf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
+local LoopTask = require("hlchunk.utils.loopTask")
+local debounce = require("hlchunk.utils.timer").debounce
+local Pos = require("hlchunk.utils.position")
+local Scope = require("hlchunk.utils.scope")
+local indentHelper = require("hlchunk.utils.indentHelper")
 
 local class = require("hlchunk.utils.class")
-local utils = require("hlchunk.utils.utils")
 
 local api = vim.api
 local fn = vim.fn
-local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
+local CHUNK_RANGE_RET = chunkHelper.CHUNK_RANGE_RET
+local rangeFromTo = chunkHelper.rangeFromTo
+local utf8Split = chunkHelper.utf8Split
+local shallowCmp = chunkHelper.shallowCmp
 
 ---@class ChunkMetaInfo : MetaInfo
+---@field task LoopTask | nil
+---@field pre_virt_text_list string[]
+---@field pre_row_list number[]
+---@field pre_virt_text_win_col_list number[]
+---@field pre_is_error boolean
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -17,6 +29,13 @@ local constructor = function(self, conf, meta)
         augroup_name = "hlchunk_chunk",
         hl_base_name = "HLChunk",
         ns_id = api.nvim_create_namespace("chunk"),
+        task = nil,
+        shiftwidth = fn.shiftwidth(),
+        leftcol = fn.winsaveview().leftcol,
+        pre_virt_text_list = {},
+        pre_row_list = {},
+        pre_virt_text_win_col_list = {},
+        pre_is_error = false,
     }
 
     BaseMod.init(self, conf, meta)
@@ -37,96 +56,163 @@ function ChunkMod:enable()
     self:extra()
 end
 
-function ChunkMod:render(range, opts)
-    if not self:shouldRender() or range == nil then
-        return
+function ChunkMod:stopRender()
+    if self.meta.task then
+        self.meta.task:stop()
+        self.meta.task = nil
     end
-    opts = opts or { error = false }
-    self:clear()
+end
 
-    local text_hl = opts.error and "HLChunk2" or "HLChunk1"
-    local beg_row = range.start + 1
-    local end_row = range.finish + 1
-    local beg_blank_len = fn.indent(beg_row) --[[@as number]]
-    local end_blank_len = fn.indent(end_row) --[[@as number]]
-    local shiftwidth = fn.shiftwidth() --[[@as number]]
-    local start_col = math.max(math.min(beg_blank_len, end_blank_len) - shiftwidth, 0)
-    local leftcol = fn.winsaveview().leftcol
-    local row_opts = {
-        virt_text_pos = "overlay",
-        hl_mode = "combine",
-        priority = 100,
-    }
+function ChunkMod:updatePreState(virt_text_list, row_list, virt_text_win_col_list, is_error)
+    self.meta.pre_virt_text_list = virt_text_list
+    self.meta.pre_row_list = row_list
+    self.meta.pre_virt_text_win_col_list = virt_text_win_col_list
+    self.meta.pre_is_error = is_error
+end
 
-    -- render beg_row
+function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_col_list)
+    local beg_blank_len = indentHelper.get_indent(range.bufnr, range.start)
+    local end_blank_len = indentHelper.get_indent(range.bufnr, range.finish)
+    local start_col = math.max(math.min(beg_blank_len, end_blank_len) - self.meta.shiftwidth, 0)
+
     if beg_blank_len > 0 then
         local virt_text_len = beg_blank_len - start_col
         local beg_virt_text = self.conf.chars.left_top
             .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
             .. self.conf.chars.left_arrow
-        local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, leftcol)
-        row_opts.virt_text = { { virt_text, text_hl } }
-        row_opts.virt_text_win_col = virt_text_win_col
-        api.nvim_buf_set_extmark(0, self.meta.ns_id, beg_row - 1, 0, row_opts)
+        local virt_text, virt_text_win_col = chunkHelper.calc(beg_virt_text, start_col, self.meta.leftcol)
+        local char_list = fn.reverse(utf8Split(virt_text))
+        vim.list_extend(virt_text_list, char_list)
+        vim.list_extend(row_list, vim.fn["repeat"]({ range.start }, #char_list))
+        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col + #char_list - 1, virt_text_win_col, -1))
     end
 
-    -- render end_row
+    local mid_char_nums = range.finish - range.start - 1
+    vim.list_extend(row_list, rangeFromTo((range.start + 1), (range.finish - 1)))
+    vim.list_extend(virt_text_win_col_list, vim.fn["repeat"]({ start_col - self.meta.leftcol }, mid_char_nums))
+    local mid = self.conf.chars.vertical_line:rep(mid_char_nums)
+    local chars
+    if start_col - self.meta.leftcol < 0 then
+        chars = vim.fn["repeat"]({ "" }, mid_char_nums)
+    else
+        chars = utf8Split(mid)
+        -- when use click `<<` or `>>` to indent, we should make sure the line would not encounter the indent char
+        for i = 1, mid_char_nums do
+            local char = Pos.get_char_at_pos(Pos(range.bufnr, range.start + i, start_col))
+            if not char:match("%s") and #char ~= 0 then
+                chars[i] = ""
+            end
+        end
+    end
+    vim.list_extend(virt_text_list, chars)
+
     if end_blank_len > 0 then
         local virt_text_len = end_blank_len - start_col
         local end_virt_text = self.conf.chars.left_bottom
             .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
             .. self.conf.chars.right_arrow
-        local virt_text, virt_text_win_col = chunkHelper.calc(end_virt_text, start_col, leftcol)
-        row_opts.virt_text = { { virt_text, text_hl } }
-        row_opts.virt_text_win_col = virt_text_win_col
-        api.nvim_buf_set_extmark(0, self.meta.ns_id, end_row - 1, 0, row_opts)
+        local virt_text, virt_text_win_col = chunkHelper.calc(end_virt_text, start_col, self.meta.leftcol)
+        local char_list = utf8Split(virt_text)
+        vim.list_extend(virt_text_list, char_list)
+        vim.list_extend(row_list, vim.fn["repeat"]({ range.finish }, virt_text_len))
+        vim.list_extend(virt_text_win_col_list, rangeFromTo(virt_text_win_col, virt_text_win_col + virt_text_len - 1))
+    end
+end
+
+function ChunkMod:render(range, opts)
+    opts = opts or { error = false }
+    if not self:shouldRender(range.bufnr) then
+        return
     end
 
-    -- render middle section
-    for i = beg_row + 1, end_row - 1 do
-        row_opts.virt_text = { { self.conf.chars.vertical_line, text_hl } }
-        row_opts.virt_text_win_col = start_col - leftcol
-        local space_tab = (" "):rep(shiftwidth)
-        local line_val = fn.getline(i):gsub("\t", space_tab)
-        -- this judgement is for the line has shadow middle section
-        if #line_val <= start_col or fn.indent(i) > start_col then
-            if row_opts.virt_text_win_col >= 0 then
-                api.nvim_buf_set_extmark(0, self.meta.ns_id, i - 1, 0, row_opts)
-            end
+    local virt_text_list = {}
+    local row_list = {}
+    local virt_text_win_col_list = {}
+    self:get_chunk_data(range, virt_text_list, row_list, virt_text_win_col_list)
+
+    if
+        shallowCmp(virt_text_list, self.meta.pre_virt_text_list)
+        and shallowCmp(row_list, self.meta.pre_row_list)
+        and shallowCmp(virt_text_win_col_list, self.meta.pre_virt_text_win_col_list)
+        and self.meta.pre_is_error == opts.error
+    then
+        return
+    end
+
+    self:stopRender()
+    self:updatePreState(virt_text_list, row_list, virt_text_win_col_list, opts.error)
+    self:clear(Scope(range.bufnr, 0, api.nvim_buf_line_count(range.bufnr)))
+
+    local row_opts = {
+        virt_text_pos = "overlay",
+        hl_mode = "combine",
+        priority = 100,
+    }
+    local text_hl = opts.error and "HLChunk2" or "HLChunk1"
+    if self.conf.delay == 0 then
+        for i, vt in ipairs(virt_text_list) do
+            row_opts.virt_text = { { vt, text_hl } }
+            row_opts.virt_text_win_col = virt_text_win_col_list[i]
+            api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row_list[i], 0, row_opts)
         end
+    else
+        self.meta.task = LoopTask(function(vt, row, vt_win_col)
+            row_opts.virt_text = { { vt, text_hl } }
+            row_opts.virt_text_win_col = vt_win_col
+            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
+                api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
+            end
+        end, "linear", self.conf.duration, virt_text_list, row_list, virt_text_win_col_list)
+        self.meta.task:start()
     end
 end
 
 function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
+    local render_cb = function(event)
+        local bufnr = event.buf
+        local winid = api.nvim_get_current_win()
+        local pos = api.nvim_win_get_cursor(winid)
 
-    local render_cb = function(info)
-        local ft = vim.filetype.match({ buf = info.buf })
-        -- TODO: need refactoro
-        if not ft or #ft == 0 then
-            return
-        end
-
-        local ret_code, range = utils.get_chunk_range(self, fn.line("."), {
+        local ret_code, range = chunkHelper.get_chunk_range({
+            pos = Pos(bufnr, pos[1] - 1, pos[2]),
             use_treesitter = self.conf.use_treesitter,
         })
+        api.nvim_win_call(winid, function()
+            self.meta.shiftwidth = api.nvim_get_option_value("shiftwidth", { buf = bufnr })
+            self.meta.leftcol = fn.winsaveview().leftcol
+        end)
         if ret_code == CHUNK_RANGE_RET.OK then
             self:render(range, { error = false })
         elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then
-            self:clear()
+            self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
+            self:updatePreState({}, {}, {}, false)
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = true })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then
-            self:notify("[hlchunk.chunk]: no parser for " .. vim.bo.filetype, nil, { once = true })
+            self:notify(
+                "[hlchunk.chunk]: no parser for " .. vim.filetype.match({ buf = event.buf }),
+                nil,
+                { once = true }
+            )
         end
     end
+    local debounce_render_cb = debounce(render_cb, self.conf.delay)
+    local debounce_render_cb_with_pre_hook = function(event)
+        local bufnr = event.buf
+        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
+            return
+        end
+        debounce_render_cb(event)
+    end
+
     api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.meta.augroup_name,
-        callback = render_cb,
+        callback = debounce_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.meta.augroup_name,
-        callback = render_cb,
+        callback = debounce_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {
         group = self.meta.augroup_name,
@@ -147,7 +233,9 @@ function ChunkMod:extra()
         return
     end
     vim.keymap.set({ "x", "o" }, textobject, function()
-        local retcode, cur_chunk_range = utils.get_chunk_range(self, nil, {
+        local pos = api.nvim_win_get_cursor(0)
+        local retcode, cur_chunk_range = chunkHelper.get_chunk_range({
+            pos = { bufnr = 0, row = pos[1] - 1, col = pos[2] },
             use_treesitter = self.conf.use_treesitter,
         })
         if retcode ~= CHUNK_RANGE_RET.OK then

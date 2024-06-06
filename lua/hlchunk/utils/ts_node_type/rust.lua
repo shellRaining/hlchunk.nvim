@@ -1,0 +1,15 @@
+return {
+    block = true,
+    function_item = true,
+    closure_expression = true,
+    while_expression = true,
+    for_expression = true,
+    loop_expression = true,
+    if_expression = true,
+    match_expression = true,
+    match_arm = true,
+    expression_statement = true,
+    struct_item = true,
+    enum_item = true,
+    impl_item = true,
+}

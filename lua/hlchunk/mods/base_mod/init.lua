@@ -26,9 +26,9 @@ end
 ---@field init fun(self: BaseMod, conf: BaseConf, meta: MetaInfo) not used for init mod, but as super keyword when inherit
 ---@field enable fun(self: BaseMod) enable the mod, the main entry of the mod
 ---@field disable fun(self: BaseMod) disable the mod
----@field protected shouldRender fun(self: BaseMod): boolean just a tool function
----@field protected render fun(self: BaseMod, range?: Scope)
----@field protected clear fun(self: BaseMod, range?: Scope)
+---@field protected shouldRender fun(self: BaseMod, bufnr: number): boolean just a tool function
+---@field protected render fun(self: BaseMod, range: Scope)
+---@field protected clear fun(self: BaseMod, range: Scope)
 ---@field protected createUsercmd fun(self: BaseMod)
 ---@field protected createAutocmd fun(self: BaseMod)
 ---@field protected clearAutocmd fun(self: BaseMod)
@@ -42,7 +42,7 @@ function BaseMod:enable()
     local ok, info = pcall(function()
         self.conf.enable = true
         self:setHl()
-        self:render()
+        self:render(Scope(0, fn.line("w0") - 1, fn.line("w$") - 1))
         self:createAutocmd()
         self:createUsercmd()
     end)
@@ -55,7 +55,6 @@ function BaseMod:disable()
     local ok, info = pcall(function()
         self.conf.enable = false
         for _, bufnr in pairs(api.nvim_list_bufs()) do
-            -- TODO: need change BaseMod:clear function
             api.nvim_buf_clear_namespace(bufnr, self.meta.ns_id, 0, -1)
         end
         self:clearAutocmd()
@@ -65,20 +64,29 @@ function BaseMod:disable()
     end
 end
 
-function BaseMod:shouldRender()
-    return self.conf.enable and not self.conf.exclude_filetypes[vim.bo.ft] and fn.shiftwidth() ~= 0
+function BaseMod:shouldRender(bufnr)
+    if api.nvim_buf_is_valid(bufnr) then
+        local ft = vim.filetype.match({ buf = bufnr })
+        local shiftwidth = api.nvim_buf_call(bufnr, function()
+            return fn.shiftwidth()
+        end)
+        if ft then
+            return self.conf.enable and not self.conf.exclude_filetypes[ft] and shiftwidth ~= 0
+        end
+    end
+    return false
 end
 
 function BaseMod:render(range)
-    if not self:shouldRender() then
+    if range and not self:shouldRender(range.bufnr) then
         return
     end
     self:clear(range)
 end
 
+-- TODO: API-indexing
 ---@param range Scope the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
-    range = range or Scope(0, fn.line("w0") - 1, fn.line("w$") --[[@as number]])
     local start = range.start
     local finish = range.finish + 1
 
@@ -92,12 +100,22 @@ function BaseMod:clear(range)
 end
 
 function BaseMod:createUsercmd()
-    -- TODO: update the name case
-    api.nvim_create_user_command("EnableHL" .. self.meta.name, function()
-        self:enable()
+    local function underscore_to_camel_case(input)
+        local result = input:gsub("(%l)(%w*)_(%w+)", function(first, middle, last)
+            return first:upper() .. middle .. last:sub(1, 1):upper() .. last:sub(2)
+        end)
+        result = result:gsub("^%l", string.upper)
+        return result
+    end
+    api.nvim_create_user_command("EnableHL" .. underscore_to_camel_case(self.meta.name), function()
+        if not self.conf.enable then
+            self:enable()
+        end
     end, {})
-    api.nvim_create_user_command("DisableHL" .. self.meta.name, function()
-        self:disable()
+    api.nvim_create_user_command("DisableHL" .. underscore_to_camel_case(self.meta.name), function()
+        if self.conf.enable then
+            self:disable()
+        end
     end, {})
 end
 

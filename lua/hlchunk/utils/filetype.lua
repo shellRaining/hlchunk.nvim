@@ -1,26 +1,5 @@
 local M = {}
 
-M.support_filetypes = {
-    "*.ts",
-    "*.tsx",
-    "*.js",
-    "*.jsx",
-    "*.html",
-    "*.json",
-    "*.go",
-    "*.c",
-    "*.py",
-    "*.cpp",
-    "*.rs",
-    "*.h",
-    "*.hpp",
-    "*.lua",
-    "*.vue",
-    "*.java",
-    "*.cs",
-    "*.dart",
-}
-
 M.exclude_filetypes = {
     aerial = true,
     dashboard = true,

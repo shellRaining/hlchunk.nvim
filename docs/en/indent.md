@@ -15,6 +15,7 @@ local default_conf = {
     use_treesitter = false,
     chars = { "│" },
     ahead_lines = 5,
+    delay = 100,
 }
 ```
 
@@ -36,6 +37,8 @@ The unique configurations are `use_treesitter`, `chars`, `ahead_lines`
 When rendering, the first level will use the first character, the second level will use the second character, and so on. If the level exceeds the number of characters you set, these characters will be used cyclically.
 
 - `ahead_lines` is a number used to control the preview and rendering range of indent lines ahead, which defaults to 5
+
+- `delay` is a number that presents a millisecond value, because rendering is very time-consuming in some cases, a throttle function is used to limit the rendering frequency, the larger the value, the smoother the screen scrolling, but at the same time, a larger part of the content will not be rendered (until after delay milliseconds), which defaults to 100
 
 Like chunk, we also need to pay extra attention to the common configuration style:
 

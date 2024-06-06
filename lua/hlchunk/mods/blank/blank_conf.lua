@@ -12,6 +12,9 @@ local BlankConf = class(IndentConf, function(self, conf)
     }
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as IndentConf]]
     IndentConf.init(self, conf)
+
+    self.priority = conf.priority
+    self.chars = conf.chars
 end)
 
 return BlankConf

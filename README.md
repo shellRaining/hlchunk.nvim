@@ -132,6 +132,16 @@ indent({
 }):enable() -- don't forget call enable method
 ```
 
+## notice
+
+Because this plugin use `shiftwidth` function to get the indent width, so for files that do not set the indent width manually, there may be inaccurate situations, you can set the indent width manually:
+
+```lua
+vim.bo.shiftwidth = xxx
+```
+
+If you feel boring to set the indent width manually, you can use [autoindent.nvim](https://github.com/nmac427/guess-indent.nvim) or [indent-o-matic](https://github.com/Darazaki/indent-o-matic) to guess indent automatically.
+
 ## command
 
 Sometimes (e.g., for performance reasons), you may want to manually disable a certain mod, you can follow the rules below: enter `DisableHLxxxx`, replacing `xxxx` with the name of the mod you want to disable, for example, to disable `chunk`, you can enter `DisableHLchunk`.

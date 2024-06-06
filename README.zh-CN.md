@@ -132,7 +132,17 @@ indent({
 }):enable() -- 不要忘记加上 enable 来明确的表示启动
 ```
 
-## command
+## 注意
+
+由于内部采用 `shiftwidth()` 函数来获取缩进宽度，所以对于没有手动设定缩进宽度的文件，可能会出现不准确的情况，这时候你可以手动设置缩进宽度：
+
+```lua
+vim.bo.shiftwidth = xxx
+```
+
+如果你感觉这个过程很繁琐，可以尝试用 [guess-indent](https://github.com/nmac427/guess-indent.nvim) 或者 [indent-o-matic](https://github.com/Darazaki/indent-o-matic) 此类插件来自动获取缩进宽度。
+
+## 用户指令
 
 有时候（比如性能原因），你可能想要手动关闭某个 mod，可以遵循下面的规则：输入 `DisableHLxxxx`，其中把 `xxxx` 替换为你想要关闭的 mod 名称，比如关闭 `chunk`，你可以输入 `DisableHLchunk`。
 
