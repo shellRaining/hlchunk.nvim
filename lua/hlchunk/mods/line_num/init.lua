@@ -1,11 +1,10 @@
 local BaseMod = require("hlchunk.mods.base_mod")
 local LineNumConf = require("hlchunk.mods.line_num.line_num_conf")
-
+local chunkHelper = require("hlchunk.utils.chunkHelper")
 local class = require("hlchunk.utils.class")
-local utils = require("hlchunk.utils.utils")
 
 local api = vim.api
-local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
+local CHUNK_RANGE_RET = chunkHelper.CHUNK_RANGE_RET
 
 ---@class LineNumMetaInfo : MetaInfo
 
@@ -53,7 +52,7 @@ function LineNumMod:createAutocmd()
             local bufnr = event.buf
             local winnr = api.nvim_get_current_win()
             local pos = api.nvim_win_get_cursor(winnr)
-            local retcode, cur_chunk_range = utils.get_chunk_range({
+            local retcode, cur_chunk_range = chunkHelper.get_chunk_range({
                 pos = { bufnr = bufnr, row = pos[1] - 1, col = pos[2] },
                 use_treesitter = self.conf.use_treesitter,
             })

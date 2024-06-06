@@ -1,14 +1,13 @@
 local BaseMod = require("hlchunk.mods.base_mod")
 local IndentConf = require("hlchunk.mods.indent.indent_conf")
 local class = require("hlchunk.utils.class")
-local utils = require("hlchunk.utils.utils")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
 local throttle = require("hlchunk.utils.debounce").throttle
 
 local api = vim.api
 local fn = vim.fn
-local ROWS_INDENT_RETCODE = utils.ROWS_INDENT_RETCODE
+local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
 ---@class IndentMetaInfo : MetaInfo
 
@@ -68,7 +67,7 @@ function IndentMod:render(range)
     end
     self:clear(range)
 
-    local retcode, rows_indent = utils.get_rows_indent(range, {
+    local retcode, rows_indent = indentHelper.get_rows_indent(range, {
         use_treesitter = self.conf.use_treesitter,
         virt_indent = true,
     })

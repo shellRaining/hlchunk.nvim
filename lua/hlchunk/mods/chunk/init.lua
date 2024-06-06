@@ -5,13 +5,13 @@ local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.debounce").debounce
 local Pos = require("hlchunk.utils.position")
 local Scope = require("hlchunk.utils.scope")
+local indentHelper = require("hlchunk.utils.indentHelper")
 
 local class = require("hlchunk.utils.class")
-local utils = require("hlchunk.utils.utils")
 
 local api = vim.api
 local fn = vim.fn
-local CHUNK_RANGE_RET = utils.CHUNK_RANGE_RET
+local CHUNK_RANGE_RET = chunkHelper.CHUNK_RANGE_RET
 local rangeFromTo = chunkHelper.rangeFromTo
 local utf8Split = chunkHelper.utf8Split
 local shallowCmp = chunkHelper.shallowCmp
@@ -71,8 +71,8 @@ function ChunkMod:updatePreState(virt_text_list, row_list, virt_text_win_col_lis
 end
 
 function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_col_list)
-    local beg_blank_len = utils.get_indent(range.bufnr, range.start)
-    local end_blank_len = utils.get_indent(range.bufnr, range.finish)
+    local beg_blank_len = indentHelper.get_indent(range.bufnr, range.start)
+    local end_blank_len = indentHelper.get_indent(range.bufnr, range.finish)
     local start_col = math.max(math.min(beg_blank_len, end_blank_len) - self.meta.shiftwidth, 0)
 
     if beg_blank_len > 0 then
@@ -161,7 +161,7 @@ function ChunkMod:createAutocmd()
         local winid = api.nvim_get_current_win()
         local pos = api.nvim_win_get_cursor(winid)
 
-        local ret_code, range = utils.get_chunk_range({
+        local ret_code, range = chunkHelper.get_chunk_range({
             pos = Pos(bufnr, pos[1] - 1, pos[2]),
             use_treesitter = self.conf.use_treesitter,
         })
@@ -221,7 +221,7 @@ function ChunkMod:extra()
     end
     vim.keymap.set({ "x", "o" }, textobject, function()
         local pos = api.nvim_win_get_cursor(0)
-        local retcode, cur_chunk_range = utils.get_chunk_range({
+        local retcode, cur_chunk_range = chunkHelper.get_chunk_range({
             pos = { bufnr = 0, row = pos[1] - 1, col = pos[2] },
             use_treesitter = self.conf.use_treesitter,
         })
