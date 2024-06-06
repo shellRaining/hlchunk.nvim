@@ -3,7 +3,7 @@ local IndentConf = require("hlchunk.mods.indent.indent_conf")
 local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
-local throttle = require("hlchunk.utils.debounce").throttle
+local throttle = require("hlchunk.utils.timer").throttle
 
 local api = vim.api
 local fn = vim.fn
