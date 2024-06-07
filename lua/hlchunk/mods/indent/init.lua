@@ -62,9 +62,6 @@ function IndentMod:renderLine(bufnr, index, blankLen)
 end
 
 function IndentMod:render(range)
-    if not self:shouldRender(range.bufnr) then
-        return
-    end
     self:clear(range)
 
     local retcode, rows_indent = indentHelper.get_rows_indent(range, {

@@ -66,7 +66,7 @@ end
 
 function BaseMod:shouldRender(bufnr)
     if api.nvim_buf_is_valid(bufnr) then
-        local ft = vim.filetype.match({ buf = bufnr })
+        local ft = vim.bo[bufnr].ft
         local shiftwidth = api.nvim_buf_call(bufnr, function()
             return fn.shiftwidth()
         end)
