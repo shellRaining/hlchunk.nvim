@@ -1,4 +1,5 @@
 local fn = vim.fn
+local cFunc = require('hlchunk.utils.cFunc')
 
 -- get the virtual indent of the given line
 ---@param rows_indent table<number, number>
@@ -41,14 +42,6 @@ indentHelper.ROWS_INDENT_RETCODE = {
     NO_TS = 1,
 }
 
----@param bufnr number
----@param row number 0-index
-function indentHelper.get_indent(bufnr, row)
-    return vim.api.nvim_buf_call(bufnr, function()
-        return fn.indent(row + 1)
-    end)
-end
-
 local function get_rows_indent_by_context(range)
     local begRow = range.start + 1
     local endRow = range.finish + 1
@@ -56,7 +49,7 @@ local function get_rows_indent_by_context(range)
     local rows_indent = {}
 
     for i = endRow, begRow, -1 do
-        rows_indent[i] = indentHelper.get_indent(range.bufnr, i - 1)
+        rows_indent[i] = cFunc.get_indent(range.bufnr, i - 1)
         if rows_indent[i] == 0 and #fn.getline(i) == 0 then
             rows_indent[i] = get_virt_indent(rows_indent, i) or -1
         end

@@ -23,6 +23,7 @@ M.exclude_filetypes = {
     better_term = true,
     fugitiveblame = true,
     Trouble = true,
+    trouble = true,
     qf = true,
     Outline = true,
     starter = true,

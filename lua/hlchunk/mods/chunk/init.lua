@@ -5,7 +5,7 @@ local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.timer").debounce
 local Pos = require("hlchunk.utils.position")
 local Scope = require("hlchunk.utils.scope")
-local indentHelper = require("hlchunk.utils.indentHelper")
+local cFunc = require('hlchunk.utils.cFunc')
 
 local class = require("hlchunk.utils.class")
 
@@ -71,8 +71,8 @@ function ChunkMod:updatePreState(virt_text_list, row_list, virt_text_win_col_lis
 end
 
 function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_col_list)
-    local beg_blank_len = indentHelper.get_indent(range.bufnr, range.start)
-    local end_blank_len = indentHelper.get_indent(range.bufnr, range.finish)
+    local beg_blank_len = cFunc.get_indent(range.bufnr, range.start)
+    local end_blank_len = cFunc.get_indent(range.bufnr, range.finish)
     local start_col = math.max(math.min(beg_blank_len, end_blank_len) - self.meta.shiftwidth, 0)
 
     if beg_blank_len > 0 then
@@ -190,11 +190,7 @@ function ChunkMod:createAutocmd()
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = true })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then
-            self:notify(
-                "[hlchunk.chunk]: no parser for " .. vim.filetype.match({ buf = event.buf }),
-                nil,
-                { once = true }
-            )
+            self:notify("[hlchunk.chunk]: no parser for " .. vim.bo[bufnr].ft, nil, { once = true })
         end
     end
     local debounce_render_cb = debounce(render_cb, self.conf.delay)
