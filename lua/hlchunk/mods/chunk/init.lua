@@ -5,7 +5,7 @@ local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.timer").debounce
 local Pos = require("hlchunk.utils.position")
 local Scope = require("hlchunk.utils.scope")
-local cFunc = require('hlchunk.utils.cFunc')
+local cFunc = require("hlchunk.utils.cFunc")
 
 local class = require("hlchunk.utils.class")
 
@@ -179,7 +179,7 @@ function ChunkMod:createAutocmd()
             use_treesitter = self.conf.use_treesitter,
         })
         api.nvim_win_call(winid, function()
-            self.meta.shiftwidth = api.nvim_get_option_value("shiftwidth", { buf = bufnr })
+            self.meta.shiftwidth = cFunc.get_sw(bufnr)
             self.meta.leftcol = fn.winsaveview().leftcol
         end)
         if ret_code == CHUNK_RANGE_RET.OK then

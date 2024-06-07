@@ -1,5 +1,5 @@
 local fn = vim.fn
-local cFunc = require('hlchunk.utils.cFunc')
+local cFunc = require("hlchunk.utils.cFunc")
 
 -- get the virtual indent of the given line
 ---@param rows_indent table<number, number>

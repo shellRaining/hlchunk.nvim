@@ -1,6 +1,7 @@
 local class = require("hlchunk.utils.class")
 local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 local Scope = require("hlchunk.utils.scope")
+local cFunc = require("hlchunk.utils.cFunc")
 
 local api = vim.api
 local fn = vim.fn
@@ -67,9 +68,7 @@ end
 function BaseMod:shouldRender(bufnr)
     if api.nvim_buf_is_valid(bufnr) then
         local ft = vim.bo[bufnr].ft
-        local shiftwidth = api.nvim_buf_call(bufnr, function()
-            return fn.shiftwidth()
-        end)
+        local shiftwidth = cFunc.get_sw(bufnr)
         if ft then
             return self.conf.enable and not self.conf.exclude_filetypes[ft] and shiftwidth ~= 0
         end
@@ -178,7 +177,7 @@ function BaseMod:setHl()
 end
 
 function BaseMod:clearHl()
-    -- TODO:
+    self:notify("clearHl not impl")
 end
 
 ---@param msg string

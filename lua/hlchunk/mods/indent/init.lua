@@ -4,6 +4,7 @@ local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
 local throttle = require("hlchunk.utils.timer").throttle
+local cFunc = require("hlchunk.utils.cFunc")
 
 local api = vim.api
 local fn = vim.fn
@@ -94,7 +95,7 @@ function IndentMod:createAutocmd()
             range.start = math.max(0, range.start - ahead_lines)
             range.finish = math.min(api.nvim_buf_line_count(bufnr) - 1, range.finish + ahead_lines)
             api.nvim_win_call(winid, function()
-                self.meta.shiftwidth = api.nvim_get_option_value("shiftwidth", { buf = bufnr })
+                self.meta.shiftwidth = cFunc.get_sw(bufnr)
                 self.meta.leftcol = fn.winsaveview().leftcol
                 self:render(range)
             end)
