@@ -11,6 +11,7 @@ local fn = vim.fn
 local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
 ---@class IndentMetaInfo : MetaInfo
+---@field cache table<number, number>
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -20,6 +21,7 @@ local constructor = function(self, conf, meta)
         ns_id = api.nvim_create_namespace("indent"),
         shiftwidth = fn.shiftwidth(),
         leftcol = fn.winsaveview().leftcol,
+        cache = {},
     }
 
     BaseMod.init(self, conf, meta)
@@ -35,7 +37,7 @@ end
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
 
-function IndentMod:renderLine(bufnr, index, blankLen)
+function IndentMod:renderLine(bufnr, lnum, blankLen)
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
@@ -58,14 +60,30 @@ function IndentMod:renderLine(bufnr, index, blankLen)
         --         return
         --     end
         -- end
-        api.nvim_buf_set_extmark(bufnr, self.meta.ns_id, index - 1, 0, row_opts)
+        api.nvim_buf_set_extmark(bufnr, self.meta.ns_id, lnum, 0, row_opts)
     end
 end
 
 function IndentMod:render(range)
     self:clear(range)
 
-    local retcode, rows_indent = indentHelper.get_rows_indent(range, {
+    -- narrow the range that should get indent
+    local non_cached_start = range.start
+    local non_cached_finish = range.finish
+    for i = range.start, range.finish do
+        if not self.meta.cache[i] then
+            non_cached_start = i
+            break
+        end
+    end
+    for i = non_cached_start, range.finish do
+        if self.meta.cache[i] then
+            non_cached_finish = i - 1
+            break
+        end
+    end
+
+    local retcode, rows_indent = indentHelper.get_rows_indent(Scope(range.bufnr, non_cached_start, non_cached_finish), {
         use_treesitter = self.conf.use_treesitter,
         virt_indent = true,
     })
@@ -75,9 +93,11 @@ function IndentMod:render(range)
         end
         return
     end
-
-    for index, _ in pairs(rows_indent) do
-        self:renderLine(range.bufnr, index, rows_indent[index])
+    for lnum, indent in pairs(rows_indent) do
+        self.meta.cache[lnum] = indent
+    end
+    for lnum = range.start, range.finish do
+        self:renderLine(range.bufnr, lnum, self.meta.cache[lnum])
     end
 end
 
@@ -116,7 +136,10 @@ function IndentMod:createAutocmd()
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = self.meta.augroup_name,
-        callback = throttle_render_cb_with_pre_hook,
+        callback = function(e)
+            self.meta.cache = {}
+            throttle_render_cb_with_pre_hook(e)
+        end,
     })
     api.nvim_create_autocmd({ "BufWinEnter" }, {
         group = self.meta.augroup_name,
