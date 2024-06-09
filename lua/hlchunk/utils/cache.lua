@@ -3,7 +3,7 @@ local class = require("hlchunk.utils.class")
 ---@class Cache
 ---@field private cache table<number, table<string|number, any>>
 ---@overload fun():Cache
-local Cache = class(function (self)
+local Cache = class(function(self)
     self.cache = {}
 end)
 

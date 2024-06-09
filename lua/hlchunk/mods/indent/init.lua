@@ -38,24 +38,6 @@ end
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
 
-function IndentMod:renderLine(bufnr, lnum, blankLen)
-    local row_opts = {
-        virt_text_pos = "overlay",
-        hl_mode = "combine",
-        priority = self.conf.priority,
-    }
-    local render_char_num, offset, shadow_char_num =
-        indentHelper.calc(blankLen, self.meta.leftcol, self.meta.shiftwidth)
-
-    for i = 1, render_char_num do
-        local char = self.conf.chars[(i - 1 + shadow_char_num) % #self.conf.chars + 1]
-        local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % #self.meta.hl_name_list + 1]
-        row_opts.virt_text = { { char, style } }
-        row_opts.virt_text_win_col = offset + (i - 1) * self.meta.shiftwidth
-        api.nvim_buf_set_extmark(bufnr, self.meta.ns_id, lnum, 0, row_opts)
-    end
-end
-
 function IndentMod:render(range)
     self:clear(range)
 
@@ -75,6 +57,7 @@ function IndentMod:render(range)
         end
     end
 
+    -- calculate indent
     local retcode, rows_indent = indentHelper.get_rows_indent(Scope(range.bufnr, non_cached_start, non_cached_finish), {
         use_treesitter = self.conf.use_treesitter,
         virt_indent = true,
@@ -85,11 +68,41 @@ function IndentMod:render(range)
         end
         return
     end
+
+    -- update cache
     for lnum, indent in pairs(rows_indent) do
         self.meta.cache:set(range.bufnr, lnum, indent)
     end
+
+    -- calc render info
+    local row_opts = {
+        virt_text_pos = "overlay",
+        hl_mode = "combine",
+        priority = self.conf.priority,
+    }
+    local char_num = #self.conf.chars
+    local style_num = #self.meta.hl_name_list
+    local render_info = {}
     for lnum = range.start, range.finish do
-        self:renderLine(range.bufnr, lnum, self.meta.cache:get(range.bufnr, lnum))
+        local blankLen = self.meta.cache:get(range.bufnr, lnum)
+        local render_char_num, offset, shadow_char_num =
+            indentHelper.calc(blankLen, self.meta.leftcol, self.meta.shiftwidth)
+        for i = 1, render_char_num do
+            local char = self.conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
+            local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
+            table.insert(render_info, {
+                lnum = lnum,
+                virt_text_win_col = offset + self.meta.leftcol + (i - 1) * self.meta.shiftwidth,
+                virt_text = { { char, style } },
+            })
+        end
+    end
+
+    -- render
+    for _, v in pairs(render_info) do
+        row_opts.virt_text = v.virt_text
+        row_opts.virt_text_win_col = v.virt_text_win_col
+        api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, v.lnum, 0, row_opts)
     end
 end
 
