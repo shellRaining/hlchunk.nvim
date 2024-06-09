@@ -3,6 +3,7 @@ local IndentConf = require("hlchunk.mods.indent.indent_conf")
 local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
+local Cache = require("hlchunk.utils.cache")
 local throttle = require("hlchunk.utils.timer").throttle
 local cFunc = require("hlchunk.utils.cFunc")
 
@@ -11,7 +12,7 @@ local fn = vim.fn
 local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
 ---@class IndentMetaInfo : MetaInfo
----@field cache table<number, number>
+---@field cache Cache
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -21,7 +22,7 @@ local constructor = function(self, conf, meta)
         ns_id = api.nvim_create_namespace("indent"),
         shiftwidth = fn.shiftwidth(),
         leftcol = fn.winsaveview().leftcol,
-        cache = {},
+        cache = Cache(),
     }
 
     BaseMod.init(self, conf, meta)
@@ -62,13 +63,13 @@ function IndentMod:render(range)
     local non_cached_start = range.start
     local non_cached_finish = range.finish
     for i = range.start, range.finish do
-        if not self.meta.cache[i] then
+        if not self.meta.cache:has(range.bufnr, i) then
             non_cached_start = i
             break
         end
     end
     for i = non_cached_start, range.finish do
-        if self.meta.cache[i] then
+        if self.meta.cache:has(range.bufnr, i) then
             non_cached_finish = i - 1
             break
         end
@@ -85,10 +86,10 @@ function IndentMod:render(range)
         return
     end
     for lnum, indent in pairs(rows_indent) do
-        self.meta.cache[lnum] = indent
+        self.meta.cache:set(range.bufnr, lnum, indent)
     end
     for lnum = range.start, range.finish do
-        self:renderLine(range.bufnr, lnum, self.meta.cache[lnum])
+        self:renderLine(range.bufnr, lnum, self.meta.cache:get(range.bufnr, lnum))
     end
 end
 
@@ -128,7 +129,7 @@ function IndentMod:createAutocmd()
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = self.meta.augroup_name,
         callback = function(e)
-            self.meta.cache = {}
+            self.meta.cache:clear(e.buf)
             throttle_render_cb_with_pre_hook(e)
         end,
     })
