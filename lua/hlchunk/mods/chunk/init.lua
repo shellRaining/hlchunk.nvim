@@ -201,7 +201,6 @@ function ChunkMod:createAutocmd()
         end
         debounce_render_cb(event)
     end
-
     api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.meta.augroup_name,
         callback = debounce_render_cb_with_pre_hook,

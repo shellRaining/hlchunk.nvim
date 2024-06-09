@@ -3,12 +3,17 @@ local cFunc = require("hlchunk.utils.cFunc")
 
 -- get the virtual indent of the given line
 ---@param bufnr number
----@param line number
+---@param lnum number 0-indexed
 ---@return number
-local function get_virt_indent(bufnr, line)
-    return vim.api.nvim_buf_call(bufnr, function()
-        return cFunc.get_indent(bufnr, fn.nextnonblank(line + 1) - 1)
-    end)
+local function get_virt_indent(bufnr, lnum)
+    local line_cnt = vim.api.nvim_buf_line_count(bufnr)
+    for i = lnum + 1, line_cnt do
+        local line = cFunc.get_line(bufnr, i)
+        if cFunc.skipwhite(line) ~= "" then
+            return cFunc.get_indent(bufnr, i)
+        end
+    end
+    return -1
 end
 
 local indentHelper = {}
@@ -40,11 +45,12 @@ indentHelper.ROWS_INDENT_RETCODE = {
 ---@return table<number, number>
 local function get_rows_indent_by_context(range)
     local rows_indent = {}
+    local bufnr = range.bufnr
 
     for i = range.finish, range.start, -1 do
-        rows_indent[i] = cFunc.get_indent(range.bufnr, i)
-        if rows_indent[i] == 0 and #fn.getline(i + 1) == 0 then
-            rows_indent[i] = get_virt_indent(range.bufnr, i)
+        rows_indent[i] = cFunc.get_indent(bufnr, i)
+        if rows_indent[i] == 0 and cFunc.get_line_len(bufnr, i) == 0 then
+            rows_indent[i] = get_virt_indent(bufnr, i)
         end
     end
 
@@ -61,13 +67,14 @@ local function get_rows_indent_by_treesitter(range)
         return indentHelper.ROWS_INDENT_RETCODE.NO_TS, {}
     end
 
+    local bufnr = range.bufnr
     for i = range.start, range.finish, -1 do
-        rows_indent[i] = vim.api.nvim_buf_call(range.bufnr, function()
+        rows_indent[i] = vim.api.nvim_buf_call(bufnr, function()
             local indent = ts_indent.get_indent(i + 1)
             if indent == -1 then
                 indent = fn.indent(i + 1)
-                if indent == 0 and #fn.getline(i + 1) == 0 then
-                    indent = get_virt_indent(range.bufnr, i)
+                if indent == 0 and cFunc.get_line_len(bufnr, i) == 0 then
+                    indent = get_virt_indent(bufnr, i)
                 end
             end
             ---@diagnostic disable-next-line: redundant-return-value

@@ -51,15 +51,6 @@ function IndentMod:renderLine(bufnr, lnum, blankLen)
         local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % #self.meta.hl_name_list + 1]
         row_opts.virt_text = { { char, style } }
         row_opts.virt_text_win_col = offset + (i - 1) * self.meta.shiftwidth
-
-        -- when use treesitter, without this judge, when paste code will over render
-        -- if row_opts.virt_text_win_col < 0 or row_opts.virt_text_win_col >= fn.indent(index) then
-        --     vim.notify(tostring(index))
-        --     -- if the len of the line is 0, and have leftcol, we should draw it indent by context
-        --     if api.nvim_buf_get_lines(bufnr, index - 1, index, false)[1] ~= "" then
-        --         return
-        --     end
-        -- end
         api.nvim_buf_set_extmark(bufnr, self.meta.ns_id, lnum, 0, row_opts)
     end
 end
