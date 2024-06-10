@@ -23,7 +23,7 @@ local M = {}
 ---@return number
 function M.get_indent(bufnr, lnum)
     local line_cnt = vim.api.nvim_buf_line_count(bufnr)
-    if lnum >= line_cnt then
+    if lnum >= line_cnt or lnum <= 0 then
         return -1
     end
     local handler = C.find_buffer_by_handle(bufnr, ffi.new("Error"))
@@ -40,11 +40,11 @@ end
 ---@return string
 function M.get_line(bufnr, lnum)
     local line_cnt = vim.api.nvim_buf_line_count(bufnr)
-    if lnum >= line_cnt then
+    if lnum >= line_cnt or lnum <= 0 then
         return ""
     end
     local handler = C.find_buffer_by_handle(bufnr, ffi.new("Error"))
-    return C.ml_get_buf(handler, lnum + 1)
+    return ffi.string(C.ml_get_buf(handler, lnum + 1))
 end
 
 ---@param bufnr number
@@ -52,7 +52,7 @@ end
 ---@return number
 function M.get_line_len(bufnr, lnum)
     local line_cnt = vim.api.nvim_buf_line_count(bufnr)
-    if lnum >= line_cnt then
+    if lnum >= line_cnt or lnum <= 0 then
         return 0
     end
     local handler = C.find_buffer_by_handle(bufnr, ffi.new("Error"))

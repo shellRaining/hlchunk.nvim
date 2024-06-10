@@ -1,4 +1,5 @@
 local class = require("hlchunk.utils.class")
+local cFunc = require("hlchunk.utils.cFunc")
 
 ---@class Pos
 ---@field bufnr number
@@ -14,12 +15,15 @@ local Pos = class(function(self, bufnr, row, col)
 end)
 
 ---@param pos Pos
+---@param expand_tab_width? number when the field is given, the tab will be expand to blank with the width, like "\t\t" -> "    " when the width is 2
 ---@return string
-function Pos.get_char_at_pos(pos)
-    local row = pos.row
-    local col = pos.col
-    local char = vim.api.nvim_buf_get_text(pos.bufnr, row, col, row, col + 1, {})[1]
-    return char
+function Pos.get_char_at_pos(pos, expand_tab_width)
+    local line = cFunc.get_line(pos.bufnr, pos.row)
+    if expand_tab_width then
+        local expanded_tab = string.rep(" ", expand_tab_width)
+        line = line:gsub("\t", expanded_tab)
+    end
+    return line:sub(pos.col + 1, pos.col + 1)
 end
 
 return Pos
