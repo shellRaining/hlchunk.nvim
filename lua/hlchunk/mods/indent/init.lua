@@ -82,17 +82,18 @@ function IndentMod:render(range)
     }
     local char_num = #self.conf.chars
     local style_num = #self.meta.hl_name_list
+    local leftcol = self.meta.leftcol
+    local sw = self.meta.shiftwidth
     local render_info = {}
     for lnum = range.start, range.finish do
         local blankLen = self.meta.cache:get(range.bufnr, lnum)
-        local render_char_num, offset, shadow_char_num =
-            indentHelper.calc(blankLen, self.meta.leftcol, self.meta.shiftwidth)
+        local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
         for i = 1, render_char_num do
             local char = self.conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
             local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
             table.insert(render_info, {
                 lnum = lnum,
-                virt_text_win_col = offset + self.meta.leftcol + (i - 1) * self.meta.shiftwidth,
+                virt_text_win_col = offset + leftcol + (i - 1) * sw,
                 virt_text = { { char, style } },
             })
         end

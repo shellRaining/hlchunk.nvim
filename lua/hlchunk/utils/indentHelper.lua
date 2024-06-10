@@ -1,4 +1,3 @@
-local fn = vim.fn
 local cFunc = require("hlchunk.utils.cFunc")
 
 -- get the virtual indent of the given line
@@ -24,6 +23,7 @@ local indentHelper = {}
 ---@return number render_num, number offset, number shadowed_num return the render char number and the start index of the
 -- first render char, the last is shadowed char number
 function indentHelper.calc(blank, leftcol, sw)
+    blank = blank or ""
     local blankLen = type(blank) == "string" and #blank or blank --[[@as number]]
     if blankLen - leftcol <= 0 or sw <= 0 then
         return 0, 0, 0
@@ -68,18 +68,17 @@ local function get_rows_indent_by_treesitter(range)
     end
 
     local bufnr = range.bufnr
-    for i = range.start, range.finish, -1 do
-        rows_indent[i] = vim.api.nvim_buf_call(bufnr, function()
-            local indent = ts_indent.get_indent(i + 1)
-            if indent == -1 then
-                indent = fn.indent(i + 1)
-                if indent == 0 and cFunc.get_line_len(bufnr, i) == 0 then
-                    indent = get_virt_indent(bufnr, i)
-                end
-            end
-            ---@diagnostic disable-next-line: redundant-return-value
-            return indent
+    for i = range.start, range.finish, 1 do
+        local t1 = vim.api.nvim_buf_call(bufnr, function()
+            return ts_indent.get_indent(i + 1)
         end)
+        local t2 = cFunc.get_indent(bufnr, i)
+        local line_len = cFunc.get_line_len(bufnr, i)
+        local indent = math.min(t1, t2)
+        if indent == 0 and line_len == 0 then
+            indent = get_virt_indent(bufnr, i)
+        end
+        rows_indent[i] = indent
     end
 
     return indentHelper.ROWS_INDENT_RETCODE.OK, rows_indent
