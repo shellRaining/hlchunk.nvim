@@ -188,7 +188,7 @@ function ChunkMod:createAutocmd()
             self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
             self:updatePreState({}, {}, {}, false)
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
-            self:render(range, { error = true })
+            self:render(range, { error = self.conf.error_sign })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then
             self:notify("[hlchunk.chunk]: no parser for " .. vim.bo[bufnr].ft, nil, { once = true })
         end
