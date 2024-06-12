@@ -194,25 +194,30 @@ function ChunkMod:createAutocmd()
             self:notify("[hlchunk.chunk]: no parser for " .. vim.bo[bufnr].ft, nil, { once = true })
         end
     end
-    local debounce_render_cb = debounce(render_cb, self.conf.delay)
-    local debounce_render_cb_with_pre_hook = function(event, opts)
+    local db_render_cb = debounce(render_cb, self.conf.delay, false)
+    local db_render_cb_imm = debounce(render_cb, self.conf.delay, true)
+    local db_render_cb_with_pre_hook = function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
         if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
         end
-        debounce_render_cb(event, opts)
+        if opts.lazy then
+            db_render_cb(event, opts)
+        else
+            db_render_cb_imm(event, opts)
+        end
     end
     api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.meta.augroup_name,
         callback = function(e)
-            debounce_render_cb_with_pre_hook(e, { lazy = true })
+            db_render_cb_with_pre_hook(e, { lazy = true })
         end,
     })
     api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.meta.augroup_name,
         callback = function(e)
-            debounce_render_cb_with_pre_hook(e, { lazy = false })
+            db_render_cb_with_pre_hook(e, { lazy = false })
         end,
     })
     api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {
