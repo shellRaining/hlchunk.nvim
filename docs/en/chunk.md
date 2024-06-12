@@ -28,7 +28,7 @@ local default_conf = {
     error_sign = true,
     -- animation related
     duration = 200,
-    delay = 500,
+    delay = 300,
 }
 ```
 
@@ -60,7 +60,7 @@ The unique configuration options are `use_treesitter`, `chars`, `textobject`, `m
 
 - `duration` is a number, with a default of `200` ms. It is used to control the duration of the animation.
 
-- `delay` is a number, with a default of `500` ms. It is used to control the delay of the animation. If set to `0`, animation will be removed.
+- `delay` is a number, with a default of `300` ms. It is used to control the delay of the animation. If set to `0`, animation will be removed.
 
 For the general configurations (mentioned in the [README](../../README.md)), only a few need special attention:
 

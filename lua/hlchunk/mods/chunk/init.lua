@@ -46,7 +46,7 @@ end
 ---@class ChunkMod : BaseMod
 ---@field conf ChunkConf
 ---@field meta ChunkMetaInfo
----@field render fun(self: ChunkMod, range: Scope, opts?: {error: boolean})
+---@field render fun(self: ChunkMod, range: Scope, opts?: {error: boolean, lazy: boolean})
 ---@overload fun(conf?: UserChunkConf, meta?: MetaInfo): ChunkMod
 local ChunkMod = class(BaseMod, constructor)
 
@@ -120,7 +120,7 @@ function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_
 end
 
 function ChunkMod:render(range, opts)
-    opts = opts or { error = false }
+    opts = opts or { error = false, lazy = false }
     if not self:shouldRender(range.bufnr) then
         return
     end
@@ -131,7 +131,8 @@ function ChunkMod:render(range, opts)
     self:get_chunk_data(range, virt_text_list, row_list, virt_text_win_col_list)
 
     if
-        shallowCmp(virt_text_list, self.meta.pre_virt_text_list)
+        opts.lazy
+        and shallowCmp(virt_text_list, self.meta.pre_virt_text_list)
         and shallowCmp(row_list, self.meta.pre_row_list)
         and shallowCmp(virt_text_win_col_list, self.meta.pre_virt_text_win_col_list)
         and self.meta.pre_is_error == opts.error
@@ -149,7 +150,7 @@ function ChunkMod:render(range, opts)
         priority = 100,
     }
     local text_hl = opts.error and "HLChunk2" or "HLChunk1"
-    if self.conf.delay == 0 then
+    if self.conf.delay == 0 or opts.lazy == false then
         for i, vt in ipairs(virt_text_list) do
             row_opts.virt_text = { { vt, text_hl } }
             row_opts.virt_text_win_col = virt_text_win_col_list[i]
@@ -169,7 +170,7 @@ end
 
 function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
-    local render_cb = function(event)
+    local render_cb = function(event, opts)
         local bufnr = event.buf
         local winid = api.nvim_get_current_win()
         local pos = api.nvim_win_get_cursor(winid)
@@ -183,31 +184,36 @@ function ChunkMod:createAutocmd()
             self.meta.leftcol = fn.winsaveview().leftcol
         end)
         if ret_code == CHUNK_RANGE_RET.OK then
-            self:render(range, { error = false })
+            self:render(range, { error = false, lazy = opts.lazy })
         elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then
             self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
             self:updatePreState({}, {}, {}, false)
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
-            self:render(range, { error = self.conf.error_sign })
+            self:render(range, { error = self.conf.error_sign, lazy = opts.lazy })
         elseif ret_code == CHUNK_RANGE_RET.NO_TS then
             self:notify("[hlchunk.chunk]: no parser for " .. vim.bo[bufnr].ft, nil, { once = true })
         end
     end
     local debounce_render_cb = debounce(render_cb, self.conf.delay)
-    local debounce_render_cb_with_pre_hook = function(event)
+    local debounce_render_cb_with_pre_hook = function(event, opts)
+        opts = opts or { lazy = false }
         local bufnr = event.buf
         if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
         end
-        debounce_render_cb(event)
+        debounce_render_cb(event, opts)
     end
     api.nvim_create_autocmd({ "CursorMovedI", "CursorMoved" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb_with_pre_hook,
+        callback = function(e)
+            debounce_render_cb_with_pre_hook(e, { lazy = true })
+        end,
     })
     api.nvim_create_autocmd({ "TextChangedI", "TextChanged" }, {
         group = self.meta.augroup_name,
-        callback = debounce_render_cb_with_pre_hook,
+        callback = function(e)
+            debounce_render_cb_with_pre_hook(e, { lazy = false })
+        end,
     })
     api.nvim_create_autocmd({ "UIEnter", "BufWinEnter" }, {
         group = self.meta.augroup_name,
