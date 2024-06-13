@@ -35,7 +35,7 @@ local default_conf = {
 The unique configuration options are `use_treesitter`, `chars`, `textobject`, `max_file_size`,  `error_sign`, `duration` and `delay`
 
 - `use_treesitter` is used to control whether to use treesitter to highlight code blocks. The default is true.
-  If this field is set to true, it finds the matching node type by searching the tree nodes from bottom to top to obtain the corresponding chunk range. If set to false, it will use Vim's `searchpair` to find the nearest braces to infer the position (which is why it cannot be used normally in scripting languages like Python).
+  If this field is set to true, it finds the matching node type by searching the tree nodes from bottom to top to obtain the corresponding chunk range. If set to false, it will use Vim's `searchpair` to find the nearest braces to infer the position (which is why it cannot be used normally in scripting languages like Python). And after `v1.2.1`, it's no longer recommended to use `treesitter` to get indent.
 
 - `chars` is a table, where the characters in it are used to render the chunk. This table contains five parts:
 

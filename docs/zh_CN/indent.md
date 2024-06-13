@@ -21,7 +21,7 @@ local default_conf = {
 
 独有的配置为 `use_treesitter`，`chars`，`ahead_lines`
 
-- `use_treesitter` 是用来控制是否使用 treesitter 来判断 indent 的层数，默认为 false（因为性能问题）。如果你对缩进的精确要求很高，你可以尝试设置为 true，详情见这个 [issue](https://github.com/shellRaining/hlchunk.nvim/issues/77#issuecomment-1817530409)
+- `use_treesitter` 是用来控制是否使用 treesitter 来判断 indent 的层数，默认为 false（因为性能问题）。如果你对缩进的精确要求很高，你可以尝试设置为 true，详情见这个 [issue](https://github.com/shellRaining/hlchunk.nvim/issues/77#issuecomment-1817530409)。同时在 `v1.2.1` 版本之后，已经不再推荐使用 treesitter 来获取缩进。
 
 - `chars` 是一个表，其中的字符用来指示用什么字符来渲染 indent line，你可以尝试设置为下面这样：
 
