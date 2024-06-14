@@ -54,6 +54,7 @@ local ChunkMod = class(BaseMod, constructor)
 function ChunkMod:enable()
     BaseMod.enable(self)
     self:extra()
+    self:render(Scope(0, 0, -1))
 end
 
 function ChunkMod:stopRender()

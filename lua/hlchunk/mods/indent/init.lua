@@ -80,7 +80,7 @@ function IndentMod:calcRenderInfo(range)
         local blankLen = self.meta.cache:get(range.bufnr, lnum) --[[@as string]]
         local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
         for i = 1, render_char_num do
-            local win_col = offset  + (i - 1) * sw
+            local win_col = offset + (i - 1) * sw
             local char = self.conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
             local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
             table.insert(render_info, {
