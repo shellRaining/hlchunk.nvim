@@ -54,13 +54,13 @@ end
 function IndentMod:narrowRange(range)
     local start = range.start
     local finish = range.finish
-    for i = range.start, range.finish do
+    for i = start, finish do
         if not self.meta.cache:has(range.bufnr, i) then
             start = i
             break
         end
     end
-    for i = range.finish, range.start, -1 do
+    for i = finish, start, -1 do
         if not self.meta.cache:has(range.bufnr, i) then
             finish = i
             break
@@ -71,18 +71,20 @@ end
 
 function IndentMod:calcRenderInfo(range)
     -- calc render info
-    local char_num = #self.conf.chars
-    local style_num = #self.meta.hl_name_list
-    local leftcol = self.meta.leftcol
-    local sw = self.meta.shiftwidth
+    local conf = self.conf
+    local meta = self.meta
+    local char_num = #conf.chars
+    local style_num = #meta.hl_name_list
+    local leftcol = meta.leftcol
+    local sw = meta.shiftwidth
     local render_info = {}
     for lnum = range.start, range.finish do
-        local blankLen = self.meta.cache:get(range.bufnr, lnum) --[[@as string]]
+        local blankLen = meta.cache:get(range.bufnr, lnum) --[[@as string]]
         local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
         for i = 1, render_char_num do
             local win_col = offset + (i - 1) * sw
-            local char = self.conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
-            local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
+            local char = conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
+            local style = meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
             table.insert(render_info, {
                 lnum = lnum,
                 virt_text_win_col = win_col,
@@ -114,32 +116,34 @@ end
 
 function IndentMod:render(range, opts)
     opts = opts or { lazy = false }
+    local bufnr = range.bufnr
+    local conf = self.conf
+    local meta = self.meta
+
     if not opts.lazy then
-        self:clear(Scope(range.bufnr, 0, api.nvim_buf_line_count(range.bufnr)))
-        self.meta.cache:clear(range.bufnr)
-        pos2id:clear(range.bufnr)
-        pos2info:clear(range.bufnr)
+        self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
+        meta.cache:clear(bufnr)
+        pos2id:clear(bufnr)
+        pos2info:clear(bufnr)
     end
 
     local narrowed_range = self:narrowRange(range)
-    -- calculate indent
     local retcode, rows_indent = indentHelper.get_rows_indent(narrowed_range, {
-        use_treesitter = self.conf.use_treesitter,
+        use_treesitter = conf.use_treesitter,
         virt_indent = true,
     })
-    if retcode == ROWS_INDENT_RETCODE.NO_TS and self.conf.use_treesitter then
-        if self.conf.notify then
+    if retcode == ROWS_INDENT_RETCODE.NO_TS and conf.use_treesitter then
+        if conf.notify then
             self:notify("[hlchunk.indent]: no parser for " .. vim.bo.filetype, nil, { once = true })
         end
         return
     end
 
-    -- update cache
     for lnum, indent in pairs(rows_indent) do
-        self.meta.cache:set(range.bufnr, lnum, indent)
+        meta.cache:set(bufnr, lnum, indent)
     end
     local render_info = self:calcRenderInfo(narrowed_range)
-    self:setmark(range.bufnr, render_info)
+    self:setmark(bufnr, render_info)
 end
 
 function IndentMod:createAutocmd()
