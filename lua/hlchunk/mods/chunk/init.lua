@@ -176,6 +176,9 @@ function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(event, opts)
         local bufnr = event.buf
+        if not api.nvim_buf_is_valid(bufnr) then
+            return
+        end
         local winid = api.nvim_get_current_win()
         local pos = api.nvim_win_get_cursor(winid)
 
