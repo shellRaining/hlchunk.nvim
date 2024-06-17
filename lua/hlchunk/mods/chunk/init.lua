@@ -54,6 +54,7 @@ local ChunkMod = class(BaseMod, constructor)
 function ChunkMod:enable()
     BaseMod.enable(self)
     self:extra()
+    self:render(Scope(0, 0, -1))
 end
 
 function ChunkMod:stopRender()
@@ -154,7 +155,10 @@ function ChunkMod:render(range, opts)
         for i, vt in ipairs(virt_text_list) do
             row_opts.virt_text = { { vt, text_hl } }
             row_opts.virt_text_win_col = virt_text_win_col_list[i]
-            api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row_list[i], 0, row_opts)
+            local row = row_list[i]
+            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
+                api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
+            end
         end
     else
         self.meta.task = LoopTask(function(vt, row, vt_win_col)
@@ -172,6 +176,9 @@ function ChunkMod:createAutocmd()
     BaseMod.createAutocmd(self)
     local render_cb = function(event, opts)
         local bufnr = event.buf
+        if not api.nvim_buf_is_valid(bufnr) then
+            return
+        end
         local winid = api.nvim_get_current_win()
         local pos = api.nvim_win_get_cursor(winid)
 

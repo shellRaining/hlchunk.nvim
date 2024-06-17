@@ -12,6 +12,7 @@ local fn = vim.fn
 local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
 ---@class IndentMetaInfo : MetaInfo
+---@field pre_leftcol number
 ---@field cache Cache
 
 local constructor = function(self, conf, meta)
@@ -21,8 +22,9 @@ local constructor = function(self, conf, meta)
         hl_base_name = "HLIndent",
         ns_id = api.nvim_create_namespace("indent"),
         shiftwidth = fn.shiftwidth(),
+        pre_leftcol = 0,
         leftcol = fn.winsaveview().leftcol,
-        cache = Cache(),
+        cache = Cache("bufnr", "line"),
     }
 
     BaseMod.init(self, conf, meta)
@@ -33,83 +35,121 @@ end
 ---@class IndentMod : BaseMod
 ---@field conf IndentConf
 ---@field meta IndentMetaInfo
----@field render fun(self: IndentMod, range: Scope)
----@field renderLine function
+---@field render fun(self: IndentMod, range: Scope, opts: {lazy: boolean})
+---@field narrowRange fun(self: IndentMod, range: Scope): Scope
+---@field calcRenderInfo fun(self: IndentMod, range: Scope): table<number, string>
+---@field setmark function
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
 
-function IndentMod:render(range)
-    self:clear(range)
+local pos2info = Cache("bufnr", "line", "col")
+local pos2id = Cache("bufnr", "line", "col")
 
-    -- narrow the range that should get indent
-    local non_cached_start = range.start
-    local non_cached_finish = range.finish
-    for i = range.start, range.finish do
+function IndentMod:disable()
+    pos2info:clear()
+    pos2id:clear()
+    BaseMod.disable(self)
+end
+
+function IndentMod:narrowRange(range)
+    local start = range.start
+    local finish = range.finish
+    for i = start, finish do
         if not self.meta.cache:has(range.bufnr, i) then
-            non_cached_start = i
+            start = i
             break
         end
     end
-    for i = non_cached_start, range.finish do
-        if self.meta.cache:has(range.bufnr, i) then
-            non_cached_finish = i - 1
+    for i = finish, start, -1 do
+        if not self.meta.cache:has(range.bufnr, i) then
+            finish = i
             break
         end
     end
+    return Scope(range.bufnr, start, finish)
+end
 
-    -- calculate indent
-    local retcode, rows_indent = indentHelper.get_rows_indent(Scope(range.bufnr, non_cached_start, non_cached_finish), {
-        use_treesitter = self.conf.use_treesitter,
-        virt_indent = true,
-    })
-    if retcode == ROWS_INDENT_RETCODE.NO_TS and self.conf.use_treesitter then
-        if self.conf.notify then
-            self:notify("[hlchunk.indent]: no parser for " .. vim.bo.filetype, nil, { once = true })
-        end
-        return
-    end
-
-    -- update cache
-    for lnum, indent in pairs(rows_indent) do
-        self.meta.cache:set(range.bufnr, lnum, indent)
-    end
-
+function IndentMod:calcRenderInfo(range)
     -- calc render info
+    local conf = self.conf
+    local meta = self.meta
+    local char_num = #conf.chars
+    local style_num = #meta.hl_name_list
+    local leftcol = meta.leftcol
+    local sw = meta.shiftwidth
+    local render_info = {}
+    for lnum = range.start, range.finish do
+        local blankLen = meta.cache:get(range.bufnr, lnum) --[[@as string]]
+        local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
+        for i = 1, render_char_num do
+            local win_col = offset + (i - 1) * sw
+            local char = conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
+            local style = meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
+            table.insert(render_info, {
+                lnum = lnum,
+                virt_text_win_col = win_col,
+                virt_text = { { char, style } },
+            })
+            pos2info:set(range.bufnr, lnum, win_col, { char, style })
+        end
+    end
+
+    return render_info
+end
+
+function IndentMod:setmark(bufnr, render_info)
+    -- render
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
         priority = self.conf.priority,
     }
-    local char_num = #self.conf.chars
-    local style_num = #self.meta.hl_name_list
-    local leftcol = self.meta.leftcol
-    local sw = self.meta.shiftwidth
-    local render_info = {}
-    for lnum = range.start, range.finish do
-        local blankLen = self.meta.cache:get(range.bufnr, lnum)
-        local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
-        for i = 1, render_char_num do
-            local char = self.conf.chars[(i - 1 + shadow_char_num) % char_num + 1]
-            local style = self.meta.hl_name_list[(i - 1 + shadow_char_num) % style_num + 1]
-            table.insert(render_info, {
-                lnum = lnum,
-                virt_text_win_col = offset + leftcol + (i - 1) * sw,
-                virt_text = { { char, style } },
-            })
-        end
-    end
-
-    -- render
     for _, v in pairs(render_info) do
         row_opts.virt_text = v.virt_text
         row_opts.virt_text_win_col = v.virt_text_win_col
-        api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, v.lnum, 0, row_opts)
+        if not pos2id:get(bufnr, v.lnum, v.virt_text_win_col) then
+            local id = api.nvim_buf_set_extmark(bufnr, self.meta.ns_id, v.lnum, 0, row_opts)
+            pos2id:set(bufnr, v.lnum, v.virt_text_win_col, id)
+        end
     end
+end
+
+function IndentMod:render(range, opts)
+    opts = opts or { lazy = false }
+    local bufnr = range.bufnr
+    local conf = self.conf
+    local meta = self.meta
+
+    if not opts.lazy then
+        self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
+        meta.cache:clear(bufnr)
+        pos2id:clear(bufnr)
+        pos2info:clear(bufnr)
+    end
+
+    local narrowed_range = self:narrowRange(range)
+    local retcode, rows_indent = indentHelper.get_rows_indent(narrowed_range, {
+        use_treesitter = conf.use_treesitter,
+        virt_indent = true,
+    })
+    if retcode == ROWS_INDENT_RETCODE.NO_TS and conf.use_treesitter then
+        if conf.notify then
+            self:notify("[hlchunk.indent]: no parser for " .. vim.bo.filetype, nil, { once = true })
+        end
+        return
+    end
+
+    for lnum, indent in pairs(rows_indent) do
+        meta.cache:set(bufnr, lnum, indent)
+    end
+    local render_info = self:calcRenderInfo(narrowed_range)
+    self:setmark(bufnr, render_info)
 end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
-    local render_cb = function(event)
+    local render_cb = function(event, opts)
+        opts = opts or { lazy = false }
         local bufnr = event.buf
         if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
@@ -122,29 +162,35 @@ function IndentMod:createAutocmd()
             range.finish = math.min(api.nvim_buf_line_count(bufnr) - 1, range.finish + ahead_lines)
             api.nvim_win_call(winid, function()
                 self.meta.shiftwidth = cFunc.get_sw(bufnr)
+                self.meta.pre_leftcol = self.meta.leftcol
                 self.meta.leftcol = fn.winsaveview().leftcol
-                self:render(range)
+                if self.meta.pre_leftcol ~= self.meta.leftcol then
+                    opts.lazy = false
+                end
+                self:render(range, opts)
             end)
         end
     end
     local throttle_render_cb = throttle(render_cb, self.conf.delay)
-    local throttle_render_cb_with_pre_hook = function(event)
+    local throttle_render_cb_with_pre_hook = function(event, opts)
+        opts = opts or { lazy = false }
         local bufnr = event.buf
         if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
         end
-        throttle_render_cb(event)
+        throttle_render_cb(event, opts)
     end
 
     api.nvim_create_autocmd({ "WinScrolled" }, {
         group = self.meta.augroup_name,
-        callback = throttle_render_cb_with_pre_hook,
+        callback = function(e)
+            throttle_render_cb_with_pre_hook(e, { lazy = true })
+        end,
     })
     api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         group = self.meta.augroup_name,
         callback = function(e)
-            self.meta.cache:clear(e.buf)
-            throttle_render_cb_with_pre_hook(e)
+            throttle_render_cb_with_pre_hook(e, { lazy = false })
         end,
     })
     api.nvim_create_autocmd({ "BufWinEnter" }, {
