@@ -13,7 +13,6 @@ local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
 ---@class IndentMetaInfo : MetaInfo
 ---@field pre_leftcol number
----@field cache Cache
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -24,7 +23,6 @@ local constructor = function(self, conf, meta)
         shiftwidth = fn.shiftwidth(),
         pre_leftcol = 0,
         leftcol = fn.winsaveview().leftcol,
-        cache = Cache("bufnr", "line"),
     }
 
     BaseMod.init(self, conf, meta)
@@ -36,12 +34,12 @@ end
 ---@field conf IndentConf
 ---@field meta IndentMetaInfo
 ---@field render fun(self: IndentMod, range: Scope, opts: {lazy: boolean})
----@field narrowRange fun(self: IndentMod, range: Scope): Scope
----@field calcRenderInfo fun(self: IndentMod, range: Scope): table<number, string>
+---@field calcRenderInfo fun(self: IndentMod, range: Scope): table<number, {lnum: number, virt_text_win_col: number, virt_text: table<number, {string, string}>}>
 ---@field setmark function
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
 
+local indent_cache = Cache("bufnr", "line")
 local pos2info = Cache("bufnr", "line", "col")
 local pos2id = Cache("bufnr", "line", "col")
 
@@ -51,17 +49,17 @@ function IndentMod:disable()
     BaseMod.disable(self)
 end
 
-function IndentMod:narrowRange(range)
+local function narrowRange(range)
     local start = range.start
     local finish = range.finish
     for i = start, finish do
-        if not self.meta.cache:has(range.bufnr, i) then
+        if not indent_cache:has(range.bufnr, i) then
             start = i
             break
         end
     end
     for i = finish, start, -1 do
-        if not self.meta.cache:has(range.bufnr, i) then
+        if not indent_cache:has(range.bufnr, i) then
             finish = i
             break
         end
@@ -70,7 +68,6 @@ function IndentMod:narrowRange(range)
 end
 
 function IndentMod:calcRenderInfo(range)
-    -- calc render info
     local conf = self.conf
     local meta = self.meta
     local char_num = #conf.chars
@@ -79,7 +76,7 @@ function IndentMod:calcRenderInfo(range)
     local sw = meta.shiftwidth
     local render_info = {}
     for lnum = range.start, range.finish do
-        local blankLen = meta.cache:get(range.bufnr, lnum) --[[@as string]]
+        local blankLen = indent_cache:get(range.bufnr, lnum) --[[@as string]]
         local render_char_num, offset, shadow_char_num = indentHelper.calc(blankLen, leftcol, sw)
         for i = 1, render_char_num do
             local win_col = offset + (i - 1) * sw
@@ -118,16 +115,17 @@ function IndentMod:render(range, opts)
     opts = opts or { lazy = false }
     local bufnr = range.bufnr
     local conf = self.conf
-    local meta = self.meta
 
     if not opts.lazy then
-        self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
-        meta.cache:clear(bufnr)
-        pos2id:clear(bufnr)
-        pos2info:clear(bufnr)
+        self:clear(range)
+        for i = range.start, range.finish do
+            indent_cache:clear(bufnr, i)
+            pos2id:clear(bufnr, i)
+            pos2info:clear(bufnr, i)
+        end
     end
 
-    local narrowed_range = self:narrowRange(range)
+    local narrowed_range = narrowRange(range)
     local retcode, rows_indent = indentHelper.get_rows_indent(narrowed_range, {
         use_treesitter = conf.use_treesitter,
         virt_indent = true,
@@ -140,7 +138,7 @@ function IndentMod:render(range, opts)
     end
 
     for lnum, indent in pairs(rows_indent) do
-        meta.cache:set(bufnr, lnum, indent)
+        indent_cache:set(bufnr, lnum, indent)
     end
     local render_info = self:calcRenderInfo(narrowed_range)
     render_info = vim.tbl_filter(function(v)
@@ -156,7 +154,7 @@ function IndentMod:createAutocmd()
     local render_cb = function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
-        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
+        if not self:shouldRender(bufnr) then
             return
         end
         local wins = fn.win_findbuf(bufnr) or {}
@@ -192,15 +190,11 @@ function IndentMod:createAutocmd()
             throttle_render_cb_with_pre_hook(e, { lazy = true })
         end,
     })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
         group = self.meta.augroup_name,
         callback = function(e)
             throttle_render_cb_with_pre_hook(e, { lazy = false })
         end,
-    })
-    api.nvim_create_autocmd({ "BufWinEnter" }, {
-        group = self.meta.augroup_name,
-        callback = throttle_render_cb_with_pre_hook,
     })
     api.nvim_create_autocmd({ "OptionSet" }, {
         group = self.meta.augroup_name,

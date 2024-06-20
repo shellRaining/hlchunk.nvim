@@ -206,7 +206,7 @@ function ChunkMod:createAutocmd()
     local db_render_cb_with_pre_hook = function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
-        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
+        if not self:shouldRender(bufnr) then
             return
         end
         if opts.lazy then
