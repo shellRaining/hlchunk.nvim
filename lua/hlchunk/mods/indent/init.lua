@@ -143,6 +143,11 @@ function IndentMod:render(range, opts)
         meta.cache:set(bufnr, lnum, indent)
     end
     local render_info = self:calcRenderInfo(narrowed_range)
+    render_info = vim.tbl_filter(function(v)
+        return (
+            pos2info:has(bufnr, v.lnum - 1, v.virt_text_win_col) or pos2info:has(bufnr, v.lnum + 1, v.virt_text_win_col)
+        )
+    end, render_info)
     self:setmark(bufnr, render_info)
 end
 
