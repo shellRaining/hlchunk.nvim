@@ -30,11 +30,17 @@ local constructor = function(self, conf, meta)
     self.conf = IndentConf(conf)
 end
 
+---@class RenderInfo
+---@field lnum number
+---@field virt_text_win_col number
+---@field virt_text table
+---@field level number
+
 ---@class IndentMod : BaseMod
 ---@field conf IndentConf
 ---@field meta IndentMetaInfo
 ---@field render fun(self: IndentMod, range: Scope, opts: {lazy: boolean})
----@field calcRenderInfo fun(self: IndentMod, range: Scope): table<number, {lnum: number, virt_text_win_col: number, virt_text: table<number, {string, string}>}>
+---@field calcRenderInfo fun(self: IndentMod, range: Scope): RenderInfo
 ---@field setmark function
 ---@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
 local IndentMod = class(BaseMod, constructor)
@@ -86,8 +92,8 @@ function IndentMod:calcRenderInfo(range)
                 lnum = lnum,
                 virt_text_win_col = win_col,
                 virt_text = { { char, style } },
+                level = i,
             })
-            pos2info:set(range.bufnr, lnum, win_col, { char, style })
         end
     end
 
@@ -137,15 +143,19 @@ function IndentMod:render(range, opts)
         return
     end
 
+    -- get render_info and process it
     for lnum, indent in pairs(rows_indent) do
         indent_cache:set(bufnr, lnum, indent)
     end
     local render_info = self:calcRenderInfo(narrowed_range)
-    render_info = vim.tbl_filter(function(v)
-        return (
-            pos2info:has(bufnr, v.lnum - 1, v.virt_text_win_col) or pos2info:has(bufnr, v.lnum + 1, v.virt_text_win_col)
-        )
-    end, render_info)
+    for _, v in pairs(render_info) do
+        pos2info:set(range.bufnr, v.lnum, v.virt_text_win_col, v.virt_text)
+    end
+    for _, filter in ipairs(self.conf.filter_list) do
+        render_info = vim.tbl_filter(filter, render_info)
+    end
+
+    -- render
     self:setmark(bufnr, render_info)
 end
 
@@ -159,12 +169,13 @@ function IndentMod:createAutocmd()
         end
         local wins = fn.win_findbuf(bufnr) or {}
         for _, winid in ipairs(wins) do
-            local range = Scope(api.nvim_win_get_buf(winid), fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
+            local win_bufnr = api.nvim_win_get_buf(winid)
+            local range = Scope(win_bufnr, fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
             local ahead_lines = self.conf.ahead_lines
             range.start = math.max(0, range.start - ahead_lines)
-            range.finish = math.min(api.nvim_buf_line_count(bufnr) - 1, range.finish + ahead_lines)
+            range.finish = math.min(api.nvim_buf_line_count(win_bufnr) - 1, range.finish + ahead_lines)
             api.nvim_win_call(winid, function()
-                self.meta.shiftwidth = cFunc.get_sw(bufnr)
+                self.meta.shiftwidth = cFunc.get_sw(win_bufnr)
                 self.meta.pre_leftcol = self.meta.leftcol
                 self.meta.leftcol = fn.winsaveview().leftcol
                 if self.meta.pre_leftcol ~= self.meta.leftcol then

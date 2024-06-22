@@ -40,6 +40,24 @@ When rendering, the first level will use the first character, the second level w
 
 - `delay` is a number that presents a millisecond value, because rendering is very time-consuming in some cases, a throttle function is used to limit the rendering frequency, the larger the value, the smoother the screen scrolling, but at the same time, a larger part of the content will not be rendered (until after delay milliseconds), which defaults to 100
 
+- `filter_list` is a `Lua` list where you can define some `filter` functions to filter the rendered characters. The functions defined here must accept one parameter, `render_char_info`, which contains the following fields:
+  - `level`: indicates the current indentation level
+  - `lnum`: indicates the line number where the current indented character is located (starting from 0)
+  - `virt_text_win_col`: represents the column on the screen where the current indented character is located (starting from 0). For more information, refer to [nvim_buf_set_extmark function](https://neovim.io/doc/user/api.html#nvim_buf_set_extmark())
+  - `virt_text`: same as above, this is a parameter of the `nvim_buf_set_extmark` function; generally, you do not need to set this field.
+  
+  let's look an example here, if you don't want to show the first level of indent line, you can set like this:
+  
+  ```lua
+  filter_list = {
+      function(v)
+          return v.level ~= 1
+      end,
+  },
+  ```
+  
+
+
 Like chunk, we also need to pay extra attention to the common configuration style:
 
 - Here, style is a RGB string or a table. If it is a string, all indent lines will be rendered in this color. If it is a table, it can be written in two ways:
