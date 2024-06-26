@@ -156,7 +156,7 @@ function ChunkMod:render(range, opts)
             row_opts.virt_text = { { vt, text_hl } }
             row_opts.virt_text_win_col = virt_text_win_col_list[i]
             local row = row_list[i]
-            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
+            if row and api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
                 api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
             end
         end
