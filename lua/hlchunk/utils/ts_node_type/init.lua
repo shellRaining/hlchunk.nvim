@@ -4,6 +4,7 @@ M.cpp = require("hlchunk.utils.ts_node_type.cpp")
 M.lua = require("hlchunk.utils.ts_node_type.lua")
 M.rust = require("hlchunk.utils.ts_node_type.rust")
 M.zig = require("hlchunk.utils.ts_node_type.zig")
+M.yaml = require("hlchunk.utils.ts_node_type.yaml")
 M.default = {
     "class",
     "^func",
