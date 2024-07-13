@@ -3,6 +3,7 @@ local ChunkConf = require("hlchunk.mods.chunk.chunk_conf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
 local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.timer").debounce
+local debounce_throttle = require("hlchunk.utils.timer").debounce_throttle
 local Pos = require("hlchunk.utils.position")
 local Scope = require("hlchunk.utils.scope")
 local cFunc = require("hlchunk.utils.cFunc")
@@ -202,7 +203,7 @@ function ChunkMod:createAutocmd()
         end
     end
     local db_render_cb = debounce(render_cb, self.conf.delay, false)
-    local db_render_cb_imm = debounce(render_cb, self.conf.delay, true)
+    local db_render_cb_imm = debounce_throttle(render_cb, self.conf.delay)
     local db_render_cb_with_pre_hook = function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
