@@ -6,14 +6,27 @@
 <p align='center'>
 <b>English</b> | <a href="./README.zh-CN.md">简体中文</a>
 </p>
-
-## notice!!!
-
-There have been many recent changes. If you encounter any bugs, please feel free to raise an issue. I will improve the code clarity and documentation in the future.
-
 ## What can this plugin do
 
 Similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim), this plugin can highlight the indent line, and highlight the code chunk according to the current cursor position.
+
+## plugin performance
+
+Using `profile.nvim` for performance analysis, all experiments were conducted on macOS with alacritty, Neovim window height was 66 lines, the code file was `typescript.js`, starting from the first line to the five hundredth line. The average rendering time per render was `0.7ms`.
+
+I did a lot of work to minimize rendering time as much as possible
+
+1. Asynchronous rendering to reduce stuttering
+
+2. Using C functions to speed up some function calls
+
+3. Caching extmarks for each line as much as possible to reduce indentation calculations
+
+4. Using throttle functions to batch the rendering process as much as possible
+
+If you want to reduce the sudden stuttering when scrolling the window, maybe you will like `hlchunk.nvim`~
+
+For detailed optimization work, you can see my blog (written in Chinese): [https://www.shellraining.top/docs/tools/hlchunk/profile.html](https://www.shellraining.top/docs/tools/hlchunk/profile.html)
 
 ## Brief introduction
 

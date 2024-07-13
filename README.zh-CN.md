@@ -6,14 +6,24 @@
 <p align='center'>
 <a href="./README.md">English</a> | <b>简体中文</b>
 </p>
-
-## 注意！！！
-
-最近代码发生了很多变动。如果您遇到任何 bug，请随时提出 issue。我将在未来改进代码清晰度和文档。
-
 ## 这个插件可以做什么
 
 和 [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) 类似，这个插件可以用来高亮缩进线,并且还可以根据当前光标所处的位置，高亮所在代码块.
+
+## 插件性能
+
+使用 `profile.nvim` 进行性能分析，所有实验均是在 macOS 上的 alacritty 进行，Neovim 窗口高度为 66 行，代码文件是 `typescript.js`，从首行开始，到五百行结束。平均每次渲染耗时 `0.7ms`
+
+我做了很多工作来尽可能缩短渲染耗时
+
+1. 异步渲染，减少卡顿
+2. 使用 c 函数，加快部分函数调用
+3. 尽可能缓存每行的 extmark，减少缩进计算
+4. 使用节流函数来尽可能批处理渲染过程
+
+如果你希望能够减少滚动窗口时候突如其来的卡顿感，也许你会喜欢上 `hlchunk.nvim`~
+
+具体的优化工作你可以看我的博客 [https://www.shellraining.top/docs/tools/hlchunk/profile.html](https://www.shellraining.top/docs/tools/hlchunk/profile.html)
 
 ## 简要概述
 
