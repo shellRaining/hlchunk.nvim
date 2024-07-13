@@ -66,6 +66,30 @@ function M.debounce(fn, delay, first)
     end
 end
 
+function M.debounce_throttle(fn, delay)
+    local timer = nil
+    local called = false
+
+    return function(...)
+        local args = { ... }
+        if timer then
+            timer:stop()
+        end
+
+        if not called then
+            fn(unpack(args))
+            called = true
+            M.setTimeout(function()
+                called = false
+            end, delay)
+        else
+            timer = M.setTimeout(function()
+                fn(unpack(args))
+            end, delay)
+        end
+    end
+end
+
 ---throttle function, assume we call a throttled func every 300ms for 9 times, and interval set to 1000ms
 ---then will actually call 3 times, and timeline as follow:
 ---`0ms` 300ms 600ms 900ms call throttled func, 0ms will tigger the timer, other 3 will be ignored

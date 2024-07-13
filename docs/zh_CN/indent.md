@@ -40,6 +40,23 @@ local default_conf = {
 
 - `delay` 是一个用来表示毫秒值的数字，这是由于某些情况下渲染非常耗时，采用节流函数对渲染频率进行了限制，数值越大，滚动屏幕时越流畅，但同时也会看到较大部分的内容未被渲染（直到 delay 毫秒后），默认为 100
 
+- `filter_list` 是一个 `Lua` 列表，其中可以定义一些 `filter` 函数，用来对渲染的字符进行过滤。你在这里定义的函数必须接受一个参数 `render_char_info`，这个参数包含如下字段
+  - `level` 表示当前缩进层级
+  - `lnum` 表示当前缩进字符所在行（0 为起始行）
+  - `virt_text_win_col` 当前缩进字符在屏幕上的所在列（0 为起始列）具体信息可以看 [nvim_buf_set_extmark 函数](https://neovim.io/doc/user/api.html#nvim_buf_set_extmark())的介绍信息
+  - `virt_text` 同上，这是 `nvim_buf_set_extmark` 函数的一个参数，一般来说你不需要设置这个字段。
+  
+  比如，如果你不希望渲染第一个 `level` 的字符，你可以按照如下方法设置
+  
+  ```lua
+  filter_list = {
+      function(v)
+          return v.level ~= 1
+      end,
+  },
+  ```
+
+
 和 chunk 一样，我们需要额外注意 style 这个通用配置：
 
 - 这里的 `style` 是一个 RGB 字符串或者一个表。如果是字符串，那么所有的缩进线将会采用这一种颜色来渲染，如果是表，可以有这两种写法：

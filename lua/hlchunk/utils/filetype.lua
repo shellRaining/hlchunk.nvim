@@ -12,6 +12,7 @@ M.exclude_filetypes = {
     mason = true,
     NvimTree = true,
     ["neo-tree"] = true,
+    ["neo-tree-popup"] = true,
     plugin = true,
     lazy = true,
     TelescopePrompt = true,
@@ -48,6 +49,7 @@ M.exclude_filetypes = {
     startify = true,
     oil = true,
     glowpreview = true,
+    fzf = true,
 }
 
 return M

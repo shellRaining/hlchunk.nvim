@@ -3,6 +3,7 @@ local ChunkConf = require("hlchunk.mods.chunk.chunk_conf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
 local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.timer").debounce
+local debounce_throttle = require("hlchunk.utils.timer").debounce_throttle
 local Pos = require("hlchunk.utils.position")
 local Scope = require("hlchunk.utils.scope")
 local cFunc = require("hlchunk.utils.cFunc")
@@ -156,7 +157,7 @@ function ChunkMod:render(range, opts)
             row_opts.virt_text = { { vt, text_hl } }
             row_opts.virt_text_win_col = virt_text_win_col_list[i]
             local row = row_list[i]
-            if api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
+            if row and api.nvim_buf_is_valid(range.bufnr) and api.nvim_buf_line_count(range.bufnr) > row then
                 api.nvim_buf_set_extmark(range.bufnr, self.meta.ns_id, row, 0, row_opts)
             end
         end
@@ -202,11 +203,11 @@ function ChunkMod:createAutocmd()
         end
     end
     local db_render_cb = debounce(render_cb, self.conf.delay, false)
-    local db_render_cb_imm = debounce(render_cb, self.conf.delay, true)
+    local db_render_cb_imm = debounce_throttle(render_cb, self.conf.delay)
     local db_render_cb_with_pre_hook = function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
-        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
+        if not self:shouldRender(bufnr) then
             return
         end
         if opts.lazy then

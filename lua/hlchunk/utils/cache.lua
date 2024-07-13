@@ -9,7 +9,7 @@ local Cache = class(function(self, ...)
     self.cache = {}
 end)
 
-local function navigateCache(cache, values, createIfMissing, setValue)
+local function navigateCache(cache, values, createIfMissing, isSetValue, setValue)
     local tableRef = cache
     local searchSteps = #values
     for i = 1, searchSteps - 1 do
@@ -24,9 +24,8 @@ local function navigateCache(cache, values, createIfMissing, setValue)
         tableRef = tableRef[key]
     end
 
-    if setValue then
+    if isSetValue then
         tableRef[values[searchSteps]] = setValue
-        return setValue
     else
         return tableRef[values[searchSteps]]
     end
@@ -46,7 +45,7 @@ function Cache:set(...)
         error("The number of keys passed to set() must be one more than the number of keys passed to the constructor")
     end
     local value = table.remove(values) -- 将最后一个参数作为要设置的值
-    navigateCache(self.cache, values, true, value)
+    navigateCache(self.cache, values, true, true, value)
 end
 
 function Cache:has(...)
@@ -62,8 +61,16 @@ function Cache:clear(...)
     if #values == 0 then
         self.cache = {}
     else
-        navigateCache(self.cache, values, false, {})
+        navigateCache(self.cache, values, false, true, {})
     end
+end
+
+function Cache:remove(...)
+    local values = { ... }
+    if #values ~= #self.keys then
+        error("The number of keys passed to remove() must match the number of keys passed to the constructor")
+    end
+    navigateCache(self.cache, values, false, true, nil)
 end
 
 return Cache
