@@ -4,7 +4,7 @@ local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
 local Scope = require("hlchunk.utils.scope")
 local Cache = require("hlchunk.utils.cache")
-local throttle = require("hlchunk.utils.timer").throttle
+local throttle = require("hlchunk.utils.timer").debounce_throttle
 local cFunc = require("hlchunk.utils.cFunc")
 
 local api = vim.api
