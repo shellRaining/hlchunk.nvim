@@ -43,7 +43,9 @@ function BaseMod:enable()
     local ok, info = pcall(function()
         self.conf.enable = true
         self:setHl()
-        self:render(Scope(0, fn.line("w0") - 1, fn.line("w$") - 1))
+        if self:shouldRender(0) then
+            self:render(Scope(0, fn.line("w0") - 1, fn.line("w$") - 1))
+        end
         self:createAutocmd()
         self:createUsercmd()
     end)
