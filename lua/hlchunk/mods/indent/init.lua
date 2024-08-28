@@ -123,12 +123,10 @@ function IndentMod:render(range, opts)
     local conf = self.conf
 
     if not opts.lazy then
-        self:clear(range)
-        for i = range.start, range.finish do
-            indent_cache:clear(bufnr, i)
-            pos2id:clear(bufnr, i)
-            pos2info:clear(bufnr, i)
-        end
+        self:clear({ bufnr = bufnr, start = 0, finish = api.nvim_buf_line_count(bufnr) - 1 })
+        indent_cache:clear(bufnr)
+        pos2id:clear(bufnr)
+        pos2info:clear(bufnr)
     end
 
     local narrowed_range = narrowRange(range)
@@ -159,14 +157,14 @@ function IndentMod:render(range, opts)
     self:setmark(bufnr, render_info)
 end
 
-function IndentMod:createAutocmd()
-    BaseMod.createAutocmd(self)
-    local render_cb = function(event, opts)
+function IndentMod:createRenderCallback()
+    return function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
         if not self:shouldRender(bufnr) then
             return
         end
+
         local wins = fn.win_findbuf(bufnr) or {}
         for _, winid in ipairs(wins) do
             local win_bufnr = api.nvim_win_get_buf(winid)
@@ -185,33 +183,40 @@ function IndentMod:createAutocmd()
             end)
         end
     end
-    local throttle_render_cb = throttle(render_cb, self.conf.delay)
-    local throttle_render_cb_with_pre_hook = function(event, opts)
+end
+
+function IndentMod:createThrottledCallback(callback)
+    local throttledCallback = throttle(callback, self.conf.delay)
+    return function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
         if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
             return
         end
-        throttle_render_cb(event, opts)
+        throttledCallback(event, opts)
     end
+end
 
-    api.nvim_create_autocmd({ "WinScrolled" }, {
-        group = self.meta.augroup_name,
-        callback = function(e)
-            throttle_render_cb_with_pre_hook(e, { lazy = true })
-        end,
-    })
-    api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "BufWinEnter" }, {
-        group = self.meta.augroup_name,
-        callback = function(e)
-            throttle_render_cb_with_pre_hook(e, { lazy = false })
-        end,
-    })
-    api.nvim_create_autocmd({ "OptionSet" }, {
-        group = self.meta.augroup_name,
-        pattern = "list,listchars,shiftwidth,tabstop,expandtab",
-        callback = throttle_render_cb_with_pre_hook,
-    })
+function IndentMod:createAutocmd()
+    BaseMod.createAutocmd(self)
+    local renderCallback = self:createRenderCallback()
+    local throttledCallback = self:createThrottledCallback(renderCallback)
+
+    local autocommands = {
+        { events = { "WinScrolled" }, opts = { lazy = true } },
+        { events = { "TextChanged", "TextChangedI", "BufWinEnter" }, opts = { lazy = false } },
+        { events = { "OptionSet" }, pattern = "list,listchars,shiftwidth,tabstop,expandtab", opts = {} },
+    }
+
+    for _, cmd in ipairs(autocommands) do
+        api.nvim_create_autocmd(cmd.events, {
+            group = self.meta.augroup_name,
+            pattern = cmd.pattern,
+            callback = function(e)
+                throttledCallback(e, cmd.opts)
+            end,
+        })
+    end
 end
 
 return IndentMod
