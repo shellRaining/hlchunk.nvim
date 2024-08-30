@@ -6,6 +6,7 @@ M.lua = require("hlchunk.utils.ts_node_type.lua")
 M.rust = require("hlchunk.utils.ts_node_type.rust")
 M.yaml = require("hlchunk.utils.ts_node_type.yaml")
 M.zig = require("hlchunk.utils.ts_node_type.zig")
+M.fortran = require("hlchunk.utils.ts_node_type.fortran")
 M.default = {
     "class",
     "^func",
