@@ -6,6 +6,7 @@
 <p align='center'>
 <a href="./README.md">English</a> | <b>简体中文</b>
 </p>
+
 ## 这个插件可以做什么
 
 和 [indent-blankline.nvim](https://github.com/lukas-reineke/indent-blankline.nvim) 类似，这个插件可以用来高亮缩进线,并且还可以根据当前光标所处的位置，高亮所在代码块.
