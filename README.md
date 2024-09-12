@@ -6,6 +6,7 @@
 <p align='center'>
 <b>English</b> | <a href="./README.zh-CN.md">简体中文</a>
 </p>
+
 ## What can this plugin do
 
 Similar to [indent-blankline](https://github.com/lukas-reineke/indent-blankline.nvim), this plugin can highlight the indent line, and highlight the code chunk according to the current cursor position.
