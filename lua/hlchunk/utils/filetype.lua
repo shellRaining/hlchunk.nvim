@@ -11,6 +11,7 @@ M.exclude_filetypes = {
     DiffviewFileHistory = true,
     DiffviewFiles = true,
     DressingInput = true,
+    fidget = true,
     fugitiveblame = true,
     glowpreview = true,
     help = true,
