@@ -1,9 +1,9 @@
 local class = require("hlchunk.utils.class")
 
----@class Cache
+---@class HlChunk.Cache
 ---@field private cache table
 ---@field private keys table
----@overload fun(...):Cache
+---@overload fun(...):HlChunk.Cache
 local Cache = class(function(self, ...)
     self.keys = { ... } -- 在构造函数中保存键名
     self.cache = {}

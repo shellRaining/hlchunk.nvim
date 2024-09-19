@@ -11,7 +11,7 @@ local api = vim.api
 local fn = vim.fn
 local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
----@class IndentMetaInfo : MetaInfo
+---@class HlChunk.IndentMetaInfo : HlChunk.MetaInfo
 ---@field pre_leftcol number
 
 local constructor = function(self, conf, meta)
@@ -30,19 +30,19 @@ local constructor = function(self, conf, meta)
     self.conf = IndentConf(conf)
 end
 
----@class RenderInfo
+---@class HlChunk.RenderInfo
 ---@field lnum number
 ---@field virt_text_win_col number
 ---@field virt_text table
 ---@field level number
 
----@class IndentMod : BaseMod
----@field conf IndentConf
----@field meta IndentMetaInfo
----@field render fun(self: IndentMod, range: Scope, opts: {lazy: boolean})
----@field calcRenderInfo fun(self: IndentMod, range: Scope): RenderInfo
+---@class HlChunk.IndentMod : HlChunk.BaseMod
+---@field conf HlChunk.IndentConf
+---@field meta HlChunk.IndentMetaInfo
+---@field render fun(self: HlChunk.IndentMod, range: HlChunk.Scope, opts: {lazy: boolean})
+---@field calcRenderInfo fun(self: HlChunk.IndentMod, range: HlChunk.Scope): HlChunk.RenderInfo
 ---@field setmark function
----@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
+---@overload fun(conf?: HlChunk.UserIndentConf, meta?: HlChunk.MetaInfo): HlChunk.IndentMod
 local IndentMod = class(BaseMod, constructor)
 
 local indent_cache = Cache("bufnr", "line")

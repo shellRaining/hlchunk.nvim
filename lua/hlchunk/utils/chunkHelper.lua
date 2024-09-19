@@ -41,7 +41,7 @@ chunkHelper.CHUNK_RANGE_RET = {
     NO_TS = 3,
 }
 
----@param pos Pos 0-index (row, col)
+---@param pos HlChunk.Pos 0-index (row, col)
 local function get_chunk_range_by_context(pos)
     local base_flag = "nWz"
     local cur_row_val = vim.api.nvim_buf_get_lines(pos.bufnr, pos.row, pos.row + 1, false)[1]
@@ -57,7 +57,7 @@ local function get_chunk_range_by_context(pos)
     return chunkHelper.CHUNK_RANGE_RET.OK, Scope(pos.bufnr, beg_row - 1, end_row - 1)
 end
 
----@param pos Pos 0-index for row, 0-index for col, API-indexing
+---@param pos HlChunk.Pos 0-index for row, 0-index for col, API-indexing
 local function get_chunk_range_by_treesitter(pos)
     if not has_treesitter(pos.bufnr) then
         return chunkHelper.CHUNK_RANGE_RET.NO_TS, Scope(pos.bufnr, -1, -1)
@@ -87,9 +87,9 @@ local function get_chunk_range_by_treesitter(pos)
     return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
 end
 
----@param opts? {pos: Pos, use_treesitter: boolean}
+---@param opts? {pos: HlChunk.Pos, use_treesitter: boolean}
 ---@return CHUNK_RANGE_RETCODE enum
----@return Scope
+---@return HlChunk.Scope
 function chunkHelper.get_chunk_range(opts)
     opts = opts or { use_treesitter = false }
 

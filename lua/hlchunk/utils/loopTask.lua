@@ -35,16 +35,16 @@ local function createStrategy(name, total_time, step_num)
     end
 end
 
----@class LoopTask
+---@class HlChunk.LoopTask
 ---@field private timer uv_timer_t | nil uv_timer_t object from the LuaJIT runtime
 ---@field private fn function function that will be executed when the timer fires
 ---@field private data table table that contains any data that needs to be passed to the function
 ---@field private strategy string string that determines how the function is executed when the timer fires
 ---@field private time_intervals table<number> table of numbers that represent the time intervals
 ---@field progress number number that represents the current progress of the timer
----@field public start fun(self: LoopTask):nil function that starts the timer
----@field public stop fun(self: LoopTask):nil function that stops the timer
----@overload fun(fn: function, strategy: string, duration: number, ...: any):LoopTask
+---@field public start fun(self: HlChunk.LoopTask):nil function that starts the timer
+---@field public stop fun(self: HlChunk.LoopTask):nil function that stops the timer
+---@overload fun(fn: function, strategy: string, duration: number, ...: any):HlChunk.LoopTask
 local LoopTask = class(function(self, fn, strategy, duration, ...)
     self.data = transpose({ ... })
     self.timer = nil

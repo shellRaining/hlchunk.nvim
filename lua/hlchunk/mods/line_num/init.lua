@@ -6,7 +6,7 @@ local class = require("hlchunk.utils.class")
 local api = vim.api
 local CHUNK_RANGE_RET = chunkHelper.CHUNK_RANGE_RET
 
----@class LineNumMetaInfo : MetaInfo
+---@class HlChunk.LineNumMetaInfo : HlChunk.MetaInfo
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -21,11 +21,11 @@ local constructor = function(self, conf, meta)
     self.conf = LineNumConf(conf)
 end
 
----@class LineNumMod : BaseMod
----@field conf LineNumConf
----@field meta LineNumMetaInfo
----@field render fun(self: LineNumMod, range: Scope, opts?: {error: boolean})
----@overload fun(conf?: UserLineNumConf, meta?: MetaInfo): LineNumMod
+---@class HlChunk.LineNumMod : HlChunk.BaseMod
+---@field conf HlChunk.LineNumConf
+---@field meta HlChunk.LineNumMetaInfo
+---@field render fun(self: HlChunk.LineNumMod, range: HlChunk.Scope, opts?: {error: boolean})
+---@overload fun(conf?: HlChunk.UserLineNumConf, meta?: HlChunk.MetaInfo): HlChunk.LineNumMod
 local LineNumMod = class(BaseMod, constructor)
 
 function LineNumMod:render(range)

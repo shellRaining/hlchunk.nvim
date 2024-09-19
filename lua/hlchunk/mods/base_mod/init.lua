@@ -6,9 +6,9 @@ local cFunc = require("hlchunk.utils.cFunc")
 local api = vim.api
 local fn = vim.fn
 
----@param self BaseMod
----@param conf BaseConf
----@param meta MetaInfo
+---@param self HlChunk.BaseMod
+---@param conf HlChunk.BaseConf
+---@param meta HlChunk.MetaInfo
 local constrctor = function(self, conf, meta)
     local default_meta = {
         name = "",
@@ -21,22 +21,22 @@ local constrctor = function(self, conf, meta)
     self.conf = BaseConf(conf)
 end
 
----@class BaseMod
----@field meta MetaInfo include info just used in mod inside, user can't access it
----@field conf BaseConf user config
----@field init fun(self: BaseMod, conf: BaseConf, meta: MetaInfo) not used for init mod, but as super keyword when inherit
----@field enable fun(self: BaseMod) enable the mod, the main entry of the mod
----@field disable fun(self: BaseMod) disable the mod
----@field protected shouldRender fun(self: BaseMod, bufnr: number): boolean just a tool function
----@field protected render fun(self: BaseMod, range: Scope)
----@field protected clear fun(self: BaseMod, range: Scope)
----@field protected createUsercmd fun(self: BaseMod)
----@field protected createAutocmd fun(self: BaseMod)
----@field protected clearAutocmd fun(self: BaseMod)
----@field protected setHl fun(self: BaseMod)
----@field protected clearHl fun(self: BaseMod)
----@field protected notify fun(self: BaseMod, msg: string, level?: string, opts?: table)
----@overload fun(conf?: UserBaseConf, meta?: MetaInfo): BaseMod
+---@class HlChunk.BaseMod
+---@field meta HlChunk.MetaInfo include info just used in mod inside, user can't access it
+---@field conf HlChunk.BaseConf user config
+---@field init fun(self: HlChunk.BaseMod, conf: HlChunk.BaseConf, meta: HlChunk.MetaInfo) not used for init mod, but as super keyword when inherit
+---@field enable fun(self: HlChunk.BaseMod) enable the mod, the main entry of the mod
+---@field disable fun(self: HlChunk.BaseMod) disable the mod
+---@field protected shouldRender fun(self: HlChunk.BaseMod, bufnr: number): boolean just a tool function
+---@field protected render fun(self: HlChunk.BaseMod, range: HlChunk.Scope)
+---@field protected clear fun(self: HlChunk.BaseMod, range: HlChunk.Scope)
+---@field protected createUsercmd fun(self: HlChunk.BaseMod)
+---@field protected createAutocmd fun(self: HlChunk.BaseMod)
+---@field protected clearAutocmd fun(self: HlChunk.BaseMod)
+---@field protected setHl fun(self: HlChunk.BaseMod)
+---@field protected clearHl fun(self: HlChunk.BaseMod)
+---@field protected notify fun(self: HlChunk.BaseMod, msg: string, level?: string, opts?: table)
+---@overload fun(conf?: HlChunk.UserBaseConf, meta?: HlChunk.MetaInfo): HlChunk.BaseMod
 local BaseMod = class(constrctor)
 
 function BaseMod:enable()
@@ -84,7 +84,7 @@ function BaseMod:render(range)
 end
 
 -- TODO: API-indexing
----@param range Scope the range to clear, start line and end line all include, 0-index
+---@param range HlChunk.Scope the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
     local start = range.start
     local finish = range.finish + 1

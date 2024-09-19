@@ -19,8 +19,8 @@ local constuctor = function(self, conf, meta)
     self.conf = BlankConf(conf)
 end
 
----@class BlankMod: IndentMod
----@overload fun(conf?: UserIndentConf, meta?: MetaInfo): IndentMod
+---@class HlChunk.BlankMod: HlChunk.IndentMod
+---@overload fun(conf?: HlChunk.UserIndentConf, meta?: HlChunk.MetaInfo): HlChunk.IndentMod
 local BlankMod = class(IndentMod, constuctor)
 
 function BlankMod:renderLeader(bufnr, index, offset, shadow_char_num, row_opts)

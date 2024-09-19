@@ -1,4 +1,4 @@
----@class MetaInfo
+---@class HlChunk.MetaInfo
 ---@field name string
 ---@field augroup_name string
 ---@field hl_base_name string

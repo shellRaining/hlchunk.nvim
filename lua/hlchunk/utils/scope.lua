@@ -1,8 +1,8 @@
----@class Scope
+---@class HlChunk.Scope
 ---@field bufnr number
 ---@field start number
 ---@field finish number
----@overload fun(bufnr: number, start: number, finish: number): Scope
+---@overload fun(bufnr: number, start: number, finish: number): HlChunk.Scope
 ---0-indexing, include start and finish
 -- local Scope = class(constructor)
 local function Scope(bufnr, start, finish)

@@ -1,14 +1,14 @@
 local class = require("hlchunk.utils.class")
 local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 
----@class UserChunkConf : UserBaseConf
+---@class HlChunk.UserChunkConf : HlChunk.UserBaseConf
 ---@field use_treesitter? boolean
 ---@field chars? table<string, string>
 ---@field textobject? string
 ---@field max_file_size? number
 ---@field error_sign? boolean
 
----@class ChunkConf : BaseConf
+---@class HlChunk.ChunkConf : HlChunk.BaseConf
 ---@field use_treesitter boolean
 ---@field chars table<string, string>
 ---@field textobject string
@@ -16,7 +16,7 @@ local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 ---@field error_sign boolean
 ---@field duration number
 ---@field delay number
----@overload fun(conf?: table): ChunkConf
+---@overload fun(conf?: table): HlChunk.ChunkConf
 local ChunkConf = class(BaseConf, function(self, conf)
     local default_conf = {
         priority = 15,
@@ -39,7 +39,7 @@ local ChunkConf = class(BaseConf, function(self, conf)
         duration = 200,
         delay = 300,
     }
-    conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as ChunkConf]]
+    conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as HlChunk.ChunkConf]]
     BaseConf.init(self, conf)
 
     self.priority = conf.priority

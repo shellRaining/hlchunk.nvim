@@ -17,8 +17,8 @@ local rangeFromTo = chunkHelper.rangeFromTo
 local utf8Split = chunkHelper.utf8Split
 local shallowCmp = chunkHelper.shallowCmp
 
----@class ChunkMetaInfo : MetaInfo
----@field task LoopTask | nil
+---@class HlChunk.ChunkMetaInfo : HlChunk.MetaInfo
+---@field task HlChunk.LoopTask | nil
 ---@field pre_virt_text_list string[]
 ---@field pre_row_list number[]
 ---@field pre_virt_text_win_col_list number[]
@@ -44,11 +44,11 @@ local constructor = function(self, conf, meta)
     self.conf = ChunkConf(conf)
 end
 
----@class ChunkMod : BaseMod
----@field conf ChunkConf
----@field meta ChunkMetaInfo
----@field render fun(self: ChunkMod, range: Scope, opts?: {error: boolean, lazy: boolean})
----@overload fun(conf?: UserChunkConf, meta?: MetaInfo): ChunkMod
+---@class HlChunk.ChunkMod : HlChunk.BaseMod
+---@field conf HlChunk.ChunkConf
+---@field meta HlChunk.ChunkMetaInfo
+---@field render fun(self: HlChunk.ChunkMod, range: HlChunk.Scope, opts?: {error: boolean, lazy: boolean})
+---@overload fun(conf?: HlChunk.UserChunkConf, meta?: HlChunk.MetaInfo): HlChunk.ChunkMod
 local ChunkMod = class(BaseMod, constructor)
 
 -- chunk_mod can use text object, so add a new function extra to handle it
