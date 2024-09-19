@@ -1,5 +1,12 @@
 local hlchunk = {}
 
+---@class HlChunk.UserConf
+---@field blank? HlChunk.UserBlankConf
+---@field chunk? HlChunk.UserChunkConf
+---@field indent? HlChunk.UserIndentConf
+---@field line_num? HlChunk.UserLineNumConf
+
+---@param userConf HlChunk.UserConf
 hlchunk.setup = function(userConf)
     for mod_name, mod_conf in pairs(userConf) do
         if mod_conf.enable then
