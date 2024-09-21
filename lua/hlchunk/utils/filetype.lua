@@ -44,6 +44,7 @@ M.exclude_filetypes = {
     startuptime = true,
     starter = true,
     TelescopePrompt = true,
+    TelescopeResults = true,
     toggleterm = true,
     Trouble = true,
     trouble = true,
