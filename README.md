@@ -75,7 +75,7 @@ One picture to understand what these mods do
 
 ## Requirements
 
-neovim version `>= 0.9.0`
+neovim version `>= 0.10.0`
 
 ## Installation (with lazy.nvim)
 

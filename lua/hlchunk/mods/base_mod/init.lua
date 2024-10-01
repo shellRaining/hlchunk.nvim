@@ -148,7 +148,31 @@ end
 
 function BaseMod:createAutocmd()
     api.nvim_create_augroup(self.meta.augroup_name, { clear = true })
+    api.nvim_create_autocmd("WinScrolled", {
+        group = self.meta.augroup_name,
+        callback = function()
+            local data = vim.v.event
 
+            for winid, changes in pairs(data) do
+                if winid ~= "all" then
+                    winid = tonumber(winid) --[[@as number]]
+                    local bufnr = api.nvim_win_get_buf(winid)
+                    if changes.topline ~= 0 then
+                        api.nvim_exec_autocmds("User", {
+                            pattern = "WinScrolledY",
+                            data = { winid = winid, buf = bufnr },
+                        })
+                    end
+                    if changes.leftcol ~= 0 then
+                        api.nvim_exec_autocmds("User", {
+                            pattern = "WinScrolledX",
+                            data = { winid = winid, buf = bufnr },
+                        })
+                    end
+                end
+            end
+        end,
+    })
     api.nvim_create_autocmd({ "ColorScheme" }, {
         group = self.meta.augroup_name,
         pattern = "*",
@@ -163,45 +187,33 @@ function BaseMod:clearAutocmd()
 end
 
 function BaseMod:setHl()
-    local hl_conf = self.conf.style
-    self.meta.hl_name_list = {}
-
-    -- such as style = "#abcabc"
-    if type(hl_conf) == "string" then
-        api.nvim_set_hl(0, self.meta.hl_base_name .. "1", { fg = hl_conf })
-        self.meta.hl_name_list = { self.meta.hl_base_name .. "1" }
-        return
-    end
-
-    for idx, val in ipairs(hl_conf) do
-        local value_type = type(val)
-        if value_type == "table" then
-            if type(val.fg) == "function" or type(val.bg) == "function" then
-                --[[
-                such as style = {
-                    { fg = fg1cb, bg = bg1cb },
-                    { fg = "#abcabc", bg = "#cdefef"},
-                }
-                --]]
-                local value_tmp = vim.deepcopy(val)
-                value_tmp.fg = type(val.fg) == "function" and val.fg() or val.fg
-                value_tmp.bg = type(val.bg) == "function" and val.bg() or val.bg
-                api.nvim_set_hl(0, self.meta.hl_base_name .. idx, value_tmp)
-            else
-                --[[
-                such as style = {
-                    { fg = "#abcabc", bg = "#cdefef" },
-                    { fg = "#abcabc", bg = "#cdefef" },
-                }
-                --]]
-                api.nvim_set_hl(0, self.meta.hl_base_name .. idx, val)
+    local function inner(hl_entry)
+        local res = {}
+        hl_entry = hl_entry or self.conf.style
+        if type(hl_entry) == "string" then
+            local hl_name = self.meta.hl_base_name .. "1"
+            api.nvim_set_hl(0, hl_name, { fg = hl_entry })
+            res[1] = hl_name
+        elseif type(hl_entry) == "table" and type(hl_entry[1]) == "string" then
+            for idx, val in ipairs(hl_entry) do
+                local hl_name = self.meta.hl_base_name .. idx
+                api.nvim_set_hl(0, hl_name, { fg = val })
+                res[idx] = hl_name
             end
-        elseif value_type == "string" then
-            -- such as style = {"#abcabc", "#cdefef"}
-            api.nvim_set_hl(0, self.meta.hl_base_name .. idx, { fg = val })
+        elseif type(hl_entry) == "table" and type(hl_entry[1]) == "table" then
+            for idx, val in ipairs(hl_entry) do
+                local hl_name = self.meta.hl_base_name .. idx
+                api.nvim_set_hl(0, hl_name, val --[[@as vim.api.keyset.highlight]])
+                res[idx] = hl_name
+            end
+        elseif type(hl_entry) == "function" then
+            res = inner(hl_entry())
         end
-        table.insert(self.meta.hl_name_list, self.meta.hl_base_name .. idx)
+        return res
     end
+
+    local res = inner()
+    self.meta.hl_name_list = res
 end
 
 function BaseMod:clearHl()

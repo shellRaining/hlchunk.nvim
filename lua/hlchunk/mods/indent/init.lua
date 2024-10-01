@@ -12,7 +12,6 @@ local fn = vim.fn
 local ROWS_INDENT_RETCODE = indentHelper.ROWS_INDENT_RETCODE
 
 ---@class HlChunk.IndentMetaInfo : HlChunk.MetaInfo
----@field pre_leftcol number
 
 local constructor = function(self, conf, meta)
     local default_meta = {
@@ -21,7 +20,6 @@ local constructor = function(self, conf, meta)
         hl_base_name = "HLIndent",
         ns_id = api.nvim_create_namespace("indent"),
         shiftwidth = fn.shiftwidth(),
-        pre_leftcol = 0,
         leftcol = fn.winsaveview().leftcol,
     }
 
@@ -157,34 +155,6 @@ function IndentMod:render(range, opts)
     self:setmark(bufnr, render_info)
 end
 
-function IndentMod:createRenderCallback()
-    return function(event, opts)
-        opts = opts or { lazy = false }
-        local bufnr = event.buf
-        if not self:shouldRender(bufnr) then
-            return
-        end
-
-        local wins = fn.win_findbuf(bufnr) or {}
-        for _, winid in ipairs(wins) do
-            local win_bufnr = api.nvim_win_get_buf(winid)
-            local range = Scope(win_bufnr, fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
-            local ahead_lines = self.conf.ahead_lines
-            range.start = math.max(0, range.start - ahead_lines)
-            range.finish = math.min(api.nvim_buf_line_count(win_bufnr) - 1, range.finish + ahead_lines)
-            api.nvim_win_call(winid, function()
-                self.meta.shiftwidth = cFunc.get_sw(win_bufnr)
-                self.meta.pre_leftcol = self.meta.leftcol
-                self.meta.leftcol = fn.winsaveview().leftcol
-                if self.meta.pre_leftcol ~= self.meta.leftcol then
-                    opts.lazy = false
-                end
-                self:render(range, opts)
-            end)
-        end
-    end
-end
-
 function IndentMod:createThrottledCallback(callback)
     local throttledCallback = throttle(callback, self.conf.delay)
     return function(event, opts)
@@ -199,13 +169,32 @@ end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
-    local renderCallback = self:createRenderCallback()
-    local throttledCallback = self:createThrottledCallback(renderCallback)
+    local throttledCallback = self:createThrottledCallback(function(event, opts)
+        opts = opts or { lazy = false }
+        local bufnr = event.buf
+        if not self:shouldRender(bufnr) then
+            return
+        end
+
+        local wins = fn.win_findbuf(bufnr) or {}
+        for _, winid in ipairs(wins) do
+            local range = Scope(bufnr, fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
+            local ahead_lines = self.conf.ahead_lines
+            range.start = math.max(0, range.start - ahead_lines)
+            range.finish = math.min(api.nvim_buf_line_count(bufnr) - 1, range.finish + ahead_lines)
+            api.nvim_win_call(winid, function()
+                self.meta.shiftwidth = cFunc.get_sw(bufnr)
+                self.meta.leftcol = fn.winsaveview().leftcol
+                self:render(range, opts)
+            end)
+        end
+    end)
 
     local autocommands = {
-        { events = { "WinScrolled" }, opts = { lazy = true } },
+        { events = { "User" }, pattern = "WinScrolledX", opts = { lazy = false } },
+        { events = { "User" }, pattern = "WinScrolledY", opts = { lazy = true } },
         { events = { "TextChanged", "TextChangedI", "BufWinEnter" }, opts = { lazy = false } },
-        { events = { "OptionSet" }, pattern = "list,listchars,shiftwidth,tabstop,expandtab", opts = {} },
+        { events = { "OptionSet" }, pattern = "list,shiftwidth,tabstop,expandtab", opts = { lazy = false } },
     }
 
     for _, cmd in ipairs(autocommands) do
