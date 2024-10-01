@@ -1,7 +1,14 @@
 local class = require("hlchunk.utils.class")
 local ft = require("hlchunk.utils.filetype")
 
----@alias HlChunk.StyleType string | table<string, string> | table<string, table<string, string>>
+---@alias HexColor string # a rgb color string, e.g. "#ff0000"
+---@alias StyleEntry { bg: HexColor, fg: HexColor }
+---@alias StyleTypeBase
+---| HexColor # a single color
+---| HexColor[] # a rgb color string array, e.g. {"#ff0000", "#00ff00"}
+---| vim.api.keyset.highlight[] # a style entry array, e.g. {{bg = "#ff0000", fg = "#00ff00"}, {bg = "#00ff00", fg = "#ff0000"}}
+---@alias StyleTypeFunction fun(): StyleTypeBase
+---@alias HlChunk.StyleType StyleTypeBase | StyleTypeFunction
 
 ---@class HlChunk.UserBaseConf
 ---@field enable? boolean
