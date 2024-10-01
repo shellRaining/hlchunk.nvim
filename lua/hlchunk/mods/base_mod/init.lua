@@ -67,15 +67,42 @@ function BaseMod:disable()
     end
 end
 
+-- Rendering will only occur when the following conditions are met.
+-- 1. The buffer is valid
+-- 2. The plugin is enabled
+-- 3. The filetype is not in the exclude_filetypes list
+-- 4. The shiftwidth is not 0
+-- 5. The buftype is not in the allowed_buftypes list { "help", "nofile", "terminal", "prompt" }
 function BaseMod:shouldRender(bufnr)
-    if api.nvim_buf_is_valid(bufnr) then
-        local ft = vim.bo[bufnr].ft
-        local shiftwidth = cFunc.get_sw(bufnr)
-        if ft then
-            return self.conf.enable and not self.conf.exclude_filetypes[ft] and shiftwidth ~= 0
-        end
+    if not api.nvim_buf_is_valid(bufnr) then
+        return false
     end
-    return false
+
+    local ft = vim.bo[bufnr].filetype
+    local buftype = vim.bo[bufnr].buftype
+
+    if not self.conf.enable then
+        return false
+    end
+
+    -- filetype
+    if self.conf.exclude_filetypes[ft] then
+        return false
+    end
+
+    -- shiftwidth
+    local shiftwidth = cFunc.get_sw(bufnr)
+    if shiftwidth == 0 then
+        return false
+    end
+
+    -- buftype
+    local allowed_buftypes = { "help", "nofile", "terminal", "prompt" }
+    if vim.tbl_contains(allowed_buftypes, buftype) then
+        return false
+    end
+
+    return true
 end
 
 function BaseMod:render(range)
@@ -85,7 +112,6 @@ function BaseMod:render(range)
     self:clear(range)
 end
 
--- TODO: API-indexing
 ---@param range HlChunk.Scope the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
     local start = range.start
