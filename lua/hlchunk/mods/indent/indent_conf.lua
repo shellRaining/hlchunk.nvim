@@ -15,6 +15,7 @@ local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 ---@field filter_list table<number, function>
 ---@overload fun(conf?: HlChunk.UserIndentConf): HlChunk.IndentConf
 local IndentConf = class(BaseConf, function(self, conf)
+    ---@type HlChunk.IndentConf
     local default_conf = {
         style = { vim.api.nvim_get_hl(0, { name = "Whitespace" }) },
         priority = 10,
