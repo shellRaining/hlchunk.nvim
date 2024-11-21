@@ -82,7 +82,11 @@ local function get_chunk_range_by_treesitter(pos)
             return cursor_node:has_error() and chunkHelper.CHUNK_RANGE_RET.CHUNK_ERR or chunkHelper.CHUNK_RANGE_RET.OK,
                 Scope(pos.bufnr, node_start, node_end)
         end
-        cursor_node = cursor_node:parent()
+        local parent_node = cursor_node:parent()
+        if parent_node == cursor_node then
+            break
+        end
+        cursor_node = parent_node
     end
     return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
 end
