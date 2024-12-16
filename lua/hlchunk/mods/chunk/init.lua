@@ -254,7 +254,7 @@ function ChunkMod:extra()
     local keymap = textobject.keymap
     local desc = textobject.desc
 
-    if not keymap or not desc then
+    if not keymap then
         return
     end
 
