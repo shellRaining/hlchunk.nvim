@@ -4,3 +4,4 @@ note
 lua/hlchunk/utils/inspect.lua
 ts_type
 .ci/vendor/pack/vendor/start
+.vscode
