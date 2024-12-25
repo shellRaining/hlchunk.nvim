@@ -2,7 +2,7 @@ local BaseMod = require("hlchunk.mods.base_mod")
 local IndentConf = require("hlchunk.mods.indent.indent_conf")
 local class = require("hlchunk.utils.class")
 local indentHelper = require("hlchunk.utils.indentHelper")
-local Scope = require("hlchunk.utils.scope")
+local Range = require("hlchunk.utils.range")
 local Cache = require("hlchunk.utils.cache")
 local throttle = require("hlchunk.utils.timer").debounce_throttle
 local cFunc = require("hlchunk.utils.cFunc")
@@ -37,8 +37,8 @@ end
 ---@class HlChunk.IndentMod : HlChunk.BaseMod
 ---@field conf HlChunk.IndentConf
 ---@field meta HlChunk.IndentMetaInfo
----@field render fun(self: HlChunk.IndentMod, range: HlChunk.Scope, opts: {lazy: boolean})
----@field calcRenderInfo fun(self: HlChunk.IndentMod, range: HlChunk.Scope): HlChunk.RenderInfo
+---@field render fun(self: HlChunk.IndentMod, range: HlChunk.Range, opts: {lazy: boolean})
+---@field calcRenderInfo fun(self: HlChunk.IndentMod, range: HlChunk.Range): HlChunk.RenderInfo
 ---@field setmark function
 ---@overload fun(conf?: HlChunk.UserIndentConf, meta?: HlChunk.MetaInfo): HlChunk.IndentMod
 local IndentMod = class(BaseMod, constructor)
@@ -68,7 +68,7 @@ local function narrowRange(range)
             break
         end
     end
-    return Scope(range.bufnr, start, finish)
+    return Range.new(range.bufnr, start, finish)
 end
 
 function IndentMod:calcRenderInfo(range)
@@ -99,7 +99,6 @@ function IndentMod:calcRenderInfo(range)
 end
 
 function IndentMod:setmark(bufnr, render_info)
-    -- render
     local row_opts = {
         virt_text_pos = "overlay",
         hl_mode = "combine",
@@ -169,6 +168,26 @@ end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
+
+    -- indent render steps:
+    -- 1. get active bufnrs from event detail
+    -- 2. find the range needed rerender for each bufnr
+    --    note that the range maybe not continuous, for example, if user split two window for a buffer
+    --
+    --    10|  hello          30|              |
+    --    11|                 31|              |
+    --    12|                 32|              |
+    --    13|                 33|              |
+    --    14|                 34|   world      |
+    --    15|                 35|              |
+    --    16|                 36|              |
+    --
+    --    the range need to rerender is a matrix, like:
+    --    {
+    --        { bufnr = x, start = 10, finish = 15 },
+    --        { bufnr = x, start = 30, finish = 36 },
+    --    }
+    -- 3. render
     local throttledCallback = self:createThrottledCallback(function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
@@ -178,7 +197,7 @@ function IndentMod:createAutocmd()
 
         local wins = fn.win_findbuf(bufnr) or {}
         for _, winid in ipairs(wins) do
-            local range = Scope(bufnr, fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
+            local range = Range.new(bufnr, fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
             local ahead_lines = self.conf.ahead_lines
             range.start = math.max(0, range.start - ahead_lines)
             range.finish = math.min(api.nvim_buf_line_count(bufnr) - 1, range.finish + ahead_lines)

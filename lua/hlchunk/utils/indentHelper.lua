@@ -40,7 +40,7 @@ indentHelper.ROWS_INDENT_RETCODE = {
     NO_TS = 1,
 }
 
----@param range HlChunk.Scope
+---@param range HlChunk.Range
 ---@return ROWS_INDENT_RETCODE
 ---@return table<number, number>
 local function get_rows_indent_by_context(range)
@@ -57,7 +57,7 @@ local function get_rows_indent_by_context(range)
     return indentHelper.ROWS_INDENT_RETCODE.OK, rows_indent
 end
 
----@param range HlChunk.Scope
+---@param range HlChunk.Range
 ---@return ROWS_INDENT_RETCODE
 ---@return table<number, number>
 local function get_rows_indent_by_treesitter(range)
@@ -98,7 +98,7 @@ end
 -- 5.
 -- 6. this is shellRaining
 -- the virtual indent of line 3 is 4, and the virtual indent of line 5 is 0
----@param range HlChunk.Scope
+---@param range HlChunk.Range
 ---@param opts? {use_treesitter: boolean, virt_indent: boolean}
 ---@return ROWS_INDENT_RETCODE enum
 ---@return table<number, number>

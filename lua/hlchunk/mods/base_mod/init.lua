@@ -1,6 +1,6 @@
 local class = require("hlchunk.utils.class")
 local BaseConf = require("hlchunk.mods.base_mod.base_conf")
-local Scope = require("hlchunk.utils.scope")
+local Range = require("hlchunk.utils.range")
 local cFunc = require("hlchunk.utils.cFunc")
 
 local api = vim.api
@@ -28,8 +28,8 @@ end
 ---@field enable fun(self: HlChunk.BaseMod) enable the mod, the main entry of the mod
 ---@field disable fun(self: HlChunk.BaseMod) disable the mod
 ---@field protected shouldRender fun(self: HlChunk.BaseMod, bufnr: number): boolean just a tool function
----@field protected render fun(self: HlChunk.BaseMod, range: HlChunk.Scope)
----@field protected clear fun(self: HlChunk.BaseMod, range: HlChunk.Scope)
+---@field protected render fun(self: HlChunk.BaseMod, range: HlChunk.Range)
+---@field protected clear fun(self: HlChunk.BaseMod, range: HlChunk.Range)
 ---@field protected createUsercmd fun(self: HlChunk.BaseMod)
 ---@field protected createAutocmd fun(self: HlChunk.BaseMod)
 ---@field protected clearAutocmd fun(self: HlChunk.BaseMod)
@@ -44,7 +44,8 @@ function BaseMod:enable()
         self.conf.enable = true
         self:setHl()
         if self:shouldRender(0) then
-            self:render(Scope(0, fn.line("w0") - 1, fn.line("w$") - 1))
+            local range = Range.new(0, fn.line("w0") - 1, fn.line("w$") - 1)
+            self:render(range)
         end
         self:createAutocmd()
         self:createUsercmd()
@@ -112,7 +113,7 @@ function BaseMod:render(range)
     self:clear(range)
 end
 
----@param range HlChunk.Scope the range to clear, start line and end line all include, 0-index
+---@param range HlChunk.Range the range to clear, start line and end line all include, 0-index
 function BaseMod:clear(range)
     local start = range.start
     local finish = range.finish + 1

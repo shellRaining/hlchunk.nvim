@@ -2,6 +2,7 @@ local BaseMod = require("hlchunk.mods.base_mod")
 local LineNumConf = require("hlchunk.mods.line_num.line_num_conf")
 local chunkHelper = require("hlchunk.utils.chunkHelper")
 local class = require("hlchunk.utils.class")
+local Range = require("hlchunk.utils.range")
 
 local api = vim.api
 local CHUNK_RANGE_RET = chunkHelper.CHUNK_RANGE_RET
@@ -24,7 +25,7 @@ end
 ---@class HlChunk.LineNumMod : HlChunk.BaseMod
 ---@field conf HlChunk.LineNumConf
 ---@field meta HlChunk.LineNumMetaInfo
----@field render fun(self: HlChunk.LineNumMod, range: HlChunk.Scope, opts?: {error: boolean})
+---@field render fun(self: HlChunk.LineNumMod, range: HlChunk.Range, opts?: {error: boolean})
 ---@overload fun(conf?: HlChunk.UserLineNumConf, meta?: HlChunk.MetaInfo): HlChunk.LineNumMod
 local LineNumMod = class(BaseMod, constructor)
 
@@ -57,7 +58,7 @@ function LineNumMod:createAutocmd()
                 pos = { bufnr = bufnr, row = pos[1] - 1, col = pos[2] },
                 use_treesitter = self.conf.use_treesitter,
             })
-            self:clear({ bufnr = bufnr, start = 0, finish = api.nvim_buf_line_count(bufnr) })
+            self:clear(Range.new(bufnr, 0, api.nvim_buf_line_count(bufnr)))
             if retcode ~= CHUNK_RANGE_RET.OK then
                 return
             end

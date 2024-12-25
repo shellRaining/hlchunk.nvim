@@ -10,7 +10,7 @@ local Range = {}
 Range.INVALID = setmetatable({
     bufnr = -1,
     start = -1,
-    finish = -1
+    finish = -1,
 }, {
     __index = {
         isValid = function()
@@ -25,7 +25,7 @@ Range.INVALID = setmetatable({
     },
     __newindex = function()
         error("Cannot modify INVALID Range")
-    end
+    end,
 })
 
 ---Create a new Range instance
@@ -49,20 +49,22 @@ Range.INVALID = setmetatable({
 ---```
 function Range.new(bufnr, start, finish)
     -- Parameter validation
-    if type(bufnr) ~= "number" or
-       type(start) ~= "number" or
-       type(finish) ~= "number" or
-       bufnr <= 0 or
-       start < 0 or
-       finish < 0 or
-       finish < start then
+    if
+        type(bufnr) ~= "number"
+        or type(start) ~= "number"
+        or type(finish) ~= "number"
+        or bufnr <= 0
+        or start < 0
+        or finish < 0
+        or finish < start
+    then
         return Range.INVALID
     end
 
     local range = {
         bufnr = bufnr,
         start = start,
-        finish = finish
+        finish = finish,
     }
 
     return setmetatable(range, {
@@ -71,11 +73,11 @@ function Range.new(bufnr, start, finish)
                 return true
             end,
             contains = Range.contains,
-            overlaps = Range.overlaps
+            overlaps = Range.overlaps,
         },
         __newindex = function()
             error("Cannot modify Range after creation")
-        end
+        end,
     })
 end
 

@@ -5,7 +5,7 @@ local LoopTask = require("hlchunk.utils.loopTask")
 local debounce = require("hlchunk.utils.timer").debounce
 local debounce_throttle = require("hlchunk.utils.timer").debounce_throttle
 local Pos = require("hlchunk.utils.position")
-local Scope = require("hlchunk.utils.scope")
+local Range = require("hlchunk.utils.range")
 local cFunc = require("hlchunk.utils.cFunc")
 
 local class = require("hlchunk.utils.class")
@@ -47,7 +47,7 @@ end
 ---@class HlChunk.ChunkMod : HlChunk.BaseMod
 ---@field conf HlChunk.ChunkConf
 ---@field meta HlChunk.ChunkMetaInfo
----@field render fun(self: HlChunk.ChunkMod, range: HlChunk.Scope, opts?: {error: boolean, lazy: boolean})
+---@field render fun(self: HlChunk.ChunkMod, range: HlChunk.Range, opts?: {error: boolean, lazy: boolean})
 ---@overload fun(conf?: HlChunk.UserChunkConf, meta?: HlChunk.MetaInfo): HlChunk.ChunkMod
 local ChunkMod = class(BaseMod, constructor)
 
@@ -55,7 +55,7 @@ local ChunkMod = class(BaseMod, constructor)
 function ChunkMod:enable()
     BaseMod.enable(self)
     self:extra()
-    self:render(Scope(0, 0, -1))
+    self:render(Range.INVALID)
 end
 
 function ChunkMod:stopRender()
@@ -144,7 +144,7 @@ function ChunkMod:render(range, opts)
 
     self:stopRender()
     self:updatePreState(virt_text_list, row_list, virt_text_win_col_list, opts.error)
-    self:clear(Scope(range.bufnr, 0, api.nvim_buf_line_count(range.bufnr)))
+    self:clear(Range.new(range.bufnr, 0, api.nvim_buf_line_count(range.bufnr)))
 
     local row_opts = {
         virt_text_pos = "overlay",
@@ -194,7 +194,7 @@ function ChunkMod:createAutocmd()
         if ret_code == CHUNK_RANGE_RET.OK then
             self:render(range, { error = false, lazy = opts.lazy })
         elseif ret_code == CHUNK_RANGE_RET.NO_CHUNK then
-            self:clear(Scope(bufnr, 0, api.nvim_buf_line_count(bufnr)))
+            self:clear(Range.new(bufnr, 0, api.nvim_buf_line_count(bufnr)))
             self:updatePreState({}, {}, {}, false)
         elseif ret_code == CHUNK_RANGE_RET.CHUNK_ERR then
             self:render(range, { error = self.conf.error_sign, lazy = opts.lazy })

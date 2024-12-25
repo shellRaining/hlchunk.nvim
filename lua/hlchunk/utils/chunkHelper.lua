@@ -1,6 +1,6 @@
 local treesitter = vim.treesitter
 local fn = vim.fn
-local Scope = require("hlchunk.utils.scope")
+local Range = require("hlchunk.utils.range")
 local ft = require("hlchunk.utils.ts_node_type")
 
 local function is_suit_type(node_type)
@@ -51,16 +51,16 @@ local function get_chunk_range_by_context(pos)
     local end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or "")) --[[@as number]]
 
     if beg_row <= 0 or end_row <= 0 or beg_row >= end_row then
-        return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
+        return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Range.INVALID
     end
 
-    return chunkHelper.CHUNK_RANGE_RET.OK, Scope(pos.bufnr, beg_row - 1, end_row - 1)
+    return chunkHelper.CHUNK_RANGE_RET.OK, Range.new(pos.bufnr, beg_row - 1, end_row - 1)
 end
 
 ---@param pos HlChunk.Pos 0-index for row, 0-index for col, API-indexing
 local function get_chunk_range_by_treesitter(pos)
     if not has_treesitter(pos.bufnr) then
-        return chunkHelper.CHUNK_RANGE_RET.NO_TS, Scope(pos.bufnr, -1, -1)
+        return chunkHelper.CHUNK_RANGE_RET.NO_TS, Range.INVALID
     end
 
     local cursor_node = treesitter.get_node({
@@ -80,7 +80,7 @@ local function get_chunk_range_by_treesitter(pos)
         local node_start, _, node_end, _ = cursor_node:range()
         if node_start ~= node_end and is_suit_type(node_type) then
             return cursor_node:has_error() and chunkHelper.CHUNK_RANGE_RET.CHUNK_ERR or chunkHelper.CHUNK_RANGE_RET.OK,
-                Scope(pos.bufnr, node_start, node_end)
+                Range.new(pos.bufnr, node_start, node_end)
         end
         local parent_node = cursor_node:parent()
         if parent_node == cursor_node then
@@ -88,12 +88,12 @@ local function get_chunk_range_by_treesitter(pos)
         end
         cursor_node = parent_node
     end
-    return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
+    return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Range.INVALID
 end
 
 ---@param opts? {pos: HlChunk.Pos, use_treesitter: boolean}
 ---@return CHUNK_RANGE_RETCODE enum
----@return HlChunk.Scope
+---@return HlChunk.Range
 function chunkHelper.get_chunk_range(opts)
     opts = opts or { use_treesitter = false }
 
