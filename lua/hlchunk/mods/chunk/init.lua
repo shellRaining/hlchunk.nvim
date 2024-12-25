@@ -100,7 +100,7 @@ function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_
         chars = utf8Split(mid)
         -- when use click `<<` or `>>` to indent, we should make sure the line would not encounter the indent char
         for i = 1, mid_char_nums do
-            local char = Pos.get_char_at_pos(Pos(range.bufnr, range.start + i, start_col), self.meta.shiftwidth)
+            local char = Pos.new(range.bufnr, range.start + i, start_col):get_char()
             if not char:match("%s") and #char ~= 0 then
                 chars[i] = ""
             end
@@ -184,7 +184,7 @@ function ChunkMod:createAutocmd()
         local pos = api.nvim_win_get_cursor(winid)
 
         local ret_code, range = chunkHelper.get_chunk_range({
-            pos = Pos(bufnr, pos[1] - 1, pos[2]),
+            pos = Pos.new(bufnr, pos[1] - 1, pos[2]),
             use_treesitter = self.conf.use_treesitter,
         })
         api.nvim_win_call(winid, function()
