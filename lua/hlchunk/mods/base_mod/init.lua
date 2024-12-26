@@ -149,31 +149,6 @@ end
 
 function BaseMod:createAutocmd()
     api.nvim_create_augroup(self.meta.augroup_name, { clear = true })
-    api.nvim_create_autocmd("WinScrolled", {
-        group = self.meta.augroup_name,
-        callback = function()
-            local data = vim.v.event
-
-            for winid, changes in pairs(data) do
-                if winid ~= "all" then
-                    winid = tonumber(winid) --[[@as number]]
-                    local bufnr = api.nvim_win_get_buf(winid)
-                    if changes.topline ~= 0 then
-                        api.nvim_exec_autocmds("User", {
-                            pattern = "WinScrolledY",
-                            data = { winid = winid, buf = bufnr },
-                        })
-                    end
-                    if changes.leftcol ~= 0 then
-                        api.nvim_exec_autocmds("User", {
-                            pattern = "WinScrolledX",
-                            data = { winid = winid, buf = bufnr },
-                        })
-                    end
-                end
-            end
-        end,
-    })
     api.nvim_create_autocmd({ "ColorScheme" }, {
         group = self.meta.augroup_name,
         pattern = "*",

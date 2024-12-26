@@ -120,7 +120,7 @@ function IndentMod:render(range, opts)
     local conf = self.conf
 
     if not opts.lazy then
-        self:clear({ bufnr = bufnr, start = 0, finish = api.nvim_buf_line_count(bufnr) - 1 })
+        self:clear(Range.new(bufnr, 0, api.nvim_buf_line_count(bufnr) - 1))
         indent_cache:clear(bufnr)
         pos2id:clear(bufnr)
         pos2info:clear(bufnr)
@@ -168,6 +168,34 @@ end
 
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
+    api.nvim_create_autocmd("WinScrolled", {
+        group = self.meta.augroup_name,
+        callback = function(e)
+            local event_bufnr = e.buf
+            local data = vim.v.event
+            data["all"] = nil
+
+            for winid, changes in pairs(data) do
+                winid = tonumber(winid) --[[@as number]]
+                local bufnr = api.nvim_win_get_buf(winid)
+                if event_bufnr == bufnr and self:shouldRender(bufnr) then
+                    vim.print(data)
+                    if changes.topline ~= 0 then
+                        api.nvim_exec_autocmds("User", {
+                            pattern = "WinScrolledY",
+                            data = { winid = winid, buf = bufnr },
+                        })
+                    end
+                    if changes.leftcol ~= 0 then
+                        api.nvim_exec_autocmds("User", {
+                            pattern = "WinScrolledX",
+                            data = { winid = winid, buf = bufnr },
+                        })
+                    end
+                end
+            end
+        end,
+    })
 
     -- indent render steps:
     -- 1. get active bufnrs from event detail
