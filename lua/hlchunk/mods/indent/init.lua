@@ -179,7 +179,6 @@ function IndentMod:createAutocmd()
                 winid = tonumber(winid) --[[@as number]]
                 local bufnr = api.nvim_win_get_buf(winid)
                 if event_bufnr == bufnr and self:shouldRender(bufnr) then
-                    vim.print(data)
                     if changes.topline ~= 0 then
                         api.nvim_exec_autocmds("User", {
                             pattern = "WinScrolledY",

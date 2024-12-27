@@ -88,7 +88,7 @@ end
 -- 1. the row has nothing, we set the value to -1
 -- 2. the row has char however not have indent, we set the indent to 0
 -- 3. the row has indent, we set its indent
---------------------------------------------------------------------------------
+--
 -- when virt_indent is true, the only difference is:
 -- when the len of line val is 0, we set its indent by its context, example
 -- 1. hello world

@@ -248,8 +248,9 @@ function ChunkMod:extra()
     end
     vim.keymap.set({ "x", "o" }, textobject, function()
         local pos = api.nvim_win_get_cursor(0)
+        local bufnr = api.nvim_get_current_buf()
         local retcode, cur_chunk_range = chunkHelper.get_chunk_range({
-            pos = Pos.new(0, pos[1] - 1, pos[2]),
+            pos = Pos.new(bufnr, pos[1] - 1, pos[2]),
             use_treesitter = self.conf.use_treesitter,
         })
         if retcode ~= CHUNK_RANGE_RET.OK then
