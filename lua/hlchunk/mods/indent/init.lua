@@ -53,6 +53,8 @@ function IndentMod:disable()
     BaseMod.disable(self)
 end
 
+---@param range HlChunk.Range
+---@return HlChunk.Range
 local function narrowRange(range)
     local start = range.start
     local finish = range.finish
@@ -154,18 +156,6 @@ function IndentMod:render(range, opts)
     self:setmark(bufnr, render_info)
 end
 
-function IndentMod:createThrottledCallback(callback)
-    local throttledCallback = throttle(callback, self.conf.delay)
-    return function(event, opts)
-        opts = opts or { lazy = false }
-        local bufnr = event.buf
-        if not (api.nvim_buf_is_valid(bufnr) and self:shouldRender(bufnr)) then
-            return
-        end
-        throttledCallback(event, opts)
-    end
-end
-
 function IndentMod:createAutocmd()
     BaseMod.createAutocmd(self)
     api.nvim_create_autocmd("WinScrolled", {
@@ -215,7 +205,7 @@ function IndentMod:createAutocmd()
     --        { bufnr = x, start = 30, finish = 36 },
     --    }
     -- 3. render
-    local throttledCallback = self:createThrottledCallback(function(event, opts)
+    local throttledCallback = throttle(function(event, opts)
         opts = opts or { lazy = false }
         local bufnr = event.buf
         if not self:shouldRender(bufnr) then
@@ -234,7 +224,7 @@ function IndentMod:createAutocmd()
                 self:render(range, opts)
             end)
         end
-    end)
+    end, self.conf.delay)
 
     local autocommands = {
         { events = { "User" }, pattern = "WinScrolledX", opts = { lazy = false } },
