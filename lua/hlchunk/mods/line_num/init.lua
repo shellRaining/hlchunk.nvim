@@ -47,10 +47,14 @@ end
 function LineNumMod:createAutocmd()
     BaseMod.createAutocmd(self)
 
+    local this = self
     api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         group = self.meta.augroup_name,
         callback = function(event)
             local bufnr = event.buf
+            if not this:shouldRender(bufnr) then
+                return true -- delete automcmd
+            end
             local winnr = api.nvim_get_current_win()
             local pos = api.nvim_win_get_cursor(winnr)
             local retcode, cur_chunk_range = chunkHelper.get_chunk_range({
