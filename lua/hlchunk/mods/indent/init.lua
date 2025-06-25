@@ -178,7 +178,7 @@ function IndentMod:createAutocmd()
 
         local wins = fn.win_findbuf(bufnr) or {}
         for _, winid in ipairs(wins) do
-            local range = Scope(bufnr, fn.line("w0", winid) - 1, fn.line("w$", winid) - 1)
+            local range = Scope(bufnr, fn.line("0", winid) - 1, fn.line("$", winid) - 1)
             local ahead_lines = self.conf.ahead_lines
             range.start = math.max(0, range.start - ahead_lines)
             range.finish = math.min(api.nvim_buf_line_count(bufnr) - 1, range.finish + ahead_lines)
