@@ -45,7 +45,7 @@ chunkHelper.CHUNK_RANGE_RET = {
 local function get_chunk_range_by_context(pos)
     local base_flag = "nWz"
     local cur_row_val = vim.api.nvim_buf_get_lines(pos.bufnr, pos.row, pos.row + 1, false)[1]
-    local cur_char = string.sub(cur_row_val, pos.col, pos.col)
+    local cur_char = string.sub(cur_row_val, pos.col + 1, pos.col + 1)
 
     local beg_row = fn.searchpair("{", "", "}", base_flag .. "b" .. (cur_char == "{" and "c" or "")) --[[@as number]]
     local end_row = fn.searchpair("{", "", "}", base_flag .. (cur_char == "}" and "c" or "")) --[[@as number]]
