@@ -80,7 +80,7 @@ local function get_chunk_range_by_treesitter(pos)
         local node_start, _, node_end, _ = cursor_node:range()
         if node_start ~= node_end and is_suit_type(node_type) then
             return cursor_node:has_error() and chunkHelper.CHUNK_RANGE_RET.CHUNK_ERR or chunkHelper.CHUNK_RANGE_RET.OK,
-                Scope(pos.bufnr, node_start, node_end)
+                Scope(pos.bufnr, node_start, node_end, node_type)
         end
         local parent_node = cursor_node:parent()
         if parent_node == cursor_node then
@@ -88,7 +88,7 @@ local function get_chunk_range_by_treesitter(pos)
         end
         cursor_node = parent_node
     end
-    return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1)
+    return chunkHelper.CHUNK_RANGE_RET.NO_CHUNK, Scope(pos.bufnr, -1, -1, nil)
 end
 
 ---@param opts? {pos: HlChunk.Pos, use_treesitter: boolean}

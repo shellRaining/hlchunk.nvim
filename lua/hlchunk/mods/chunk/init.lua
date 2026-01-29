@@ -17,6 +17,9 @@ local rangeFromTo = chunkHelper.rangeFromTo
 local utf8Split = chunkHelper.utf8Split
 local shallowCmp = chunkHelper.shallowCmp
 
+-- Counter for dynamically created highlight groups
+local hl_group_counter = 0
+
 ---@class HlChunk.ChunkMetaInfo : HlChunk.MetaInfo
 ---@field task HlChunk.LoopTask | nil
 ---@field pre_virt_text_list string[]
@@ -121,6 +124,37 @@ function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_
     end
 end
 
+--- Get the highlight group for a given node type
+--- Matches node_type against patterns in node_type_styles config
+---@param node_type string|nil the treesitter node type
+---@param is_error boolean whether the chunk has an error
+---@return string highlight group name
+function ChunkMod:get_hl_group_for_node_type(node_type, is_error)
+    -- If error, always use error style
+    if is_error then
+        return "HLChunk2"
+    end
+
+    -- If no node type or no node_type_styles configured, use default
+    if not node_type or not self.conf.node_type_styles or vim.tbl_isempty(self.conf.node_type_styles) then
+        return "HLChunk1"
+    end
+
+    -- Try to match node_type against configured patterns
+    for pattern, style in pairs(self.conf.node_type_styles) do
+        if node_type:find(pattern) then
+            -- Create a dynamic highlight group for this style
+            hl_group_counter = hl_group_counter + 1
+            local hl_name = "HLChunkNodeType" .. hl_group_counter
+            api.nvim_set_hl(0, hl_name, style)
+            return hl_name
+        end
+    end
+
+    -- No match, use default
+    return "HLChunk1"
+end
+
 function ChunkMod:render(range, opts)
     opts = opts or { error = false, lazy = false }
     if not self:shouldRender(range.bufnr) then
@@ -148,10 +182,12 @@ function ChunkMod:render(range, opts)
 
     local row_opts = {
         virt_text_pos = "overlay",
+        virt_text_repeat_linebreak = true,
         hl_mode = "combine",
         priority = 100,
     }
-    local text_hl = opts.error and "HLChunk2" or "HLChunk1"
+    -- Get highlight based on node type (or error/default)
+    local text_hl = self:get_hl_group_for_node_type(range.node_type, opts.error)
     if self.conf.delay == 0 or opts.lazy == false then
         for i, vt in ipairs(virt_text_list) do
             row_opts.virt_text = { { vt, text_hl } }
