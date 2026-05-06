@@ -7,6 +7,7 @@ local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 ---@field textobject? string
 ---@field max_file_size? number
 ---@field error_sign? boolean
+---@field straight? boolean
 
 ---@class HlChunk.ChunkConf : HlChunk.BaseConf
 ---@field use_treesitter boolean
@@ -16,6 +17,7 @@ local BaseConf = require("hlchunk.mods.base_mod.base_conf")
 ---@field error_sign boolean
 ---@field duration number
 ---@field delay number
+---@field straight boolean
 ---@overload fun(conf?: table): HlChunk.ChunkConf
 local ChunkConf = class(BaseConf, function(self, conf)
     local default_conf = {
@@ -38,6 +40,7 @@ local ChunkConf = class(BaseConf, function(self, conf)
         error_sign = true,
         duration = 200,
         delay = 300,
+        straight = false,
     }
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as HlChunk.ChunkConf]]
     BaseConf.init(self, conf)
@@ -50,6 +53,7 @@ local ChunkConf = class(BaseConf, function(self, conf)
     self.error_sign = conf.error_sign
     self.duration = conf.duration
     self.delay = conf.delay
+    self.straight = conf.straight
 end)
 
 return ChunkConf
