@@ -192,7 +192,7 @@ function IndentMod:createAutocmd()
 
     local autocommands = {
         { events = { "User" }, pattern = "WinScrolledX", opts = { lazy = false } },
-        { events = { "User" }, pattern = "WinScrolledY", opts = { lazy = true } },
+        { events = { "User" }, pattern = "WinScrolledY", opts = { lazy = false } },
         { events = { "TextChanged", "TextChangedI", "BufWinEnter" }, opts = { lazy = false } },
         { events = { "OptionSet" }, pattern = "list,shiftwidth,tabstop,expandtab", opts = { lazy = false } },
     }
