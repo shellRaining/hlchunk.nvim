@@ -38,9 +38,9 @@ local ChunkConf = class(BaseConf, function(self, conf)
         textobject = "",
         max_file_size = 1024 * 1024,
         error_sign = true,
+        straight = false,
         duration = 200,
         delay = 300,
-        straight = false,
     }
     conf = vim.tbl_deep_extend("force", default_conf, conf or {}) --[[@as HlChunk.ChunkConf]]
     BaseConf.init(self, conf)

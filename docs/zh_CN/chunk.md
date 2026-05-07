@@ -26,13 +26,14 @@ local default_conf = {
     textobject = "",
     max_file_size = 1024 * 1024,
     error_sign = true,
+    straight = false,
     -- 动画相关
     duration = 200,
     delay = 300,
 }
 ```
 
-独有的配置项为 `use_treesitter`，`chars`，`textobject`，`max_file_size`，`error_sign`，`duration`，`delay`
+独有的配置项为 `use_treesitter`，`chars`，`textobject`，`max_file_size`，`error_sign`，`duration`，`delay`，`straight`
 
 - `use_treesitter` 是用来控制是否使用 treesitter 来高亮代码块，默认为 true。
   如果该项被设置为 true，他是通过自底向上的查找树的节点，直至找到匹配的节点类型，以此获取相应的 chunk 范围的。而如果设置为 false，将使用 vim 的 `searchpair` 来查找最近的相邻大括号来推断位置（也因此导致 Python 等脚本语言无法正常使用该 mod）
@@ -61,6 +62,8 @@ local default_conf = {
 - `duration` 用来控制动画的持续时间，以毫秒为单位，默认 200 ms
 
 - `delay` 从移动光标到动画开始间隔的时间，以毫秒为单位，默认 300 ms，设置为 0 可以取消动画效果
+
+- `straight` 是一个布尔值，默认为 false。当设置为 true 时，chunk 将以对齐到代码块缩进层级的垂直直线渲染，省去顶部（`╭─`）和底部（`╰─>`）的弯折连接符，呈现出类似缩进参考线的简洁样式。
 
 对于通用的配置（在 [README](../../README.zh-CN.md) 中有提到），仅有部分需要特别注意：
 
