@@ -75,9 +75,14 @@ end
 function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_col_list)
     local beg_blank_len = cFunc.get_indent(range.bufnr, range.start)
     local end_blank_len = cFunc.get_indent(range.bufnr, range.finish)
-    local start_col = math.max(math.min(beg_blank_len, end_blank_len) - self.meta.shiftwidth, 0)
+    local start_col
+    if self.conf.straight then
+        start_col = math.max(math.min(beg_blank_len, end_blank_len), 0)
+    else
+        start_col = math.max(math.min(beg_blank_len, end_blank_len) - self.meta.shiftwidth, 0)
+    end
 
-    if beg_blank_len > 0 then
+    if not self.conf.straight and beg_blank_len > 0 then
         local virt_text_len = beg_blank_len - start_col
         local beg_virt_text = self.conf.chars.left_top
             .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
@@ -108,7 +113,7 @@ function ChunkMod:get_chunk_data(range, virt_text_list, row_list, virt_text_win_
     end
     vim.list_extend(virt_text_list, chars)
 
-    if end_blank_len > 0 then
+    if not self.conf.straight and end_blank_len > 0 then
         local virt_text_len = end_blank_len - start_col
         local end_virt_text = self.conf.chars.left_bottom
             .. self.conf.chars.horizontal_line:rep(virt_text_len - 2)
