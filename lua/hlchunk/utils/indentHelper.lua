@@ -70,12 +70,12 @@ local function get_rows_indent_by_treesitter(range)
     local bufnr = range.bufnr
     for i = range.start, range.finish, 1 do
         local t1 = vim.api.nvim_buf_call(bufnr, function()
-          local ok, indent = pcall(ts_indent.get_indent, i + 1)
-          return ok and indent or nil
+            local ok, indent = pcall(ts_indent.get_indent, i + 1)
+            return ok and indent or nil
         end)
 
         if t1 == nil then
-          goto continue
+            goto continue
         end
 
         local t2 = cFunc.get_indent(bufnr, i)
