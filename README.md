@@ -31,12 +31,13 @@ For detailed optimization work, you can see my blog (written in Chinese): [https
 
 ## Brief introduction
 
-This plugin now have four parts
+This plugin now have five parts
 
 1. chunk
 1. indent
 1. line_num
 1. blank
+1. scope
 
 One picture to understand what these mods do
 
@@ -72,6 +73,20 @@ One picture to understand what these mods do
 <img width='500' src='https://raw.githubusercontent.com/shellRaining/img/main/2303/11_hlblank2.png'>
 <img width="500" alt="image" src="https://raw.githubusercontent.com/shellRaining/img/main/2303/08_hlblank1.png">
 </a>
+
+### scope
+
+Highlight the current scope (function, class, or block) the cursor is in by setting a background highlight on all lines in that scope. Uses treesitter to find the enclosing scope node.
+
+To enable:
+```lua
+require('hlchunk').setup({
+    scope = {
+        enable = true,
+        style = { { bg = "#3a3a5c" } },
+    },
+})
+```
 
 ## Requirements
 
@@ -119,6 +134,7 @@ The specific configuration methods for each mod can be found in their respective
 - [indent](./docs/en/indent.md)
 - [line_num](./docs/en/line_num.md)
 - [blank](./docs/en/blank.md)
+- [scope](#scope)
 
 You can config the whole plugin by using setup function:
 
