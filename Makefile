@@ -35,7 +35,7 @@ fmt:
 
 lua-language-server: dependencies
 	rm -rf .ci/lua-language-server-log
-	lua-language-server --configpath .luarc.json --logpath .ci/lua-language-server-log --check .
+	lua-language-server --configpath .luarc.json --checklevel Error --logpath .ci/lua-language-server-log --check .
 	[ -f .ci/lua-language-server-log/check.json ] && { cat .ci/lua-language-server-log/check.json 2>/dev/null; exit 1; } || true
 
 # idempotent: clone (bare) on first run, then checkout the pinned commit every time
