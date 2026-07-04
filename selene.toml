@@ -1,4 +1,4 @@
-std = "vim"
+std = "neovim"
 
 [lints]
 # warning-level so issues surface without blocking; promote to "deny" once stable

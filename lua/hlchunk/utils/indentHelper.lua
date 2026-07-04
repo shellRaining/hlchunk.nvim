@@ -74,18 +74,15 @@ local function get_rows_indent_by_treesitter(range)
             return ok and indent or nil
         end)
 
-        if t1 == nil then
-            goto continue
+        if t1 ~= nil then
+            local t2 = cFunc.get_indent(bufnr, i)
+            local line_len = cFunc.get_line_len(bufnr, i)
+            local indent = math.min(t1, t2)
+            if indent == 0 and line_len == 0 then
+                indent = get_virt_indent(bufnr, i)
+            end
+            rows_indent[i] = indent
         end
-
-        local t2 = cFunc.get_indent(bufnr, i)
-        local line_len = cFunc.get_line_len(bufnr, i)
-        local indent = math.min(t1, t2)
-        if indent == 0 and line_len == 0 then
-            indent = get_virt_indent(bufnr, i)
-        end
-        rows_indent[i] = indent
-        ::continue::
     end
 
     return indentHelper.ROWS_INDENT_RETCODE.OK, rows_indent
