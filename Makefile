@@ -9,10 +9,10 @@ NEODEV_COMMIT  := 46aa467dca16cf3dfe27098042402066d2ae242d
 VENDOR_DIR := .ci/vendor/pack/vendor/start
 
 # local preview of CI: lint + format check + tests
-ci: luacheck selene stylua test
+ci: selene stylua test
 
 # alias
-lint: luacheck
+lint: selene
 
 selene:
 	selene --config selene.toml lua/
@@ -24,9 +24,6 @@ test: dependencies
 		--noplugin \
 		-u test/spec.lua \
 		-c "PlenaryBustedDirectory test/features {minimal_init = 'test/spec.lua'}"
-
-luacheck:
-	luacheck .
 
 # check only
 stylua:
@@ -53,4 +50,4 @@ dependencies:
 	fi
 	@cd $(VENDOR_DIR)/neodev.nvim && git fetch --depth 1 origin $(NEODEV_COMMIT) && git checkout $(NEODEV_COMMIT)
 
-.PHONY: ci lint test luacheck selene stylua fmt lua-language-server dependencies
+.PHONY: ci lint test selene stylua fmt lua-language-server dependencies

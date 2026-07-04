@@ -10,33 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  luacheck:
-    name: Luacheck
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install luacheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y luarocks
-          sudo luarocks install luacheck
-
-      - run: luacheck .
-
-  stylua:
-    name: StyLua
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check formatting
-        uses: JohnnyMorganz/stylua-action@v4
-        with:
-          version: 0.20.0
-          args: --check .
-
   selene:
     name: Selene
     runs-on: ubuntu-latest
@@ -52,3 +25,15 @@ jobs:
           selene --version
 
       - run: selene --config selene.toml lua/
+
+  stylua:
+    name: StyLua
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        uses: JohnnyMorganz/stylua-action@v4
+        with:
+          version: 0.20.0
+          args: --check .

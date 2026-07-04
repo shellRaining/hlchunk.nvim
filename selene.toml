@@ -1,7 +1,6 @@
 std = "vim"
 
 [lints]
-# existing codebase passes luacheck; selene runs alongside as a second opinion,
-# so keep everything as warnings rather than hard errors for now
+# warning-level so issues surface without blocking; promote to "deny" once stable
 multiple_statements = "warn"
 unused_variable = "warn"

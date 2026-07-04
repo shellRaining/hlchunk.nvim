@@ -14,17 +14,16 @@ hlchunk.nvim 是一个 Neovim（>= 0.10.0）缩进与代码块高亮插件，用
 ## 本地命令
 
 ```
-make ci                 # 本地预演 CI：luacheck + selene + stylua + test
+make ci                 # 本地预演 CI：selene + stylua + test
 make test               # 跑 plenary busted 测试（headless）
-make luacheck           # luacheck 静态检查
-make selene             # selene 静态检查（second opinion）
+make selene             # selene 静态检查（linter）
 make stylua             # 格式校验（只读 --check）
 make fmt                # 格式写入（stylua 原地格式化）
 make lua-language-server # 类型检查（基于 .luarc.json + neodev 类型库）
 make dependencies       # 按 Makefile 中 pin 的 commit 拉取 plenary/neodev
 ```
 
-CI 等价命令：`make luacheck && make selene && make stylua && make test`。
+CI 等价命令：`make selene && make stylua && make test`。
 `make lua-language-server` 对应单独的 typecheck workflow。
 
 ## 目录地图
@@ -59,7 +58,7 @@ docs/                   用户文档
 
 ## PR 流程
 
-1. 本地通过 `make luacheck && make stylua && make test`
+1. 本地通过 `make selene && make stylua && make test`
 2. 新增功能补 `test/features/*_spec.lua`
 3. 用户可见行为变化同步更新 `docs/en` 与 `docs/zh_CN`
 4. commit message 遵循现有风格（见 `git log`，如 `feat(chunk): ...`、`fix(indent): ...`）
