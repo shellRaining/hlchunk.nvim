@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Neovim ${{ matrix.nvim }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        nvim: [stable, nightly]
+    # nightly is informational only, do not block on it
+    continue-on-error: ${{ matrix.nvim == 'nightly' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup neovim
+        uses: MunifTanjim/setup-neovim@v1
+        with:
+          version: ${{ matrix.nvim }}
+
+      - name: Cache vendor
+        uses: actions/cache@v4
+        with:
+          path: .ci/vendor
+          # Makefile holds the pinned plenary/neodev commits, so cache rebuilds on bump
+          key: vendor-${{ hashFiles('Makefile') }}
+
+      - name: Fetch dependencies
+        run: make dependencies
+
+      - name: Run tests
+        run: make test
+
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-${{ matrix.nvim }}
+          path: |
+            .ci/vendor/**/log
+            **/*.log
+          if-no-files-found: ignore
+          retention-days: 7

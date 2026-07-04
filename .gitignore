@@ -1,4 +1,3 @@
-.luarc.json
 plugin/.hlchunk.lua
 note
 lua/hlchunk/utils/inspect.lua

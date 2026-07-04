@@ -1,0 +1,17 @@
+{
+    "runtime.version": "LuaJIT",
+    "workspace.library": [
+        ".ci/vendor/pack/vendor/start/neodev.nvim/types/stable",
+        ".ci/vendor/pack/vendor/start/plenary.nvim/lua"
+    ],
+    "workspace.checkThirdParty": false,
+    "diagnostics.groupSeverity": {
+        "unused": "Warning"
+    },
+    "diagnostics.globals": [
+        "vim"
+    ],
+    "workspace.ignoreDir": [
+        ".ci/vendor"
+    ]
+}

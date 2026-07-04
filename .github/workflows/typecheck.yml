@@ -1,0 +1,37 @@
+name: Type check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: typecheck-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lua-language-server:
+    name: lua-language-server
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache vendor
+        uses: actions/cache@v4
+        with:
+          path: .ci/vendor
+          key: vendor-${{ hashFiles('Makefile') }}
+
+      - name: Fetch dependencies
+        run: make dependencies
+
+      - name: Install lua-language-server
+        run: |
+          VERSION=3.18.2
+          curl -sSL "https://github.com/LuaLS/lua-language-server/releases/download/${VERSION}/lua-language-server-${VERSION}-linux-x64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin --strip-components=1
+          lua-language-server --version
+
+      - name: Run type check
+        run: make lua-language-server

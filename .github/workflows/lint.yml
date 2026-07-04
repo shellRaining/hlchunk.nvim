@@ -1,34 +1,54 @@
-name: Linting and style checking
+name: Lint and format
 
 on:
   push:
+    branches: [main]
   pull_request:
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   luacheck:
     name: Luacheck
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Prepare
+      - name: Install luacheck
         run: |
           sudo apt-get update
-          sudo apt-get install luarocks -y
+          sudo apt-get install -y luarocks
           sudo luarocks install luacheck
 
-      - name: Run Luacheck
-        run: luacheck .
+      - run: luacheck .
 
   stylua:
     name: StyLua
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3
-      - name: Lint with stylua
-        uses: JohnnyMorganz/stylua-action@v2
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        uses: JohnnyMorganz/stylua-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
+          version: 0.20.0
           args: --check .
 
+  selene:
+    name: Selene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install selene
+        run: |
+          VERSION=0.28.0
+          curl -sSL "https://github.com/Kampfkarren/selene/releases/download/${VERSION}/selene-${VERSION}-linux-x86_64.zip" -o /tmp/selene.zip
+          sudo unzip /tmp/selene.zip -d /usr/local/bin selene
+          selene --version
+
+      - run: selene --config selene.toml lua/

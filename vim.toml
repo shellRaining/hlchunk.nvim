@@ -1,0 +1,4 @@
+# neovim globals: treat `vim` as an opaque table, no per-field checking.
+# this mirrors folke/twilight.nvim and avoids maintaining a hand-rolled vim std.
+[vim]
+any = true
