@@ -1,7 +1,9 @@
 --- Doc-gardening: ensure file paths referenced in AGENTS.md / ARCHITECTURE.md
 --- still exist. Catches stale references after refactors.
 local assert = require("luassert")
-local uv = vim.uv
+-- vim.loop is the stable name across Neovim 0.10+; vim.uv alias may be nil
+-- on some builds, so prefer the long-standing one.
+local uv = vim.loop
 
 local DOCS = { "AGENTS.md", "ARCHITECTURE.md" }
 
