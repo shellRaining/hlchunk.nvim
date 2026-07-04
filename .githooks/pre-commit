@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Lightweight pre-commit guard. Enable once per clone:
+#   git config core.hooksPath .githooks
+# Runs selene + stylua --check on staged Lua files only. Missing tools warn
+# instead of blocking, so a fresh checkout without the toolchain can still commit.
+
+set -euo pipefail
+
+staged_lua=$(git diff --cached --name-only --diff-filter=ACM -- '*.lua')
+if [ -z "$staged_lua" ]; then
+    exit 0
+fi
+
+fail=0
+
+if command -v selene >/dev/null 2>&1; then
+    if ! selene --config selene.toml --quiet $staged_lua; then
+        echo "selene: lint failed. Run 'make selene' for details." >&2
+        fail=1
+    fi
+else
+    echo "selene not installed, skipping lint (brew install selene)" >&2
+fi
+
+if command -v stylua >/dev/null 2>&1; then
+    if ! stylua --check --color=auto $staged_lua; then
+        echo "stylua: formatting check failed. Run 'make fmt' to fix." >&2
+        fail=1
+    fi
+else
+    echo "stylua not installed, skipping format check (brew install stylua)" >&2
+fi
+
+exit $fail

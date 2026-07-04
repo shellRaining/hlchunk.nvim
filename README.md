@@ -163,3 +163,13 @@ Sometimes (e.g., for performance reasons), you may want to manually disable a ce
 Similarly, to enable a mod, enter `EnableHLxxxx`.
 
 However, for mods with `enable` set to `false`, the plugin itself will not create a user command (because there is no need).
+
+## Contributing
+
+Contributions are welcome. The repo ships a lightweight pre-commit hook that runs `selene` and `stylua --check` on staged Lua files. Enable it once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+Before opening a PR, run `make selene && make stylua && make test` locally. See [AGENTS.md](AGENTS.md) for the project map and [ARCHITECTURE.md](ARCHITECTURE.md) for the module layout.
