@@ -19,8 +19,8 @@ jobs:
 
       - name: Install selene
         run: |
-          VERSION=0.28.0
-          curl -sSL "https://github.com/Kampfkarren/selene/releases/download/${VERSION}/selene-${VERSION}-linux-x86_64.zip" -o /tmp/selene.zip
+          VERSION=0.31.0
+          curl -sSL "https://github.com/Kampfkarren/selene/releases/download/${VERSION}/selene-${VERSION}-linux.zip" -o /tmp/selene.zip
           sudo unzip /tmp/selene.zip -d /usr/local/bin selene
           selene --version
 
@@ -35,5 +35,6 @@ jobs:
       - name: Check formatting
         uses: JohnnyMorganz/stylua-action@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: 0.20.0
           args: --check .
