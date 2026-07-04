@@ -30,8 +30,9 @@ jobs:
         run: |
           VERSION=3.18.2
           curl -sSL "https://github.com/LuaLS/lua-language-server/releases/download/${VERSION}/lua-language-server-${VERSION}-linux-x64.tar.gz" \
-            | sudo tar -xz -C /usr/local/bin --strip-components=1
-          lua-language-server --version
+            | sudo tar -xz -C /opt
+          echo "/opt/bin" >> $GITHUB_PATH
+          /opt/bin/lua-language-server --version
 
       - name: Run type check
         run: make lua-language-server

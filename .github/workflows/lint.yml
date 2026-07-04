@@ -22,6 +22,7 @@ jobs:
           VERSION=0.31.0
           curl -sSL "https://github.com/Kampfkarren/selene/releases/download/${VERSION}/selene-${VERSION}-linux.zip" -o /tmp/selene.zip
           sudo unzip /tmp/selene.zip -d /usr/local/bin selene
+          sudo chmod +x /usr/local/bin/selene
           selene --version
 
       - run: selene --config selene.toml lua/
@@ -36,5 +37,5 @@ jobs:
         uses: JohnnyMorganz/stylua-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: 0.20.0
+          version: 2.5.2
           args: --check .
